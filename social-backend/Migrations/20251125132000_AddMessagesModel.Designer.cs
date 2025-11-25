@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace social_backend.Migrations
 {
     [DbContext(typeof(SocialContext))]
-    [Migration("20251125094612_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20251125132000_AddMessagesModel")]
+    partial class AddMessagesModel
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,6 +54,7 @@ namespace social_backend.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Content")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedAt")
@@ -64,9 +65,6 @@ namespace social_backend.Migrations
 
                     b.Property<int>("SendingUserId")
                         .HasColumnType("INTEGER");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 

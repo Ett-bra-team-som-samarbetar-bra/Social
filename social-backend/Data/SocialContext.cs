@@ -15,7 +15,7 @@ public class SocialContext : DbContext, ISocialContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
-        options.UseSqlite();
+        options.UseSqlite("Data Source=./Data/social.db");
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
