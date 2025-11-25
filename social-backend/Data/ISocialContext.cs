@@ -1,4 +1,5 @@
-using Microsoft.EntityFrameworkCore;
+namespace SocialBackend.Data;
+
 public interface ISocialContext
 {
     DbSet<User> Users { get; set; }
