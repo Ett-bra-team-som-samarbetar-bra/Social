@@ -21,7 +21,9 @@
     </PackageReference>
   </ItemGroup>
 
- 
+ <ItemGroup>
+    <Using Include="Xunit" />
+</ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\social-backend.csproj" />
