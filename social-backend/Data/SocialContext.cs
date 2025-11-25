@@ -15,6 +15,7 @@ public class SocialContext : DbContext, ISocialContext
     {
         options.UseSqlite();
     }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

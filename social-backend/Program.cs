@@ -1,19 +1,21 @@
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder();
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddDbContext<ISocialContext, SocialContext>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IPostService, PostService>();
+//builder.Services.AddSingleton<Validator>();
+
+// log level for EF Core >= Warning
+builder.Logging.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Warning);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    //app.MapOpenApi();
 }
 
 using (var scope = app.Services.CreateScope())
@@ -22,11 +24,8 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
 }
 
-
 app.UseHttpsRedirection();
-
-
+//app.UseAuthorization();
+app.MapControllers();
 
 app.Run();
-
-

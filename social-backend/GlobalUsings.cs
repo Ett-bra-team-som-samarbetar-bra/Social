@@ -4,3 +4,7 @@ global using System;
 global using SocialBackend.Models;
 global using SocialBackend.Services;
 global using SocialBackend.Data;
+global using Microsoft.AspNetCore.Mvc;
+global using FluentValidation;
+global using System.Net;
+
