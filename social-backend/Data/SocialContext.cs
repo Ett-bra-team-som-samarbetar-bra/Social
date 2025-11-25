@@ -9,7 +9,7 @@ public class SocialContext : DbContext, ISocialContext
     public DbSet<Comment> Comments { get; set; }
     public DbSet<Message> Messages { get; set; }
 
-    public SocialContext()
+    public SocialContext(DbContextOptions<SocialContext> options) : base(options)
     {
     }
 
