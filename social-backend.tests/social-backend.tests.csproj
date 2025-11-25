@@ -22,9 +22,13 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
+ <ItemGroup>
     <Using Include="Xunit" />
-  </ItemGroup>
+</ItemGroup>
+
+<ItemGroup>
+  <ProjectReference Include="..\social-backend\social-backend.csproj" />
+</ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\social-backend\social-backend.csproj" />
