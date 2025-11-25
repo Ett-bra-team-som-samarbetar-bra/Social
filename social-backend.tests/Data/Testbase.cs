@@ -22,11 +22,7 @@ namespace social_backend.tests.Data
                 .Options;
 
             Context = new SocialContext(options);
-
-            // Build schema for this in-memory DB
             Context.Database.EnsureCreated();
-
-            // Optional seed
             SeedData();
         }
 

@@ -1,3 +1,4 @@
+namespace SocialBackend.Models;
 
 public class User
 {
