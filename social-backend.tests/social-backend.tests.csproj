@@ -30,8 +30,4 @@
   <ProjectReference Include="..\social-backend\social-backend.csproj" />
 </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\social-backend\social-backend.csproj" />
-  </ItemGroup>
-
 </Project>

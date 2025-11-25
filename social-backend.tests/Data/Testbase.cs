@@ -1,7 +1,8 @@
 using System;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using social_backend;
+using SocialBackend.Data;
+
 
 namespace social_backend.tests.Data
 {
