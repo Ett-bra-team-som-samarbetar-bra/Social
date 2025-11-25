@@ -13,17 +13,17 @@ public class SocialContext : DbContext, ISocialContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
-        options.UseSqlite();
+        options.UseSqlite("Data Source=./Data/social.db");
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<Message>()
-    .HasOne(m => m.SendingUser)
-    .WithMany(u => u.MessagesSent)
-    .HasForeignKey(m => m.SendingUserId)
-    .OnDelete(DeleteBehavior.Restrict);
+            .HasOne(m => m.SendingUser)
+            .WithMany(u => u.MessagesSent)
+            .HasForeignKey(m => m.SendingUserId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<Message>()
             .HasOne(m => m.ReceivingUser)
@@ -31,5 +31,10 @@ public class SocialContext : DbContext, ISocialContext
             .HasForeignKey(m => m.ReceivingUserId)
             .OnDelete(DeleteBehavior.Restrict);
 
+    }
+
+    public async Task<int> SaveChangesAsync()
+    {
+        return await base.SaveChangesAsync();
     }
 }
