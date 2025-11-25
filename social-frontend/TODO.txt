@@ -1,0 +1,10 @@
+Colors:
+
+text => outlineGlow 
+
+primaryTextLight - #EB9A1D
+primaryTextDark - #1C0001
+BorderSelected - #EB9A1D
+BorderNotSelected - #52391A
+LightBackground - #FB9B10
+DarkBackground - #170800
