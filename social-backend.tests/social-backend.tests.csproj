@@ -27,7 +27,7 @@
 </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\social-backend.csproj" />
+    <ProjectReference Include="..\social-backend\social-backend.csproj" />
   </ItemGroup>
 
 </Project>
