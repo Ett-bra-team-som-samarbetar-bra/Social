@@ -1,3 +1,4 @@
+
 var builder = WebApplication.CreateBuilder();
 
 builder.Services.AddControllers();
@@ -6,17 +7,14 @@ builder.Services.AddDbContext<ISocialContext, SocialContext>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IPostService, PostService>();
-//builder.Services.AddSingleton<Validator>();
+builder.Services.AddSingleton<Validator>();
 
 // log level for EF Core >= Warning
 builder.Logging.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Warning);
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    //app.MapOpenApi();
-}
+// if (app.Environment.IsDevelopment()) {}
 
 using (var scope = app.Services.CreateScope())
 {
@@ -24,8 +22,9 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
 }
 
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
-//app.UseAuthorization();
+//app.UseAuthorization(); todo?
 app.MapControllers();
 
 app.Run();

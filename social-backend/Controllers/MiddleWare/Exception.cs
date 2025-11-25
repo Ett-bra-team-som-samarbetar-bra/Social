@@ -1,19 +1,14 @@
 namespace SocialBackend.Controllers.MiddleWare;
 
-public class ExceptionMiddleware
+public class ExceptionMiddleware(RequestDelegate next)
 {
-    private readonly RequestDelegate _next;
-
-    public ExceptionMiddleware(RequestDelegate next)
-    {
-        _next = next;
-    }
+    private readonly RequestDelegate _next = next;
 
     public async Task InvokeAsync(HttpContext context)
     {
         try
         {
-            await _next(context); // Fortsätt med nästa middleware/controller
+            await _next(context);
         }
         catch (Exception ex)
         {
@@ -26,13 +21,14 @@ public class ExceptionMiddleware
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-        // Här kan du logga exception också
-        Console.WriteLine($"Något gick fel: {ex.Message}");
+        Console.WriteLine($"Middleware Error: {ex.Message}");
 
-        return context.Response.WriteAsync(new
+        // Todo now we sending back everything to client :)
+        var result = System.Text.Json.JsonSerializer.Serialize(new
         {
-            StatusCode = context.Response.StatusCode,
-            Message = "Ett fel inträffade på servern."
-        }.ToString());
+            statusCode = context.Response.StatusCode
+        });
+
+        return context.Response.WriteAsync(result);
     }
 }
