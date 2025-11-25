@@ -9,6 +9,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddDbContext<ISocialContext, SocialContext>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddScoped<IPostService, PostService>();
 
 var app = builder.Build();
 
