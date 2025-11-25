@@ -14,7 +14,9 @@ public class AuthService : IAuthService
         if (await UserExists(request.Username))
             throw new Exception("User already exists");
 
-        var user = CreateUser(request);
+        var passwordHash = HashPassword(request.Password);
+
+        var user = CreateUser(request, passwordHash);
 
         _db.Users.Add(user);
         await _db.SaveChangesAsync();
@@ -48,15 +50,14 @@ public class AuthService : IAuthService
     {
         return await _db.Users.AnyAsync(u => u.Username == username);
     }
-    public User CreateUser(RegisterRequest request)
+    public User CreateUser(RegisterRequest request, string passwordHash)
     {
-        var hash = HashPassword(request.Password);
 
         var user = new User
         {
             Username = request.Username,
             Email = request.Email,
-            PasswordHash = hash,
+            PasswordHash = passwordHash,
             CreatedAt = DateTime.Now
         };
 
