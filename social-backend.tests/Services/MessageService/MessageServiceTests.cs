@@ -33,6 +33,21 @@ public class MessageServiceTests : TestBase
 
         // Assert
         Assert.NotNull(result);
+        Assert.Equal(content, result.Content);
     }
+
+    [Fact]
+    public async Task SendMessage_ShouldThrowWhenContentIsEmpty()
+    {
+        // Arrange
+        var content = "";
+
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
+        {
+            await _messageService.SendMessageAsync(_sendingUser.Id, _receivingUser.Id, content);
+        });
+    }
+
 
 }
