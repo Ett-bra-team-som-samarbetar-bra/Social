@@ -5,8 +5,8 @@ using Xunit;
 public class MessageServiceTests : TestBase
 {
     private readonly MessageService _messageService;
-    public required User _sendingUser;
-    public required User _receivingUser;
+    public User _sendingUser = null!;
+    public User _receivingUser = null!;
 
     public MessageServiceTests() : base()
     {
@@ -49,5 +49,29 @@ public class MessageServiceTests : TestBase
         });
     }
 
+    [Fact]
+    public async Task GetMessagesBetweenUsers_ShouldReturnMessagesInChronologicalOrder()
+    {
+        // Arrange
+        await _messageService.SendMessageAsync(_sendingUser.Id, _receivingUser.Id, "First");
+        await _messageService.SendMessageAsync(_receivingUser.Id, _sendingUser.Id, "Second");
+        await _messageService.SendMessageAsync(_sendingUser.Id, _receivingUser.Id, "Third");
 
+        // Act
+        var result = await _messageService.GetMessagesBetweenUsersAsync(_sendingUser.Id, _receivingUser.Id);
+
+        // Assert
+        Assert.Equal(3, result.Count);
+        Assert.Equal("First", result[0].Content);
+        Assert.Equal("Second", result[1].Content);
+        Assert.Equal("Third", result[2].Content);
+    }
+    
+    [Fact]
+    public async Task GetMessagesBetweenUsers_ShouldReturnEmptyList_WhenNoMessages()
+    {
+        var result = await _messageService.GetMessagesBetweenUsersAsync(_sendingUser.Id, _receivingUser.Id);
+
+        Assert.Empty(result);
+    }
 }
