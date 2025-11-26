@@ -3,7 +3,7 @@ var builder = WebApplication.CreateBuilder();
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
-builder.Services.AddDbContext<ISocialContext, SocialContext>();
+builder.Services.AddDbContext<IDatabaseContext, DatabaseContext>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IPostService, PostService>();
@@ -31,7 +31,7 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<SocialContext>();
+    var db = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
     db.Database.Migrate();
 }
 

@@ -9,7 +9,7 @@ namespace social_backend.tests.Data
     public abstract class TestBase : IDisposable
     {
         private readonly SqliteConnection _connection;
-        protected readonly SocialContext Context;
+        protected readonly DatabaseContext Context;
 
         protected TestBase()
         {
@@ -17,12 +17,12 @@ namespace social_backend.tests.Data
             _connection = new SqliteConnection("DataSource=:memory:");
             _connection.Open();
 
-            var options = new DbContextOptionsBuilder<SocialContext>()
+            var options = new DbContextOptionsBuilder<DatabaseContext>()
                 .UseSqlite(_connection)
                 .EnableSensitiveDataLogging()
                 .Options;
 
-            Context = new SocialContext(options);
+            Context = new DatabaseContext(options);
             Context.Database.EnsureCreated();
             SeedData();
         }

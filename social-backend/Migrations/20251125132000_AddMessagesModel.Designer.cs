@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace social_backend.Migrations
 {
-    [DbContext(typeof(SocialContext))]
+    [DbContext(typeof(DatabaseContext))]
     [Migration("20251125132000_AddMessagesModel")]
     partial class AddMessagesModel
     {

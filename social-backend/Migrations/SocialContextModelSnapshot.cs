@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace social_backend.Migrations
 {
-    [DbContext(typeof(SocialContext))]
+    [DbContext(typeof(DatabaseContext))]
     partial class SocialContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

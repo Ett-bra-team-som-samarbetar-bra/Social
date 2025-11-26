@@ -1,19 +1,20 @@
 namespace SocialBackend.Data;
 
-public class SocialContext : DbContext, ISocialContext
+public class DatabaseContext : DbContext, IDatabaseContext
 {
     public DbSet<User> Users { get; set; }
     public DbSet<Post> Posts { get; set; }
     public DbSet<Comment> Comments { get; set; }
     public DbSet<Message> Messages { get; set; }
 
-    public SocialContext(DbContextOptions<SocialContext> options) : base(options)
+    public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
     {
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
-        options.UseSqlite("Data Source=./Data/social.db");
+        if (!options.IsConfigured)
+            options.UseSqlite("Data Source=./Data/social.db");
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

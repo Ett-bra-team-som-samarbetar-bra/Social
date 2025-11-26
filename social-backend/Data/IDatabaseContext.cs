@@ -1,6 +1,6 @@
 namespace SocialBackend.Data;
 
-public interface ISocialContext
+public interface IDatabaseContext
 {
     DbSet<User> Users { get; set; }
     DbSet<Post> Posts { get; set; }
