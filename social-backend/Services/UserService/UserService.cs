@@ -30,6 +30,8 @@ public class UserService(DatabaseContext dbContext, IPasswordHelper passwordHelp
         var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == request.UserId)
             ?? throw new UserNotFoundException($"No user with Id {request.UserId} was found");
         user.PasswordHash = _passwordHelper.HashPassword(request.NewPassword);
+
+        await _db.SaveChangesAsync();
     }
 
 }
