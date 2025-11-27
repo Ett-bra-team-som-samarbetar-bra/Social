@@ -208,17 +208,3 @@ public class AuthServiceTest : TestBase
         await Assert.ThrowsAsync<Exception>(() => _authService.RegisterAsync(newUser));
     }
 }
-
-/*
-public async Task RegisterAsync(RegisterRequest request)
-    {
-        if (await DoesUserExists(request.Username))
-            throw new Exception("Username already exists");
-
-        var passwordHash = HashPassword(request.Password);
-        var user = CreateUser(request, passwordHash);
-
-        _db.Users.Add(user);
-        await _db.SaveChangesAsync();
-    }
-*/
