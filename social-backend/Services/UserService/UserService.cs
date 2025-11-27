@@ -27,7 +27,8 @@ public class UserService(DatabaseContext dbContext, IPasswordHelper passwordHelp
 
     public async Task UpdatePassword(UpdatePasswordRequest request)
     {
-        var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == request.UserId) ?? throw new UserNotFoundException($"No user with Id {request.UserId} was found");
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == request.UserId)
+            ?? throw new UserNotFoundException($"No user with Id {request.UserId} was found");
         user.PasswordHash = _passwordHelper.HashPassword(request.NewPassword);
     }
 
