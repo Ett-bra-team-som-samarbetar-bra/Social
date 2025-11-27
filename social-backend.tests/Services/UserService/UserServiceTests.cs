@@ -2,7 +2,10 @@ using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using social_backend.tests.Data;
+using SocialBackend.Dto;
+using SocialBackend.Exceptions;
 using SocialBackend.Models;
+using SocialBackend.Services;
 
 public class UserServiceTests : TestBase
 {
@@ -99,7 +102,7 @@ public class UserServiceTests : TestBase
     }
 
     [Fact]
-    public async Task UpdatePassword_ShouldChangesUpdatedValuesOnSelectedUser()
+    public async Task UpdatePassword_ShouldChangeUpdatedValuesOnSelectedUser()
     {
         //Arrange
         var request = new UpdatePasswordRequest
@@ -118,7 +121,7 @@ public class UserServiceTests : TestBase
     }
 
     [Fact]
-    public async Task UpdatePassword_ShouldThrowWHenUserIsNotFound()
+    public async Task UpdatePassword_ShouldThrowWhenUserIsNotFound()
     {
         //Arrange
         var request = new UpdatePasswordRequest

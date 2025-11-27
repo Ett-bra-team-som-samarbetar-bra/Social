@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Session;
 using Moq;
 using System.Drawing;
 using Microsoft.AspNetCore.Identity;
+using SocialBackend.Dto;
 namespace social_backend.tests;
 
 public class AuthServiceTest : TestBase
