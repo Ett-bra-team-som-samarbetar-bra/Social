@@ -2,16 +2,17 @@ namespace SocialBackend.Services;
 
 using BCrypt.Net;
 
-public class AuthService(DatabaseContext dbContext) : IAuthService
+public class AuthService(DatabaseContext dbContext, IPasswordHelper passwordHelper) : IAuthService
 {
     public readonly IDatabaseContext _db = dbContext;
+    private readonly IPasswordHelper _passwordHelper = passwordHelper;
 
     public async Task RegisterAsync(RegisterRequest request)
     {
-        if (await DoesUserExists(request.Username))
+        if (await DoesUserExist(request.Username))
             throw new Exception("Username already exists");
 
-        var passwordHash = HashPassword(request.Password);
+        var passwordHash = _passwordHelper.HashPassword(request.Password);
         var user = CreateUser(request, passwordHash);
 
         _db.Users.Add(user);
@@ -24,7 +25,7 @@ public class AuthService(DatabaseContext dbContext) : IAuthService
         if (user == null)
             throw new Exception("Invalid username or password");
 
-        if (IsPasswordVerified(request.Password, user.PasswordHash))
+        if (_passwordHelper.IsPasswordVerified(request.Password, user.PasswordHash))
             SetUserSession(user, context);
         else
             throw new Exception("Invalid username or password");
@@ -35,17 +36,7 @@ public class AuthService(DatabaseContext dbContext) : IAuthService
     public void Logout(HttpContext context) => context.Session.Clear();
     public void SetUserSession(User user, HttpContext context) => context.Session.SetInt32("UserId", user.Id);
 
-    public string HashPassword(string password)
-    {
-        return BCrypt.HashPassword(password, workFactor: 12);
-    }
-
-    public bool IsPasswordVerified(string password, string storedHash)
-    {
-        return BCrypt.Verify(password, storedHash);
-    }
-
-    public async Task<bool> DoesUserExists(string username)
+    public async Task<bool> DoesUserExist(string username)
     {
         return await _db.Users.AnyAsync(u => u.Username == username);
     }
