@@ -2,6 +2,6 @@ namespace SocialBackend.Services;
 
 public interface IMessageService
 {
-      Message SendMessage(int senderId, int receiverId, string content);
-
+      Task<MessageDto> SendMessageAsync(int senderId, int receiverId, string content);
+      Task<PaginatedList<MessageDto>> GetMessagesBetweenUsersAsync(int userAId, int userBId, int pageIndex, int pageSize);
 }

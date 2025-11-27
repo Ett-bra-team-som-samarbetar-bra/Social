@@ -1,58 +1,91 @@
+
 public class MessageService(IDatabaseContext context) : IMessageService
 {
     private readonly IDatabaseContext _context = context;
 
     // remove later and use UserService
-    public async Task<User> FindUserOrThrowAsync(int userId)
+    private async Task<User> ValidateUserExists(int userId)
     {
         return await _context.Users.FindAsync(userId)
-            ?? throw new KeyNotFoundException("User with this ID not found.");
+            ?? throw new KeyNotFoundException($"User with ID {userId} not found.");
     }
 
-    public async Task<PaginatedList<Message>> GetMessagesBetweenUsersAsync(
-        int userAId, int userBId, int pageIndex, int pageSize)
+    public async Task<PaginatedList<MessageDto>> GetMessagesBetweenUsersAsync(
+        int sendingUserId, int receivingUserId, int pageIndex, int pageSize)
     {
-        var sender = await FindUserOrThrowAsync(userAId);
-        var receiver = await FindUserOrThrowAsync(userBId);
+        await ValidateUserExists(sendingUserId);
+        await ValidateUserExists(receivingUserId);
+
+        if (pageIndex < 1)
+            throw new ArgumentOutOfRangeException(nameof(pageIndex), "Page index must be greater than 0.");
+        if (pageSize < 1)
+            throw new ArgumentOutOfRangeException(nameof(pageSize), "Page size must be greater than 0.");
 
         var query = _context.Messages
-            .Where(m => (m.SendingUserId == userAId && m.ReceivingUserId == userBId) ||
-                        (m.SendingUserId == userBId && m.ReceivingUserId == userAId))
+            .Where(m => (m.SendingUserId == sendingUserId && m.ReceivingUserId == receivingUserId) ||
+                        (m.SendingUserId == receivingUserId && m.ReceivingUserId == sendingUserId))
             .OrderBy(m => m.CreatedAt);
 
-        var totalItems = await query.CountAsync();
-        var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+        var count = await query.CountAsync();
+        var totalPages = (int)Math.Ceiling(count / (double)pageSize);
 
         var messages = await query
             .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize)
+            .Select(m => new MessageDto(
+                m.Id,
+                m.SendingUserId,
+                m.SendingUser.Username,
+                m.ReceivingUserId,
+                m.ReceivingUser.Username,
+                m.CreatedAt,
+                m.Content))
             .ToListAsync();
 
-        return new PaginatedList<Message>(messages, pageIndex, totalPages);
+        return new PaginatedList<MessageDto>(messages, pageIndex, totalPages);
     }
 
-    public async Task<Message> SendMessageAsync(int senderId, int receiverId, string content)
+    public async Task<MessageDto> SendMessageAsync(int sendingUserId, int receivingUserId, string content)
     {
-        var sender = await FindUserOrThrowAsync(senderId);
-        var receiver = await FindUserOrThrowAsync(receiverId);
+        if (sendingUserId == receivingUserId)
+            throw new InvalidOperationException("Cannot send a message to oneself.");
 
         if (string.IsNullOrWhiteSpace(content))
-        {
             throw new ArgumentException("Message cannot be empty!", nameof(content));
-        }
+
+        var sendingUser = await ValidateUserExists(sendingUserId);
+        var receivingUser = await ValidateUserExists(receivingUserId);
 
         var message = new Message
         {
-            SendingUserId = senderId,
-            ReceivingUserId = receiverId,
-            Content = content,
-            SendingUser = sender,
-            ReceivingUser = receiver
+            SendingUserId = sendingUserId,
+            ReceivingUserId = receivingUserId,
+            SendingUser = sendingUser,
+            ReceivingUser = receivingUser,
+            Content = content
         };
 
         _context.Messages.Add(message);
         await _context.SaveChangesAsync();
 
-        return message;
+        return new MessageDto(
+            message.Id,
+            message.SendingUserId,
+            message.SendingUser.Username,
+            message.ReceivingUserId,
+            message.ReceivingUser.Username,
+            message.CreatedAt,
+            message.Content
+        );
     }
 }
+
+public record MessageDto(
+    int Id,
+    int SendingUserId,
+    string SendingUserName,
+    int ReceivingUserId,
+    string ReceivingUserName,
+    DateTime CreatedAt,
+    string Content
+);
