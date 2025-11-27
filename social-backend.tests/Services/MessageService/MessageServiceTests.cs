@@ -58,20 +58,31 @@ public class MessageServiceTests : TestBase
         await _messageService.SendMessageAsync(_sendingUser.Id, _receivingUser.Id, "Third");
 
         // Act
-        var result = await _messageService.GetMessagesBetweenUsersAsync(_sendingUser.Id, _receivingUser.Id);
+        var result = await _messageService.GetMessagesBetweenUsersAsync(
+            _sendingUser.Id,
+            _receivingUser.Id,
+            pageIndex: 1,
+            pageSize: 10
+        );
 
         // Assert
-        Assert.Equal(3, result.Count);
-        Assert.Equal("First", result[0].Content);
-        Assert.Equal("Second", result[1].Content);
-        Assert.Equal("Third", result[2].Content);
+        Assert.NotNull(result);
+        Assert.Equal(3, result.Items.Count);
+        Assert.Equal("First", result.Items[0].Content);
+        Assert.Equal("Second", result.Items[1].Content);
+        Assert.Equal("Third", result.Items[2].Content);
     }
-    
+
     [Fact]
     public async Task GetMessagesBetweenUsers_ShouldReturnEmptyList_WhenNoMessages()
     {
-        var result = await _messageService.GetMessagesBetweenUsersAsync(_sendingUser.Id, _receivingUser.Id);
+        var result = await _messageService.GetMessagesBetweenUsersAsync(
+            _sendingUser.Id,
+            _receivingUser.Id,
+            pageIndex: 1,
+            pageSize: 10
+        );
 
-        Assert.Empty(result);
+        Assert.Empty(result.Items);
     }
 }
