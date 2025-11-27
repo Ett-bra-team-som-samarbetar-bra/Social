@@ -118,7 +118,7 @@ public class UserServiceTests : TestBase
     }
 
     [Fact]
-    public async Task UpdatePassword_ShouldThrowWHenUserIsNotFound()
+    public async Task UpdatePassword_ShouldThrowWhenUserIsNotFound()
     {
         //Arrange
         var request = new UpdatePasswordRequest
