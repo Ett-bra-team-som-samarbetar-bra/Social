@@ -1,4 +1,4 @@
-
+namespace SocialBackend.Services;
 public class MessageService(IDatabaseContext context, IUserService userService) : IMessageService
 {
     private readonly IDatabaseContext _context = context;
@@ -11,7 +11,7 @@ public class MessageService(IDatabaseContext context, IUserService userService) 
             throw new ArgumentOutOfRangeException(nameof(pageIndex), "Page index must be greater than 0.");
         if (pageSize < 1)
             throw new ArgumentOutOfRangeException(nameof(pageSize), "Page size must be greater than 0.");
-     
+
         var (sendingUser, receivingUser) = await GetBothUsersAsync(sendingUserId, receivingUserId);
 
         var query = _context.Messages
@@ -39,7 +39,7 @@ public class MessageService(IDatabaseContext context, IUserService userService) 
 
         if (string.IsNullOrWhiteSpace(content))
             throw new ArgumentException("Message cannot be empty!", nameof(content));
-   
+
         var (sendingUser, receivingUser) = await GetBothUsersAsync(sendingUserId, receivingUserId);
 
         var message = new Message
@@ -76,13 +76,3 @@ public class MessageService(IDatabaseContext context, IUserService userService) 
         return (sendingUser, receivingUser);
     }
 }
-
-public record MessageDto(
-    int Id,
-    int SendingUserId,
-    string SendingUserName,
-    int ReceivingUserId,
-    string ReceivingUserName,
-    DateTime CreatedAt,
-    string Content
-);
