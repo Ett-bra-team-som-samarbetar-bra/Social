@@ -56,7 +56,8 @@ public class AuthService(DatabaseContext dbContext) : IAuthService
         {
             Username = request.Username,
             Email = request.Email,
-            PasswordHash = passwordHash
+            PasswordHash = passwordHash,
+            Description = request.Description
         };
     }
 }
@@ -72,4 +73,5 @@ public record RegisterRequest
     public required string Username { get; set; }
     public required string Email { get; set; }
     public required string Password { get; set; }
+    public required string Description { get; set; }
 }
