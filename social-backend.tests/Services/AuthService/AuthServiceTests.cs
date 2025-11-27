@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Session;
 using Moq;
 using System.Drawing;
 using Microsoft.AspNetCore.Identity;
+using SocialBackend.Dto;
 namespace social_backend.tests;
 
 public class AuthServiceTest : TestBase
@@ -28,9 +29,9 @@ public class AuthServiceTest : TestBase
 
     protected override void SeedData()
     {
-        Context.Users.Add(new User { Id = 1, Username = "Alfred", Email = "Alfred@microsoft.com", PasswordHash = "Hej123" });
-        Context.Users.Add(new User { Id = 2, Username = "Manfred", Email = "Manfred@microsoft.com", PasswordHash = "123Lösen" });
-        Context.Users.Add(new User { Id = 3, Username = "Fredrik", Email = "Fredrik@microsoft.com", PasswordHash = "123456" });
+        Context.Users.Add(new User { Id = 1, Username = "Alfred", Email = "Alfred@microsoft.com", PasswordHash = "Hej123", Description = "Just a lil guy" });
+        Context.Users.Add(new User { Id = 2, Username = "Manfred", Email = "Manfred@microsoft.com", PasswordHash = "123Lösen", Description = "Just a medium guy" });
+        Context.Users.Add(new User { Id = 3, Username = "Fredrik", Email = "Fredrik@microsoft.com", PasswordHash = "123456", Description = "Just a big guy" });
 
         Context.SaveChanges();
     }
@@ -43,11 +44,13 @@ public class AuthServiceTest : TestBase
         string userName = "Nisse";
         string email = "Nisse@manpower.se";
         string password = "Password";
+        string description = "Legendary";
         RegisterRequest newUser = new RegisterRequest
         {
             Username = userName,
             Email = email,
-            Password = password
+            Password = password,
+            Description = description
         };
         var passwordHash = newUser.Password;
 
@@ -89,7 +92,7 @@ public class AuthServiceTest : TestBase
     public void SetUserSession_ShouldStoreUserId()
     {
         //Arrange
-        var user = new User { Id = 4, Username = "Emil", Email = "Emil@microsoft.com", PasswordHash = "Dansbandsveckanimalung2022" };
+        var user = new User { Id = 4, Username = "Emil", Email = "Emil@microsoft.com", PasswordHash = "Dansbandsveckanimalung2022", Description = "Legendary" };
         var expected = 4;
 
 
@@ -175,7 +178,8 @@ public class AuthServiceTest : TestBase
         {
             Username = "Pelle",
             Email = "Pelle@Microsoft.com",
-            Password = "Hemligtsomfän"
+            Password = "Hemligtsomfän",
+            Description = "Cool Kille"
         };
         _mockHelper.Setup(h => h.HashPassword(It.IsAny<string>())).Returns((string passwordHash) => passwordHash);
         var expectedUserCount = Context.Users.Count() + 1;
@@ -195,7 +199,8 @@ public class AuthServiceTest : TestBase
         {
             Username = "Alfred",
             Email = "Alfred@Microsoft.com",
-            Password = "Hemligtsomfän"
+            Password = "Hemligtsomfän",
+            Description = "Cool Kille"
         };
         _mockHelper.Setup(h => h.HashPassword(It.IsAny<string>())).Returns((string passwordHash) => passwordHash);
 
@@ -203,17 +208,3 @@ public class AuthServiceTest : TestBase
         await Assert.ThrowsAsync<Exception>(() => _authService.RegisterAsync(newUser));
     }
 }
-
-/*
-public async Task RegisterAsync(RegisterRequest request)
-    {
-        if (await DoesUserExists(request.Username))
-            throw new Exception("Username already exists");
-
-        var passwordHash = HashPassword(request.Password);
-        var user = CreateUser(request, passwordHash);
-
-        _db.Users.Add(user);
-        await _db.SaveChangesAsync();
-    }
-*/

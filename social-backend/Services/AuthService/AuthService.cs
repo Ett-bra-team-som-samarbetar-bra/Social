@@ -4,7 +4,7 @@ using BCrypt.Net;
 
 public class AuthService(DatabaseContext dbContext, IPasswordHelper passwordHelper) : IAuthService
 {
-    public readonly IDatabaseContext _db = dbContext;
+    private readonly IDatabaseContext _db = dbContext;
     private readonly IPasswordHelper _passwordHelper = passwordHelper;
 
     public async Task RegisterAsync(RegisterRequest request)
@@ -51,18 +51,4 @@ public class AuthService(DatabaseContext dbContext, IPasswordHelper passwordHelp
             Description = request.Description
         };
     }
-}
-
-public record LoginRequest
-{
-    public required string Username { get; set; }
-    public required string Password { get; set; }
-}
-
-public record RegisterRequest
-{
-    public required string Username { get; set; }
-    public required string Email { get; set; }
-    public required string Password { get; set; }
-    public required string Description { get; set; }
 }
