@@ -1,16 +1,21 @@
 using social_backend.tests.Data;
 using SocialBackend.Models;
+using SocialBackend.Services;
 using Xunit;
+using Moq;
+namespace social_backend.tests;
 
 public class MessageServiceTests : TestBase
 {
-    private readonly MessageService _messageService;
+    private readonly IMessageService _messageService;
+    private readonly Mock<IUserService> _mockUserService;
     public User _sendingUser = null!;
     public User _receivingUser = null!;
 
     public MessageServiceTests() : base()
     {
-        _messageService = new MessageService(Context);
+        _mockUserService = new Mock<IUserService>();
+        _messageService = new MessageService(Context, _mockUserService.Object);
     }
 
     protected override void SeedData()

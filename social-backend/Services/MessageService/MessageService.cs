@@ -1,25 +1,18 @@
 
-public class MessageService(IDatabaseContext context) : IMessageService
+public class MessageService(IDatabaseContext context, IUserService userService) : IMessageService
 {
     private readonly IDatabaseContext _context = context;
-
-    // remove later and use UserService
-    private async Task<User> ValidateUserExists(int userId)
-    {
-        return await _context.Users.FindAsync(userId)
-            ?? throw new UserNotFoundException($"User with ID {userId} not found.");
-    }
+    private readonly IUserService _userService = userService;
 
     public async Task<PaginatedList<MessageDto>> GetMessagesBetweenUsersAsync(
-        int sendingUserId, int receivingUserId, int pageIndex, int pageSize)
+    int sendingUserId, int receivingUserId, int pageIndex, int pageSize)
     {
-        await ValidateUserExists(sendingUserId);
-        await ValidateUserExists(receivingUserId);
-
         if (pageIndex < 1)
             throw new ArgumentOutOfRangeException(nameof(pageIndex), "Page index must be greater than 0.");
         if (pageSize < 1)
             throw new ArgumentOutOfRangeException(nameof(pageSize), "Page size must be greater than 0.");
+     
+        var (sendingUser, receivingUser) = await GetBothUsersAsync(sendingUserId, receivingUserId);
 
         var query = _context.Messages
             .Include(m => m.SendingUser)
@@ -46,9 +39,8 @@ public class MessageService(IDatabaseContext context) : IMessageService
 
         if (string.IsNullOrWhiteSpace(content))
             throw new ArgumentException("Message cannot be empty!", nameof(content));
-
-        var sendingUser = await ValidateUserExists(sendingUserId);
-        var receivingUser = await ValidateUserExists(receivingUserId);
+   
+        var (sendingUser, receivingUser) = await GetBothUsersAsync(sendingUserId, receivingUserId);
 
         var message = new Message
         {
@@ -63,6 +55,7 @@ public class MessageService(IDatabaseContext context) : IMessageService
         await _context.SaveChangesAsync();
         return ToDto(message);
     }
+
     private static MessageDto ToDto(Message message)
     {
         return new(
@@ -74,6 +67,13 @@ public class MessageService(IDatabaseContext context) : IMessageService
             message.CreatedAt,
             message.Content
         );
+    }
+
+    private async Task<(User SendingUser, User ReceivingUser)> GetBothUsersAsync(int sendingUserId, int receivingUserId)
+    {
+        var sendingUser = await _userService.GetUserById(new UserIdRequest { UserId = sendingUserId });
+        var receivingUser = await _userService.GetUserById(new UserIdRequest { UserId = receivingUserId });
+        return (sendingUser, receivingUser);
     }
 }
 
