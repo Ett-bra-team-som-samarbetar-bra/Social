@@ -99,7 +99,7 @@ public class UserServiceTests : TestBase
     }
 
     [Fact]
-    public async Task UpdatePassword_ShouldChangesUpdatedValuesOnSelectedUser()
+    public async Task UpdatePassword_ShouldChangeUpdatedValuesOnSelectedUser()
     {
         //Arrange
         var request = new UpdatePasswordRequest
