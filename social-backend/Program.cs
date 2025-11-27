@@ -7,6 +7,7 @@ builder.Services.AddDbContext<IDatabaseContext, DatabaseContext>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddScoped<IPasswordHelper, PasswordHelper>();
 builder.Services.AddSingleton<Validator>();
 
 //Adds in memory session
