@@ -7,7 +7,7 @@ public class MessageService(IDatabaseContext context) : IMessageService
     private async Task<User> ValidateUserExists(int userId)
     {
         return await _context.Users.FindAsync(userId)
-            ?? throw new KeyNotFoundException($"User with ID {userId} not found.");
+            ?? throw new UserNotFoundException($"User with ID {userId} not found.");
     }
 
     public async Task<PaginatedList<MessageDto>> GetMessagesBetweenUsersAsync(
@@ -22,6 +22,8 @@ public class MessageService(IDatabaseContext context) : IMessageService
             throw new ArgumentOutOfRangeException(nameof(pageSize), "Page size must be greater than 0.");
 
         var query = _context.Messages
+            .Include(m => m.SendingUser)
+            .Include(m => m.ReceivingUser)
             .Where(m => (m.SendingUserId == sendingUserId && m.ReceivingUserId == receivingUserId) ||
                         (m.SendingUserId == receivingUserId && m.ReceivingUserId == sendingUserId))
             .OrderBy(m => m.CreatedAt);
@@ -30,16 +32,8 @@ public class MessageService(IDatabaseContext context) : IMessageService
         var totalPages = (int)Math.Ceiling(count / (double)pageSize);
 
         var messages = await query
-            .Skip((pageIndex - 1) * pageSize)
-            .Take(pageSize)
-            .Select(m => new MessageDto(
-                m.Id,
-                m.SendingUserId,
-                m.SendingUser.Username,
-                m.ReceivingUserId,
-                m.ReceivingUser.Username,
-                m.CreatedAt,
-                m.Content))
+            .Paginate(pageIndex, pageSize)
+            .Select(m => ToDto(m))
             .ToListAsync();
 
         return new PaginatedList<MessageDto>(messages, pageIndex, totalPages);
@@ -67,8 +61,11 @@ public class MessageService(IDatabaseContext context) : IMessageService
 
         _context.Messages.Add(message);
         await _context.SaveChangesAsync();
-
-        return new MessageDto(
+        return ToDto(message);
+    }
+    private static MessageDto ToDto(Message message)
+    {
+        return new(
             message.Id,
             message.SendingUserId,
             message.SendingUser.Username,

@@ -15,8 +15,8 @@ public class MessageServiceTests : TestBase
 
     protected override void SeedData()
     {
-        _sendingUser = new User { Username = "sender", Email = "sender@example.com", PasswordHash = "Abcd1234!" };
-        _receivingUser = new User { Username = "receiver", Email = "receiver@example.com", PasswordHash = "Abcd1234!" };
+        _sendingUser = new User { Username = "sender", Email = "sender@example.com", PasswordHash = "Abcd1234!", Description = "I am the sender." };
+        _receivingUser = new User { Username = "receiver", Email = "receiver@example.com", PasswordHash = "Abcd1234!", Description = "I am the receiver." };
 
         Context.Users.AddRange(_sendingUser, _receivingUser);
         Context.SaveChanges();
