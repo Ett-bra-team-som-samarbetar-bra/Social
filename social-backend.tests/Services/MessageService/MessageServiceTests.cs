@@ -85,4 +85,67 @@ public class MessageServiceTests : TestBase
 
         Assert.Empty(result.Items);
     }
+
+    [Fact]
+    public async Task SendMessage_ShouldThrow_WhenSendingToSelf()
+    {
+        await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+        {
+            await _messageService.SendMessageAsync(_sendingUser.Id, _sendingUser.Id, "Hello me");
+        });
+    }
+
+    [Fact]
+    public async Task GetMessagesBetweenUsers_ShouldThrowWhenInvalidPaginationParameters()
+    {
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+        {
+            await _messageService.GetMessagesBetweenUsersAsync(
+                _sendingUser.Id,
+                _receivingUser.Id,
+                pageIndex: 0,
+                pageSize: 10
+            );
+        });
+
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+        {
+            await _messageService.GetMessagesBetweenUsersAsync(
+                _sendingUser.Id,
+                _receivingUser.Id,
+                pageIndex: 1,
+                pageSize: 0
+            );
+        });
+    }
+
+    [Fact]
+    public async Task GetMessagesBetweenUsers_ShouldReturnCorrectPageOfMessages()
+    {
+        // Arrange
+        for (int i = 1; i <= 30; i++)
+        {
+            await _messageService.SendMessageAsync(
+                _sendingUser.Id,
+                _receivingUser.Id,
+                $"Msg {i}"
+            );
+        }
+
+        // Act
+        var result = await _messageService.GetMessagesBetweenUsersAsync(
+            _sendingUser.Id,
+            _receivingUser.Id,
+            pageIndex: 2,
+            pageSize: 10
+        );
+
+        // Assert
+        Assert.Equal(10, result.Items.Count);
+        Assert.Equal("Msg 11", result.Items.First().Content);
+        Assert.Equal("Msg 20", result.Items.Last().Content);
+        Assert.True(result.HasPreviousPage);
+        Assert.True(result.HasNextPage);
+        Assert.Equal(3, result.TotalPages);
+    }
 }
