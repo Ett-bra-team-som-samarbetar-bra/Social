@@ -9,7 +9,6 @@ public record MessageDto(
 
 public record SendMessageRequest
 {
-    public int SendingUserId { get; set; }
     public int ReceivingUserId { get; set; }
-    public string Content { get; set; }
+    public required string Content { get; set; }
 }
