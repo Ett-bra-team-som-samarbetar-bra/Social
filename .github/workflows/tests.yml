@@ -73,7 +73,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dotnet-test-results
-          path: social-backend.test/TestResults/
+          path: social-backend.tests/TestResults/
 
       - name: Upload Coverage Report
         uses: actions/upload-artifact@v4
