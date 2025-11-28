@@ -38,7 +38,6 @@ public class UpdatePasswordRequestValidator : AbstractValidator<UpdatePasswordRe
 {
     public UpdatePasswordRequestValidator()
     {
-
         RuleFor(x => x.NewPassword).NotEmpty().WithMessage("Password must not be emtpy")
         .MinimumLength(6).WithMessage("Password must be at least 6 characters")
         .Matches("[A-Z]").WithMessage("Password must contain at least one uppercase letter.")
