@@ -3,19 +3,32 @@ using SocialBackend.Models;
 using SocialBackend.Services;
 using Xunit;
 using Moq;
+using Microsoft.AspNetCore.SignalR;
+using Social_Backend.Hubs;
 namespace social_backend.tests;
 
 public class MessageServiceTests : TestBase
 {
     private readonly IMessageService _messageService;
     private readonly Mock<IUserService> _mockUserService;
+    private readonly Mock<IHubContext<ChatHub>> _mockHubContext;
     public User _sendingUser = null!;
     public User _receivingUser = null!;
 
     public MessageServiceTests() : base()
     {
         _mockUserService = new Mock<IUserService>();
-        _messageService = new MessageService(Context, _mockUserService.Object);
+        _mockHubContext = new Mock<IHubContext<ChatHub>>();
+
+        // Ignore SignalR 
+        _mockHubContext
+            .Setup(x => x.Clients.User(It.IsAny<string>()).SendCoreAsync(
+                It.IsAny<string>(),
+                It.IsAny<object[]>(),
+                It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        _messageService = new MessageService(Context, _mockUserService.Object, _mockHubContext.Object);
     }
 
     protected override void SeedData()

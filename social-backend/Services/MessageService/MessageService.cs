@@ -64,7 +64,6 @@ public class MessageService(IDatabaseContext context, IUserService userService, 
     private static MessageDto ToDto(Message message)
     {
         return new(
-            message.Id,
             message.SendingUserId,
             message.SendingUser.Username,
             message.ReceivingUserId,
