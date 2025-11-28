@@ -79,7 +79,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dotnet-coverage
-          path: social-backlend.tests/TestResults/**/coverage.cobertura.xml
+          path: social-backend.tests/TestResults/**/coverage.cobertura.xml
 
   summarize-results: 
     name: Summarize Test Results
@@ -113,7 +113,7 @@ jobs:
       - name: Extract Backend Coverage
         id: be_cov
         run: |
-          COV=$(grep -o 'line-rate="[^"]*"' dotnet-coverage/coverage.cobertura.xml | head -1 | sed 's/line-rate="//' | sed 's/"//')
+          COV=$(grep -o 'line-rate="[^"]*"' dotnet-coverage/**/coverage.cobertura.xml | head -1 | sed 's/line-rate="//' | sed 's/"//')
           PERCENT=$(python3 - <<EOF
           print(round(float("$COV") * 100))
           EOF
