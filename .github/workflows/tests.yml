@@ -50,7 +50,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Cahce NuGet
+      - name: Cache NuGet
         uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
@@ -67,7 +67,7 @@ jobs:
         run: dotnet restore social-backend
 
       - name: Run tests with coverage + results
-        run: dotnet test social-backend.tests --no-build --collect:"XPlat Code Coverage" --logger:"trx;LogFileName=test_results.trx"
+        run: dotnet test social-backend.tests --collect:"XPlat Code Coverage" --logger:"trx;LogFileName=test_results.trx"
 
       - name: Upload .NET Test Results
         uses: actions/upload-artifact@v4
@@ -79,7 +79,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dotnet-coverage
-          path: social-backend.tests/TestResults/**/coverage.cobertura.xml
+          path: social-backend.tests/TestResults/**/coverage*.xml
 
   summarize-results: 
     name: Summarize Test Results
