@@ -11,14 +11,11 @@ builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<IPasswordHelper, PasswordHelper>();
 builder.Services.AddSingleton<Validator>();
-<<<<<<< HEAD
 
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
-=======
 builder.Services.AddSignalR();
->>>>>>> dev
 //Adds in memory session
 builder.Services.AddDistributedMemoryCache();
 
