@@ -11,5 +11,6 @@ global using SocialBackend.Controllers.MiddleWare;
 global using Api.Controllers.Validators;
 global using SocialBackend.Dto;
 global using SocialBackend.Exceptions;
-
+global using Social_Backend.Hubs;
+global using Microsoft.AspNetCore.SignalR;
 
