@@ -107,8 +107,13 @@ jobs:
       - name: Extract frontend Coverage
         id: fe_cov
         run: |
-          COV=$(grep -o '"pct":[0-9]\+' jest-coverage/coverage-summary.json | head -1 | grep -o '[0-9]\+')
-          echo "pct=$COV" >> $GITHUB_OUTPUT
+          if [ -f jest-coverage/coverage-summary.json ]; then
+            COV=$(grep -o '"pct":[0-9]\+' jest-coverage/coverage-summary.json | head -1 | grep -o '[0-9]\+')
+            echo "pct=$COV" >> $GITHUB_OUTPUT
+          else
+            echo "No coverage file found, setting FE pct=0"
+            echo "pct=0" >> $GITHUB_OUTPUT
+          fi
 
       - name: Extract Backend Coverage
         id: be_cov
@@ -125,6 +130,9 @@ jobs:
         id: comment
         run: |
           FRONT=${{ steps.fe_cov.outputs.pct }}
+          if [ "$FRONT" -eq "0" ]; then
+          FRONT="No tests"
+          fi
           BACK=${{ steps.be_cov.outputs.pct }}
 
           echo "body<<EOF" >> $GITHUB_OUTPUT
