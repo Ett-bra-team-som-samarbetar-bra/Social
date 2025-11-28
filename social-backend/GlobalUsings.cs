@@ -10,5 +10,6 @@ global using SocialBackend.Data;
 global using SocialBackend.Controllers.MiddleWare;
 global using Api.Controllers.Validators;
 global using SocialBackend.Dto;
+global using SocialBackend.Exceptions;
 
 
