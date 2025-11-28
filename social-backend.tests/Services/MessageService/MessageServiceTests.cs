@@ -19,7 +19,16 @@ public class MessageServiceTests : TestBase
     {
         _mockUserService = new Mock<IUserService>();
         _mockHubContext = new Mock<IHubContext<ChatHub>>();
-        _messageService = new MessageService(Context, _mockUserService.Object , _mockHubContext.Object);
+
+        // Ignore SignalR 
+        _mockHubContext
+            .Setup(x => x.Clients.User(It.IsAny<string>()).SendCoreAsync(
+                It.IsAny<string>(),
+                It.IsAny<object[]>(),
+                It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        _messageService = new MessageService(Context, _mockUserService.Object, _mockHubContext.Object);
     }
 
     protected override void SeedData()
