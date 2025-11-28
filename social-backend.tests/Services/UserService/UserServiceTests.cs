@@ -77,16 +77,13 @@ public class UserServiceTests : TestBase
     public async Task DeleteUser_ShouldDeleteUser()
     {
         //Arrange
-        var request = new UserIdRequest
-        {
-            UserId = 3
-        };
+        int userId = 3;
 
         //Act
-        await _userService.DeleteUser(request);
+        await _userService.DeleteUser(userId);
 
         //Assert
-        var deletedUser = await Context.Users.FindAsync(request.UserId);
+        var deletedUser = await Context.Users.FindAsync(userId);
         Assert.Null(deletedUser);
     }
 
@@ -94,13 +91,10 @@ public class UserServiceTests : TestBase
     public async Task DeleteUser_ShouldThrowIfUserIsNotFound()
     {
         //Arrange
-        var request = new UserIdRequest
-        {
-            UserId = 1337
-        };
+        int userId = 1337;
 
         //Assert
-        await Assert.ThrowsAsync<UserNotFoundException>(() => _userService.DeleteUser(request));
+        await Assert.ThrowsAsync<UserNotFoundException>(() => _userService.DeleteUser(userId));
     }
 
     [Fact]
