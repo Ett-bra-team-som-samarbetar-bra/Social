@@ -1,8 +1,10 @@
 namespace SocialBackend.Services;
-public class MessageService(IDatabaseContext context, IUserService userService) : IMessageService
+
+public class MessageService(IDatabaseContext context, IUserService userService, IHubContext<ChatHub> hubContext) : IMessageService
 {
     private readonly IDatabaseContext _context = context;
     private readonly IUserService _userService = userService;
+    private readonly IHubContext<ChatHub> _hubContext = hubContext;
 
     public async Task<PaginatedList<MessageDto>> GetMessagesBetweenUsersAsync(
     int sendingUserId, int receivingUserId, int pageIndex, int pageSize)
@@ -53,7 +55,10 @@ public class MessageService(IDatabaseContext context, IUserService userService) 
 
         _context.Messages.Add(message);
         await _context.SaveChangesAsync();
-        return ToDto(message);
+        var messageDto = ToDto(message);
+        await BroadcastMessageAsync(messageDto, sendingUserId, receivingUserId);
+
+        return messageDto;
     }
 
     private static MessageDto ToDto(Message message)
@@ -67,6 +72,15 @@ public class MessageService(IDatabaseContext context, IUserService userService) 
             message.CreatedAt,
             message.Content
         );
+    }
+
+    private async Task BroadcastMessageAsync(MessageDto messageDto, int sendingUserId, int receivingUserId)
+    {
+        await _hubContext.Clients.User(sendingUserId.ToString())
+            .SendAsync("ReceiveMessage", messageDto);
+
+        await _hubContext.Clients.User(receivingUserId.ToString())
+            .SendAsync("ReceiveMessage", messageDto);
     }
 
     private async Task<(User SendingUser, User ReceivingUser)> GetBothUsersAsync(int sendingUserId, int receivingUserId)
