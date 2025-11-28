@@ -19,14 +19,23 @@ public class ExceptionMiddleware(RequestDelegate next)
     private static Task HandleExceptionAsync(HttpContext context, Exception ex)
     {
         context.Response.ContentType = "application/json";
-        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-        Console.WriteLine($"Middleware Error: {ex.Message}");
+        var (status, message) = ex switch
+        {
+            UserNotFoundException => (HttpStatusCode.NotFound, ex.Message),
+            InvalidCredentialsException => (HttpStatusCode.BadRequest, ex.Message),
+            UsernameExistsException => (HttpStatusCode.BadRequest, ex.Message),
+            ArgumentOutOfRangeException => (HttpStatusCode.BadRequest, ex.Message),
+            InvalidOperationException => (HttpStatusCode.BadRequest, ex.Message),
+            _ => (HttpStatusCode.InternalServerError, "An unexpected error occured.")
+        };
 
-        // Todo now we sending back everything to client :)
+        context.Response.StatusCode = (int)status;
+
         var result = System.Text.Json.JsonSerializer.Serialize(new
         {
-            statusCode = context.Response.StatusCode
+            statusCode = context.Response.StatusCode,
+            error = message
         });
 
         return context.Response.WriteAsync(result);

@@ -18,7 +18,7 @@ namespace SocialBackend.Services
         public async Task<User> GetUserById(UserIdRequest request)
         {
             return await _db.Users.FirstOrDefaultAsync(u => u.Id == request.UserId)
-                ?? throw new UserNotFoundException($"No user with Id {request.UserId} was found");
+                ?? throw new UserNotFoundException(request.UserId);
         }
 
         public async Task<List<User>> GetAllUsers()
@@ -29,7 +29,7 @@ namespace SocialBackend.Services
         public async Task DeleteUser(int userId)
         {
             var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId)
-                ?? throw new UserNotFoundException($"No user with Id {userId} was found");
+                ?? throw new UserNotFoundException(userId);
             _db.Users.Remove(user);
             await _db.SaveChangesAsync();
         }
@@ -37,7 +37,7 @@ namespace SocialBackend.Services
         public async Task UpdatePassword(UpdatePasswordRequest request, int userId)
         {
             var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId)
-                ?? throw new UserNotFoundException($"No user with Id {userId} was found");
+                ?? throw new UserNotFoundException(userId);
             user.PasswordHash = _passwordHelper.HashPassword(request.NewPassword);
         }
     }
