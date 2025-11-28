@@ -80,3 +80,72 @@ jobs:
         with:
           name: dotnet-coverage
           path: social-backlend.tests/TestResults/**/coverage.cobertura.xml
+
+  summarize-results: 
+    name: Summarize Test Results
+    runs-on: ubuntu-latest
+    needs:
+      - frontend-tests
+      - backend-tests
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download Jest Coverage
+        uses: actions/download-artifact@v4
+        with: 
+          name: jest-coverage
+          path: jest-coverage
+
+      - name: Download .NET Coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: dotnet-coverage
+          path: dotnet-coverage
+
+      - name: Extract frontend Coverage
+        id: fe_cov
+        run: |
+          COV=$(grep -o '"pct":[0-9]\+' jest-coverage/coverage-summary.json | head -1 | grep -o '[0-9]\+')
+          echo "pct=$COV" >> $GITHUB_OUTPUT
+
+      - name: Extract Backend Coverage
+        id: be_cov
+        run: |
+          COV=$(grep -o 'line-rate="[^"]*"' dotnet-coverage/coverage.cobertura.xml | head -1 | sed 's/line-rate="//' | sed 's/"//')
+          PERCENT=$(python3 - <<EOF
+          print(round(float("$COV") * 100))
+          EOF
+          )
+          echo "pct=$PERCENT" >> $GITHUB_OUTPUT
+
+      # Create PR Comment Body
+      - name: Build comment body
+        id: comment
+        run: |
+          FRONT=${{ steps.fe_cov.outputs.pct }}
+          BACK=${{ steps.be_cov.outputs.pct }}
+
+          echo "body<<EOF" >> $GITHUB_OUTPUT
+          echo "### 🧪 Test & Coverage Summary" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          echo "| Project | Coverage |" >> $GITHUB_OUTPUT
+          echo "|---------|----------|" >> $GITHUB_OUTPUT
+          echo "| **Frontend (Jest)** | $FRONT% |" >> $GITHUB_OUTPUT
+          echo "| **Backend (.NET)** | $BACK% |" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          echo "✔ Tests completed successfully" >> $GITHUB_OUTPUT
+          echo "✔ Coverage generated for both projects" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          echo "This comment auto-updates with every commit 🤖" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      # Post or update PR comment
+      - name: Post coverage comment on PR
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: ${{ steps.comment.outputs.body }}
+          edit-mode: replace
