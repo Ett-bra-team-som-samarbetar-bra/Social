@@ -1,0 +1,85 @@
+name: Tests
+
+on:
+  pull_request:
+    branches:
+      -dev
+
+jobs:
+  frontend-tests:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: social-frontend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: social-frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: npm install
+
+      - name: Run Jest tests
+        run: npm test
+
+      - name: Upload Jest Coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: jest-coverage
+          path: social-frontend/coverage/
+
+      - name: Upload Jest Test Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: jest-test-results
+          path: social-frontend/test-results/
+
+  backend-tests:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Cahce NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore social-backend
+
+      - name: Run tests with coverage + results
+        run: dotnet test social-backend.tests \
+               --no-build \
+               --collect:"XPlat Code Coverage" \
+               --logger:"trx;LogFileName=test_results.trx"
+
+      - name: Upload .NET Test Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-test-results
+          path: social-backend.test/TestResults/
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-coverage
+          path: social-backlend.tests/TestResults/**/coverage.cobertura.xml
