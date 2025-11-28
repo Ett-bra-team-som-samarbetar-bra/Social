@@ -7,6 +7,8 @@ using SocialBackend.Exceptions;
 using SocialBackend.Models;
 using SocialBackend.Services;
 
+namespace social_backend.tests;
+
 public class UserServiceTests : TestBase
 {
     private readonly IUserService _userService;

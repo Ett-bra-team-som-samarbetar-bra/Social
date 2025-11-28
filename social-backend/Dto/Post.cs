@@ -1,21 +1,28 @@
 namespace SocialBackend.Dto;
 
-public record CreatePostDto
+public record PostResponseDto
+{
+    public int UserId { get; set; }
+    public required string UserName { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    public required string Title { get; set; }
+    public required string Content { get; set; }
+    public int LikeCount { get; set; } = 0;
+    public ICollection<Comment> Comments { get; set; } = [];
+    public bool IsEdited => CreatedAt != UpdatedAt;
+}
+
+public record PostCreateDto
 {
     public required User User { get; set; }
     public required string Title { get; set; }
     public required string Content { get; set; }
 }
 
-public record EditPostDto
+public record PostEditDto
 {
-    public required User User { get; set; }
     public int Id { get; set; }
-    public required string Content { get; set; }
-}
-
-public record CreateCommentDto
-{
     public required User User { get; set; }
     public required string Content { get; set; }
 }
