@@ -27,10 +27,10 @@ namespace SocialBackend.Services
             await _db.SaveChangesAsync();
         }
 
-        public async Task UpdatePassword(UpdatePasswordRequest request)
+        public async Task UpdatePassword(UpdatePasswordRequest request, int userId)
         {
-            var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == request.UserId)
-                ?? throw new UserNotFoundException($"No user with Id {request.UserId} was found");
+            var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId)
+                ?? throw new UserNotFoundException($"No user with Id {userId} was found");
             user.PasswordHash = _passwordHelper.HashPassword(request.NewPassword);
         }
     }

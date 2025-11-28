@@ -105,16 +105,16 @@ public class UserServiceTests : TestBase
     public async Task UpdatePassword_ShouldChangeUpdatedValuesOnSelectedUser()
     {
         //Arrange
+        int userId = 3;
         var request = new UpdatePasswordRequest
         {
-            UserId = 3,
             NewPassword = "123457"
         };
         _mockHelper.Setup(h => h.HashPassword(It.IsAny<string>())).Returns((string passwordHash) => passwordHash);
 
         //Act
-        await _userService.UpdatePassword(request);
-        var user = await Context.Users.FirstOrDefaultAsync(u => u.Id == request.UserId);
+        await _userService.UpdatePassword(request, userId);
+        var user = await Context.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
         //Assert
         Assert.Equal(request.NewPassword, user?.PasswordHash);
@@ -124,13 +124,13 @@ public class UserServiceTests : TestBase
     public async Task UpdatePassword_ShouldThrowWhenUserIsNotFound()
     {
         //Arrange
+        int userId = 1337;
         var request = new UpdatePasswordRequest
         {
-            UserId = 1337,
             NewPassword = "123457"
         };
 
         //Assert
-        await Assert.ThrowsAsync<UserNotFoundException>(() => _userService.UpdatePassword(request));
+        await Assert.ThrowsAsync<UserNotFoundException>(() => _userService.UpdatePassword(request, userId));
     }
 }

@@ -16,7 +16,6 @@ namespace SocialBackend.Dto
 
     public record UpdatePasswordRequest
     {
-        public required int UserId { get; set; }
         public required string NewPassword { get; set; }
     }
 
