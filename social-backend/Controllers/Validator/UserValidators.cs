@@ -29,7 +29,7 @@ public class RegisterRequestValidator : AbstractValidator<RegisterRequest>
         .Matches("[0-9]").WithMessage("Password must contain at least one number.")
         .Matches("[^a-zA-Z0-9]").WithMessage("Password must contain at least one special character.")
         .Matches(@"^\S+$").WithMessage("Password cannot contain whitespace.");
-        ;
+
 
         RuleFor(x => x.Description).NotEmpty().WithMessage("").MaximumLength(300).WithMessage("Description must be at most 100 characters");
     }
@@ -47,7 +47,7 @@ public class UpdatePasswordRequestValidator : AbstractValidator<UpdatePasswordRe
         .Matches("[0-9]").WithMessage("Password must contain at least one number.")
         .Matches("[^a-zA-Z0-9]").WithMessage("Password must contain at least one special character.")
         .Matches(@"^\S+$").WithMessage("Password cannot contain whitespace.");
-        ;
+
     }
 }
 
