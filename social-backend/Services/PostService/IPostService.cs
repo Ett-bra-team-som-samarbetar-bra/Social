@@ -2,10 +2,12 @@ namespace SocialBackend.Services;
 
 public interface IPostService
 {
-    public Task<List<Post>> GetAllPosts();
-    public Task<PaginatedList<Post>> GetPosts(int pageIndex, int pageSize);
-    public Task<PaginatedList<Post>> GetUserPosts(int pageIndex, int pageSize, User user);
-    public Task<PaginatedList<Post>> GetFollowingPosts(int pageIndex, int pageSize, User user);
-    public Task<Post> CreatePost(CreatePostDto dto);
-    public Task<Comment> CreateComment(CreateCommentDto dto, int postId);
+    Task<List<PostResponseDto>> GetAllPosts();
+    Task<int> CreatePost(PostCreateDto dto);
+    Task<PaginatedList<PostResponseDto>> GetPosts(int pageIndex, int pageSize);
+    Task<PaginatedList<PostResponseDto>> GetUserPosts(int pageIndex, int pageSize, User user);
+    Task<PaginatedList<PostResponseDto>> GetFollowingPosts(int pageIndex, int pageSize, User user);
+    Task<int> CreateComment(CommentCreateDto dto, int postId);
+    Task<List<CommentResponseDto>> GetAllComments(int postId);
+    Task<PaginatedList<CommentResponseDto>> GetComment(int pageIndex, int pageSize, int postId);
 }

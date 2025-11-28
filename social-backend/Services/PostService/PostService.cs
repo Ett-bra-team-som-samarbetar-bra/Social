@@ -4,15 +4,7 @@ public class PostService(DatabaseContext dbContext) : IPostService
 {
     private readonly IDatabaseContext _db = dbContext;
 
-    public async Task<List<Post>> GetAllPosts()
-    {
-        return await _db.Posts
-            .Include(p => p.User)
-            .Include(p => p.Comments)
-            .ToListAsync();
-    }
-
-    public async Task<PaginatedList<Post>> GetPosts(int pageIndex, int pageSize)
+    public async Task<PaginatedList<PostResponseDto>> GetPosts(int pageIndex, int pageSize)
     {
         var posts = await _db.Posts
             .Include(p => p.User)
@@ -22,10 +14,13 @@ public class PostService(DatabaseContext dbContext) : IPostService
             .Take(pageSize)
             .ToListAsync();
 
-        return await GetPaginatedPosts(posts, pageIndex, pageSize);
+        var paginatedPosts = await GetPaginatedPosts(posts, pageIndex, pageSize);
+        var dtoPosts = paginatedPosts.Items.Select(ToPostDto).ToList();
+
+        return new PaginatedList<PostResponseDto>(dtoPosts, pageIndex, paginatedPosts.TotalPages);
     }
 
-    public async Task<PaginatedList<Post>> GetUserPosts(int pageIndex, int pageSize, User user)
+    public async Task<PaginatedList<PostResponseDto>> GetUserPosts(int pageIndex, int pageSize, User user)
     {
         var posts = await _db.Posts
             .Where(p => p.UserId == user.Id)
@@ -36,10 +31,13 @@ public class PostService(DatabaseContext dbContext) : IPostService
             .Take(pageSize)
             .ToListAsync();
 
-        return await GetPaginatedPosts(posts, pageIndex, pageSize);
+        var paginatedPosts = await GetPaginatedPosts(posts, pageIndex, pageSize);
+        var dtoPosts = paginatedPosts.Items.Select(ToPostDto).ToList();
+
+        return new PaginatedList<PostResponseDto>(dtoPosts, pageIndex, paginatedPosts.TotalPages);
     }
 
-    public async Task<PaginatedList<Post>> GetFollowingPosts(int pageIndex, int pageSize, User user)
+    public async Task<PaginatedList<PostResponseDto>> GetFollowingPosts(int pageIndex, int pageSize, User user)
     {
         var followingIds = user.Following.Select(u => u.Id).ToList();
 
@@ -53,10 +51,13 @@ public class PostService(DatabaseContext dbContext) : IPostService
             .Take(pageSize)
             .ToListAsync();
 
-        return await GetPaginatedPosts(posts, pageIndex, pageSize);
+        var paginatedPosts = await GetPaginatedPosts(posts, pageIndex, pageSize);
+        var dtoPosts = paginatedPosts.Items.Select(ToPostDto).ToList();
+
+        return new PaginatedList<PostResponseDto>(dtoPosts, pageIndex, paginatedPosts.TotalPages);
     }
 
-    public async Task<Post> CreatePost(CreatePostDto dto)
+    public async Task<int> CreatePost(PostCreateDto dto)
     {
         var post = new Post
         {
@@ -69,13 +70,12 @@ public class PostService(DatabaseContext dbContext) : IPostService
         _db.Posts.Add(post);
         await _db.SaveChangesAsync();
 
-        return post;
+        return post.Id;
     }
 
-    public async Task<Comment> CreateComment(CreateCommentDto dto, int postId)
+    public async Task<int> CreateComment(CommentCreateDto dto, int postId)
     {
-        var post =
-            await _db.Posts.FindAsync(postId)
+        var post = await _db.Posts.FindAsync(postId)
             ?? throw new Exception("Post not found");
 
         var comment = new Comment
@@ -86,13 +86,13 @@ public class PostService(DatabaseContext dbContext) : IPostService
         };
 
         _db.Comments.Add(comment);
-        post.Comments.Add(comment);     // TODO ???
+        post.Comments.Add(comment); // TODO ???
         await _db.SaveChangesAsync();
 
-        return comment;
+        return comment.Id;
     }
 
-    public async Task<PaginatedList<Comment>> GetComment(int pageIndex, int pageSize, int postId)
+    public async Task<PaginatedList<CommentResponseDto>> GetComment(int pageIndex, int pageSize, int postId)
     {
         var post = await _db.Posts
             .Include(p => p.Comments)
@@ -101,8 +101,31 @@ public class PostService(DatabaseContext dbContext) : IPostService
             ?? throw new Exception("Post not found");
 
         var comments = post.Comments.ToList();
+        var paginatedComments = GetPaginatedComments(comments, pageIndex, pageSize);
+        var dto = paginatedComments.Items.Select(ToCommentDto).ToList();
 
-        return GetPaginatedComments(comments, pageIndex, pageSize);
+        return new PaginatedList<CommentResponseDto>(dto, pageIndex, paginatedComments.TotalPages);
+    }
+
+    public async Task<List<PostResponseDto>> GetAllPosts()
+    {
+        var posts = await _db.Posts
+            .Include(p => p.User)
+            .Include(p => p.Comments)
+            .ToListAsync();
+
+        return posts.Select(ToPostDto).ToList();
+    }
+
+    public async Task<List<CommentResponseDto>> GetAllComments(int postId)
+    {
+        var post = await _db.Posts
+            .Include(p => p.Comments)
+            .ThenInclude(c => c.User)
+            .FirstOrDefaultAsync(p => p.Id == postId)
+            ?? throw new Exception("Post not found");
+
+        return post.Comments.Select(ToCommentDto).ToList();
     }
 
     private async Task<PaginatedList<Post>> GetPaginatedPosts(List<Post> posts, int pageIndex, int pageSize)
@@ -119,5 +142,31 @@ public class PostService(DatabaseContext dbContext) : IPostService
         var totalPages = (int)Math.Ceiling(count / (double)pageSize);
 
         return new PaginatedList<Comment>(comment, pageIndex, totalPages);
+    }
+
+    private static PostResponseDto ToPostDto(Post post)
+    {
+        return new PostResponseDto
+        {
+            UserId = post.UserId,
+            UserName = post.User.Username,
+            CreatedAt = post.CreatedAt,
+            UpdatedAt = post.UpdatedAt,
+            Title = post.Title,
+            Content = post.Content,
+            LikeCount = post.LikeCount,
+            Comments = post.Comments
+        };
+    }
+
+    private static CommentResponseDto ToCommentDto(Comment comment)
+    {
+        return new CommentResponseDto
+        {
+            UserId = comment.UserId,
+            UserName = comment.User.Username,
+            Content = comment.Content,
+            CreatedAt = comment.CreatedAt
+        };
     }
 }
