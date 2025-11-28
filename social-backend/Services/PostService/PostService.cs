@@ -34,6 +34,8 @@ public class PostService(DatabaseContext dbContext) : IPostService
 
     public async Task<PaginatedList<PostResponseDto>> GetUserPosts(int pageIndex, int pageSize, User user)
     {
+        ArgumentNullException.ThrowIfNull(user);
+
         var posts = await _db.Posts
             .Where(p => p.UserId == user.Id)
             .Include(p => p.User)
@@ -51,6 +53,8 @@ public class PostService(DatabaseContext dbContext) : IPostService
 
     public async Task<PaginatedList<PostResponseDto>> GetFollowingPosts(int pageIndex, int pageSize, User user)
     {
+        ArgumentNullException.ThrowIfNull(user);
+
         var followingIds = user.Following.Select(u => u.Id).ToList();
 
         var posts = await _db.Posts
@@ -88,7 +92,7 @@ public class PostService(DatabaseContext dbContext) : IPostService
     public async Task<int> CreateComment(CommentCreateDto dto, int postId)
     {
         var post = await _db.Posts.FindAsync(postId)
-            ?? throw new Exception("Post not found");
+            ?? throw new KeyNotFoundException("Post not found");
 
         var comment = new Comment
         {
@@ -110,7 +114,7 @@ public class PostService(DatabaseContext dbContext) : IPostService
             .Include(p => p.Comments)
             .ThenInclude(c => c.User)
             .FirstOrDefaultAsync(p => p.Id == postId)
-            ?? throw new Exception("Post not found");
+            ?? throw new KeyNotFoundException("Post not found");
 
         var comments = post.Comments.ToList();
         var paginatedComments = GetPaginatedComments(comments, pageIndex, pageSize);
@@ -135,7 +139,7 @@ public class PostService(DatabaseContext dbContext) : IPostService
             .Include(p => p.Comments)
             .ThenInclude(c => c.User)
             .FirstOrDefaultAsync(p => p.Id == postId)
-            ?? throw new Exception("Post not found");
+            ?? throw new KeyNotFoundException("Post not found");
 
         return post.Comments.Select(ToCommentDto).ToList();
     }
