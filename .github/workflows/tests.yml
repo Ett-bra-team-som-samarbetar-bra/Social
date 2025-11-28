@@ -67,10 +67,7 @@ jobs:
         run: dotnet restore social-backend
 
       - name: Run tests with coverage + results
-        run: dotnet test social-backend.tests \
-               --no-build \
-               --collect:"XPlat Code Coverage" \
-               --logger:"trx;LogFileName=test_results.trx"
+        run: dotnet test social-backend.tests --no-build --collect:"XPlat Code Coverage" --logger:"trx;LogFileName=test_results.trx"
 
       - name: Upload .NET Test Results
         uses: actions/upload-artifact@v4
