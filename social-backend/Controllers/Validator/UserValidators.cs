@@ -30,7 +30,7 @@ public class RegisterRequestValidator : AbstractValidator<RegisterRequest>
         .Matches("[^a-zA-Z0-9]").WithMessage("Password must contain at least one special character.")
         .Matches(@"^\S+$").WithMessage("Password cannot contain whitespace.");
 
-        RuleFor(x => x.Description).NotEmpty().WithMessage("").MaximumLength(300).WithMessage("Description must be at most 100 characters");
+        RuleFor(x => x.Description).NotEmpty().WithMessage("Description must not be empty").MaximumLength(300).WithMessage("Description must be at most 300 characters");
     }
 }
 
