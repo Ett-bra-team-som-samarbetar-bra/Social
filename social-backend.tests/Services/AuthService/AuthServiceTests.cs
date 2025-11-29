@@ -9,6 +9,7 @@ using Moq;
 using System.Drawing;
 using Microsoft.AspNetCore.Identity;
 using SocialBackend.Dto;
+using SocialBackend.Exceptions;
 namespace social_backend.tests;
 
 public class AuthServiceTest : TestBase
@@ -150,7 +151,7 @@ public class AuthServiceTest : TestBase
             Password = "Grodan Boll"
         };
 
-        await Assert.ThrowsAsync<Exception>(() => _authService.Login(request, _httpContext));
+        await Assert.ThrowsAsync<InvalidCredentialsException>(() => _authService.Login(request, _httpContext));
     }
 
     [Fact]
@@ -167,7 +168,7 @@ public class AuthServiceTest : TestBase
             It.IsAny<string>()))
         .Returns((string password, string hash) => password == hash);
 
-        await Assert.ThrowsAsync<Exception>(() => _authService.Login(request, _httpContext));
+        await Assert.ThrowsAsync<InvalidCredentialsException>(() => _authService.Login(request, _httpContext));
     }
 
     [Fact]
@@ -205,6 +206,6 @@ public class AuthServiceTest : TestBase
         _mockHelper.Setup(h => h.HashPassword(It.IsAny<string>())).Returns((string passwordHash) => passwordHash);
 
         //Assert
-        await Assert.ThrowsAsync<Exception>(() => _authService.RegisterAsync(newUser));
+        await Assert.ThrowsAsync<UsernameExistsException>(() => _authService.RegisterAsync(newUser));
     }
 }

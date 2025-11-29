@@ -10,7 +10,7 @@ public class AuthService(DatabaseContext dbContext, IPasswordHelper passwordHelp
     public async Task RegisterAsync(RegisterRequest request)
     {
         if (await DoesUserExist(request.Username))
-            throw new Exception("Username already exists");
+            throw new UsernameExistsException();
 
         var passwordHash = _passwordHelper.HashPassword(request.Password);
         var user = CreateUser(request, passwordHash);
@@ -23,12 +23,12 @@ public class AuthService(DatabaseContext dbContext, IPasswordHelper passwordHelp
     {
         var user = await _db.Users.SingleOrDefaultAsync(u => u.Username == request.Username);
         if (user == null)
-            throw new Exception("Invalid username or password");
+            throw new InvalidCredentialsException();
 
         if (_passwordHelper.IsPasswordVerified(request.Password, user.PasswordHash))
             SetUserSession(user, context);
         else
-            throw new Exception("Invalid username or password");
+            throw new InvalidCredentialsException();
 
         return user;
     }
