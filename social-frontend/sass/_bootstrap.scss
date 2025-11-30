@@ -1,0 +1,28 @@
+$font-family-sans-serif: 'consolas, Noto Sans';
+$font-size-base: 1.1rem;
+$line-height-base: 1.4;
+$navbar-dark-color: rgba(white, .8) !default;
+$navbar-dark-hover-color: rgba(white, .9) !default;
+$enable-negative-margins: true;
+
+$primary: #EB9A1D;
+$secondary: #FB9B10;
+$light: #FB9B10;
+$info: #52391A;
+$body-bg: #0c0101;
+$dark: #170800;
+$danger: #8b2f2c;
+$warning: #F48D60;
+$success: #21866F;
+@import '../node_modules/bootstrap/scss/bootstrap.scss';
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    scrollbar-width: thin;
+    scrollbar-color: #FB9B10 #170800;
+}
