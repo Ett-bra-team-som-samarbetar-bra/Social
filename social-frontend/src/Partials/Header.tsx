@@ -32,7 +32,7 @@ export default function Header() {
                                     className="nav-link px-lg-4 text-uppercase"
                                     onClick={() => setTimeout(() => setExpanded(false), 200)}
                                 >
-                                    {r.menuLabel}
+                                    [{r.menuLabel}]
                                 </Nav.Link>
                             ))}
                     </Nav>
