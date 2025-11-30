@@ -2,6 +2,20 @@ using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy =>
+        {
+            policy
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .WithOrigins("http://localhost:5173")
+                .AllowCredentials();
+
+        });
+});
+
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddDbContext<IDatabaseContext, DatabaseContext>();
@@ -17,6 +31,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddSignalR();
 //Adds in memory session
 builder.Services.AddDistributedMemoryCache();
+
 
 //Adds and configures sessioncookie
 builder.Services.AddSession(options =>
@@ -40,6 +55,8 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
     db.Database.Migrate();
 }
+
+app.UseCors("AllowFrontend");
 app.MapHub<ChatHub>("/chatHub");
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
