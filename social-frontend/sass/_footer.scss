@@ -1,0 +1,20 @@
+@use 'bootstrap';
+#root {
+  display: flex;
+  min-height: 100vh;
+  min-height: 100svh;
+  flex-direction: column;
+
+  main {
+    flex: 1;
+  }
+}
+
+footer {
+  background-color: bootstrap.$dark;
+  border-top: 2px solid bootstrap.$primary;
+  padding: 1rem 1.5rem;
+  text-align: center;
+  color: bootstrap.$light;
+  font-size: 0.9rem;
+}
