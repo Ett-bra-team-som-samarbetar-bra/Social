@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Storage;
 using SocialBackend.Exceptions;
 
@@ -9,6 +10,10 @@ namespace SocialBackend.Services
         Task<List<User>> GetAllUsers();
         Task<User> GetUserById(UserIdRequest request);
         Task UpdatePassword(UpdatePasswordRequest request, int userId);
+        Task FollowUser(int userId, UserIdRequest request);
+        Task<(User, User)> ValidateFollowAsync(int sourceId, int targetId);
+        Task UnfollowUser(int userId, UserIdRequest request);
+        Task<(User, User)> ValidateUnfollowAsync(int sourceId, int targetId);
     }
     public class UserService(DatabaseContext dbContext, IPasswordHelper passwordHelper) : IUserService
     {
@@ -39,6 +44,60 @@ namespace SocialBackend.Services
             var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId)
                 ?? throw new UserNotFoundException(userId);
             user.PasswordHash = _passwordHelper.HashPassword(request.NewPassword);
+        }
+
+        public async Task FollowUser(int userId, UserIdRequest request)
+        {
+            var (loggedInUser, followedUser) = await ValidateFollowAsync(userId, request.UserId);
+
+            loggedInUser.Following.Add(followedUser);
+            followedUser.Followers.Add(loggedInUser);
+
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task<(User, User)> ValidateFollowAsync(int sourceId, int targetId)
+        {
+            var loggedInUser = await _db.Users.Include(u => u.Following).FirstOrDefaultAsync(u => u.Id == sourceId)
+                ?? throw new UserNotFoundException(sourceId);
+
+            var followedUser = await _db.Users.Include(u => u.Followers).FirstOrDefaultAsync(u => u.Id == targetId)
+                ?? throw new UserNotFoundException(targetId);
+
+            if (loggedInUser.Id == followedUser.Id)
+                throw new CannotFollowSelfException();
+
+            if (loggedInUser.Following.Contains(followedUser))
+                throw new AlreadyFollowingException();
+
+            return (loggedInUser, followedUser);
+        }
+
+        public async Task UnfollowUser(int userId, UserIdRequest request)
+        {
+            var (loggedInUser, followedUser) = await ValidateUnfollowAsync(userId, request.UserId);
+
+            loggedInUser.Following.Remove(followedUser);
+            followedUser.Followers.Remove(loggedInUser);
+
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task<(User, User)> ValidateUnfollowAsync(int sourceId, int targetId)
+        {
+            var loggedInUser = await _db.Users.Include(u => u.Following).FirstOrDefaultAsync(u => u.Id == sourceId)
+                ?? throw new UserNotFoundException(sourceId);
+
+            var followedUser = await _db.Users.Include(u => u.Followers).FirstOrDefaultAsync(u => u.Id == targetId)
+                ?? throw new UserNotFoundException(targetId);
+
+            if (loggedInUser.Id == followedUser.Id)
+                throw new CannotUnfollowSelfException();
+
+            if (!loggedInUser.Following.Contains(followedUser))
+                throw new NotFollowingException();
+
+            return (loggedInUser, followedUser);
         }
     }
 }

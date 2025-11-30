@@ -93,6 +93,58 @@ public class ExceptionTests
     }
 
     [Fact]
+    public async Task CannotFollowSelfException_Returns_BadRequest()
+    {
+        var ex = new CannotFollowSelfException();
+
+        var (status, contentType, json) = await RunMiddlewareWithExceptionAsync(ex);
+
+        Assert.Equal((int)HttpStatusCode.BadRequest, status);
+        Assert.Equal("application/json", contentType);
+        Assert.Equal((int)status, json.GetProperty("statusCode").GetInt32());
+        Assert.Equal(ex.Message, json.GetProperty("error").GetString());
+    }
+
+    [Fact]
+    public async Task CannotUnfollowSelfException_Returns_BadRequest()
+    {
+        var ex = new CannotUnfollowSelfException();
+
+        var (status, contentType, json) = await RunMiddlewareWithExceptionAsync(ex);
+
+        Assert.Equal((int)HttpStatusCode.BadRequest, status);
+        Assert.Equal("application/json", contentType);
+        Assert.Equal((int)status, json.GetProperty("statusCode").GetInt32());
+        Assert.Equal(ex.Message, json.GetProperty("error").GetString());
+    }
+
+    [Fact]
+    public async Task AlreadyFollowingException_Returns_BadRequest()
+    {
+        var ex = new AlreadyFollowingException();
+
+        var (status, contentType, json) = await RunMiddlewareWithExceptionAsync(ex);
+
+        Assert.Equal((int)HttpStatusCode.BadRequest, status);
+        Assert.Equal("application/json", contentType);
+        Assert.Equal((int)status, json.GetProperty("statusCode").GetInt32());
+        Assert.Equal(ex.Message, json.GetProperty("error").GetString());
+    }
+
+    [Fact]
+    public async Task NotFollowingException_Returns_BadRequest()
+    {
+        var ex = new NotFollowingException();
+
+        var (status, contentType, json) = await RunMiddlewareWithExceptionAsync(ex);
+
+        Assert.Equal((int)HttpStatusCode.BadRequest, status);
+        Assert.Equal("application/json", contentType);
+        Assert.Equal((int)status, json.GetProperty("statusCode").GetInt32());
+        Assert.Equal(ex.Message, json.GetProperty("error").GetString());
+    }
+
+    [Fact]
     public async Task UnknownException_Returns_InternalServerError_WithGenericMessage()
     {
         var ex = new Exception("boom");

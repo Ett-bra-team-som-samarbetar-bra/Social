@@ -27,6 +27,10 @@ public class ExceptionMiddleware(RequestDelegate next)
             UsernameExistsException => (HttpStatusCode.BadRequest, ex.Message),
             ArgumentOutOfRangeException => (HttpStatusCode.BadRequest, ex.Message),
             InvalidOperationException => (HttpStatusCode.BadRequest, ex.Message),
+            CannotFollowSelfException => (HttpStatusCode.BadRequest, ex.Message),
+            CannotUnfollowSelfException => (HttpStatusCode.BadRequest, ex.Message),
+            AlreadyFollowingException => (HttpStatusCode.BadRequest, ex.Message),
+            NotFollowingException => (HttpStatusCode.BadRequest, ex.Message),
             _ => (HttpStatusCode.InternalServerError, "An unexpected error occured.")
         };
 
