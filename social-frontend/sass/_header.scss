@@ -1,0 +1,37 @@
+@use 'bootstrap';
+
+.app-header {
+    width: 100%;
+    padding: 0.5rem 1rem;
+    background-color: bootstrap.$dark;
+    border-bottom: 2px solid bootstrap.$primary;
+
+    h1 {
+        font-family: 'Press Start 2P', 'Noto Sans', sans-serif;
+        font-size: 1.4rem;
+        color: bootstrap.$primary;
+        margin: 0;
+        letter-spacing: 1px;
+        white-space: nowrap;
+    }
+
+    .nav-link {
+        color: bootstrap.$primary !important;
+        font-family: 'Consolas', monospace;
+        font-size: 1rem;
+        letter-spacing: 1px;
+
+        &:hover {
+            color: bootstrap.$secondary !important;
+        }
+
+        &.active {
+            color: bootstrap.$secondary !important;
+            text-shadow: 0 0 4px bootstrap.$secondary;
+        }
+    }
+
+    .navbar-toggler {
+        filter: brightness(1.2);
+    }
+}
