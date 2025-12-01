@@ -20,19 +20,7 @@ public class ExceptionMiddleware(RequestDelegate next)
     {
         context.Response.ContentType = "application/json";
 
-        var (status, message) = ex switch
-        {
-            UserNotFoundException => (HttpStatusCode.NotFound, ex.Message),
-            InvalidCredentialsException => (HttpStatusCode.BadRequest, ex.Message),
-            UsernameExistsException => (HttpStatusCode.BadRequest, ex.Message),
-            ArgumentOutOfRangeException => (HttpStatusCode.BadRequest, ex.Message),
-            InvalidOperationException => (HttpStatusCode.BadRequest, ex.Message),
-            CannotFollowSelfException => (HttpStatusCode.BadRequest, ex.Message),
-            CannotUnfollowSelfException => (HttpStatusCode.BadRequest, ex.Message),
-            AlreadyFollowingException => (HttpStatusCode.BadRequest, ex.Message),
-            NotFollowingException => (HttpStatusCode.BadRequest, ex.Message),
-            _ => (HttpStatusCode.InternalServerError, "An unexpected error occured.")
-        };
+        var (status, message) = MapExeptions(ex);
 
         context.Response.StatusCode = (int)status;
 
@@ -43,5 +31,22 @@ public class ExceptionMiddleware(RequestDelegate next)
         });
 
         return context.Response.WriteAsync(result);
+    }
+
+    private static (HttpStatusCode status, string message) MapExeptions(Exception ex)
+    {
+        return ex switch
+        {
+            UserNotFoundException => (HttpStatusCode.NotFound, ex.Message),
+            InvalidCredentialsException
+            or UsernameExistsException
+            or ArgumentOutOfRangeException
+            or InvalidOperationException
+            or CannotFollowSelfException
+            or CannotUnfollowSelfException
+            or AlreadyFollowingException
+            or NotFollowingException => (HttpStatusCode.BadRequest, ex.Message),
+            _ => (HttpStatusCode.InternalServerError, "An unexpected error occured.")
+        };
     }
 }
