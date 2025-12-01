@@ -1,66 +1,62 @@
-﻿namespace SocialBackend.Controllers;
+﻿namespace social_backend.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class TestController : ControllerBase
+public class PostController(IPostService postService) : ControllerBase
 {
-    [HttpGet]
-    public IActionResult Get()
+    private readonly IPostService _postService = postService;
+
+    [HttpGet("{pageIndex}/{pageSize}")]
+    public async Task<ActionResult<List<PostResponseDto>>> GetPosts(int pageIndex = 1, int pageSize = 10)
     {
-        throw new Exception();
-        return Ok("Test successful!");
+        var posts = await _postService.GetPosts(pageIndex, pageSize);
+        return Ok(posts);
     }
 
-
-
-
-
-
-}
-
-
-
-/* namespace Api.Controllers.Auth;
-
-[Route("api/auth")]
-[ApiController]
-public class LoginController(IAuthService authService, Validator validator) : Controller
-{
-    private readonly IAuthService _authService = authService;
-    private readonly Validator _validator = validator;
-
-
-    [HttpPost("login")]
-    public async Task<ActionResult> LogIn([FromBody] LoginRequest request)
+    [HttpGet("user-posts/{pageIndex}/{pageSize}")]
+    public async Task<ActionResult<List<PostResponseDto>>> GetUserPosts(int pageIndex = 1, int pageSize = 10)
     {
-        var validation = _validator.Validate(new LoginValidator(), request);
-        if (validation != null)
-            return validation;
-
-        var result = await _authService.Login(request.Username, request.Password); //verifying login with authservice.
-        if (result == null)
-            return NotFound("Invalid username or password");
-
-        var response = new Response(result.Username);
-
-        return Ok(response);
+        var UserId = HttpContext.GetUserId();
+        var userPosts = await _postService.GetUserPosts(pageIndex, pageSize, UserId);
+        return Ok(userPosts);
     }
 
-    [HttpPost("register")]
-    public async Task<ActionResult> Handle([FromBody] RegisterRequest request)
+    [HttpGet("follower-posts/{pageIndex}/{pageSize}")]
+    public async Task<ActionResult<List<PostResponseDto>>> GetFollowingPosts(int pageIndex = 1, int pageSize = 10)
     {
-        var validation = _validator.Validate(new RegisterValidator(), request);
-        if (validation != null)
-            return validation;
+        var UserId = HttpContext.GetUserId();
+        var userPosts = await _postService.GetUserPosts(pageIndex, pageSize, UserId);
+        return Ok(userPosts);
+    }
 
-        var result = await _authService.Register(request.Username, request.Password, request.Email, request.PhoneNumber); //creating user with authservice
-        if (result == null)
-        {
-            return BadRequest("Username already exists");
-        }
-        var response = new Response(result.Username);
+    [HttpPut("like/{postId}")]
+    public async Task<ActionResult<int>> UpdateLikeCount(int postId)
+    {
+        var userId = HttpContext.GetUserId();
+        var updatedLikeCount = await _postService.UpdateLikeCount(postId, userId);
+        return Ok(updatedLikeCount);
+    }
 
-        return Created("User created", response);
+    [HttpPost]
+    public async Task<ActionResult<int>> Create([FromBody] PostCreateDto dto)
+    {
+        var UserId = HttpContext.GetUserId();
+        var postId = await _postService.CreatePost(dto, UserId);
+        return Ok(postId);
+    }
+
+    [HttpGet("comments/{postId}/{pageIndex}/{pageSize}")]
+    public async Task<ActionResult<PaginatedList<CommentResponseDto>>> GetComments(int postId, int pageIndex = 1, int pageSize = 10)
+    {
+        var comments = await _postService.GetComments(pageIndex, pageSize, postId);
+        return Ok(comments);
+    }
+
+    [HttpPost("comments/{postId}")]
+    public async Task<ActionResult<int>> CreateComment(int postId, [FromBody] CommentCreateDto dto)
+    {
+        var userId = HttpContext.GetUserId();
+        var commentId = await _postService.CreateComment(dto, postId, userId);
+        return Ok(commentId);
     }
 }
- */

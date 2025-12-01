@@ -2,7 +2,6 @@ namespace SocialBackend.Dto;
 
 public record CommentCreateDto
 {
-    public required User User { get; set; }
     public required string Content { get; set; }
 }
 
