@@ -39,6 +39,7 @@ public class ExceptionMiddleware(RequestDelegate next)
         {
             NotFoundException => (HttpStatusCode.NotFound, ex.Message),
             BadRequestException => (HttpStatusCode.BadRequest, ex.Message),
+            UnauthorizedException => (HttpStatusCode.Unauthorized, ex.Message),
             _ => (HttpStatusCode.InternalServerError, "An unexpected error occured.")
         };
     }

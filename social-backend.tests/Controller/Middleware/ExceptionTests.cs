@@ -53,4 +53,13 @@ public class ExceptionTests
 
         AssertExceptionResponse(status, contentType, json, (int)HttpStatusCode.BadRequest, ex.Message);
     }
+
+    [Fact]
+    public async Task UnauthorizedException_Returns_Unauthorized()
+    {
+        var ex = new UnauthorizedException("Unauthorized");
+        var (status, contentType, json) = await RunMiddlewareWithExceptionAsync(ex);
+
+        AssertExceptionResponse(status, contentType, json, (int)HttpStatusCode.Unauthorized, ex.Message);
+    }
 }

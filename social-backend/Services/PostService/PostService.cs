@@ -2,10 +2,11 @@ namespace SocialBackend.Services;
 
 public interface IPostService
 {
-    Task<int> CreatePost(PostCreateDto dto, int userId);
     Task<PaginatedList<PostResponseDto>> GetPosts(int pageIndex, int pageSize);
     Task<PaginatedList<PostResponseDto>> GetUserPosts(int pageIndex, int pageSize, int user);
     Task<PaginatedList<PostResponseDto>> GetFollowingPosts(int pageIndex, int pageSize, int user);
+    Task<int> CreatePost(PostCreateDto dto, int userId);
+    Task<int> DeletePost(int postId, int userId);
     Task<int> CreateComment(CommentCreateDto dto, int postId, int userId);
     Task<PaginatedList<CommentResponseDto>> GetComments(int pageIndex, int pageSize, int postId);
     Task<int> UpdateLikeCount(int postId, int userId);
@@ -88,6 +89,25 @@ public class PostService(DatabaseContext dbContext) : IPostService
         };
 
         _db.Posts.Add(post);
+        await _db.SaveChangesAsync();
+
+        return post.Id;
+    }
+
+    public async Task<int> DeletePost(int postId, int userId)
+    {
+        var post = await _db.Posts.FindAsync(postId)
+            ?? throw new NotFoundException("Post not found");
+
+        var user = await _db.Users.FindAsync(userId)
+            ?? throw new NotFoundException("User not found");
+
+        if (post.UserId != user.Id)
+            throw new UnauthorizedException("You are not authorized to delete this post");
+
+        post.Title = "[Deleted]";
+        post.Content = "[Deleted]";
+        post.UpdatedAt = DateTime.UtcNow; // Will set IsEdited = true
         await _db.SaveChangesAsync();
 
         return post.Id;

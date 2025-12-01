@@ -29,20 +29,28 @@ public class PostController(IPostService postService) : ControllerBase
         return Ok(userPosts);
     }
 
+    [HttpPost]
+    public async Task<ActionResult<int>> CreatePost([FromBody] PostCreateDto dto)
+    {
+        var UserId = HttpContext.GetUserId();
+        var postId = await _postService.CreatePost(dto, UserId);
+        return Ok(postId);
+    }
+
+    [HttpDelete("{postId}")]
+    public async Task<ActionResult<int>> DeletePost(int postId)
+    {
+        var UserId = HttpContext.GetUserId();
+        var deletedPostId = await _postService.DeletePost(postId, UserId);
+        return Ok(deletedPostId);
+    }
+
     [HttpPut("like/{postId}")]
     public async Task<ActionResult<int>> UpdateLikeCount(int postId)
     {
         var userId = HttpContext.GetUserId();
         var updatedLikeCount = await _postService.UpdateLikeCount(postId, userId);
         return Ok(updatedLikeCount);
-    }
-
-    [HttpPost]
-    public async Task<ActionResult<int>> Create([FromBody] PostCreateDto dto)
-    {
-        var UserId = HttpContext.GetUserId();
-        var postId = await _postService.CreatePost(dto, UserId);
-        return Ok(postId);
     }
 
     [HttpGet("comments/{postId}/{pageIndex}/{pageSize}")]
