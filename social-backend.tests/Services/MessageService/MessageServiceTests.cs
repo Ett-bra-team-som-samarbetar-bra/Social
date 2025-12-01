@@ -1,11 +1,9 @@
 using social_backend.tests.Data;
 using SocialBackend.Models;
 using SocialBackend.Services;
-using Xunit;
 using Moq;
 using Microsoft.AspNetCore.SignalR;
 using Social_Backend.Hubs;
-using Microsoft.AspNetCore.Http.HttpResults;
 using SocialBackend.Exceptions;
 namespace social_backend.tests;
 
@@ -136,7 +134,7 @@ public class MessageServiceTests : TestBase
         );
 
         Assert.Equal(20, firstPage.Count);
-        Assert.Equal("Msg 11", firstPage.First().Content); 
+        Assert.Equal("Msg 11", firstPage.First().Content);
         Assert.Equal("Msg 30", firstPage.Last().Content);
 
         var before = firstPage.First().CreatedAt;
@@ -151,5 +149,88 @@ public class MessageServiceTests : TestBase
         Assert.Equal(10, secondPage.Count);
         Assert.Equal("Msg 1", secondPage.First().Content);
         Assert.Equal("Msg 10", secondPage.Last().Content);
+    }
+
+    [Fact]
+    public async Task GetConversationsAsync_ShouldReturnOneConversation_WithCorrectUnreadFlag()
+    {
+        await _messageService.SendMessageAsync(_sendingUser.Id, _receivingUser.Id, "Hello");
+        await _messageService.SendMessageAsync(_receivingUser.Id, _sendingUser.Id, "Hi");
+
+        var senderConvos = await _messageService.GetConversationsAsync(_sendingUser.Id);
+        var receiverConvos = await _messageService.GetConversationsAsync(_receivingUser.Id);
+
+        Assert.True(senderConvos.First().HasUnreadMessages);
+        Assert.True(receiverConvos.First().HasUnreadMessages);
+    }
+
+    [Fact]
+    public async Task GetConversationsAsync_ShouldReturnOneConversation_WhenAllMessagesRead()
+    {
+        await _messageService.SendMessageAsync(_sendingUser.Id, _receivingUser.Id, "Hello");
+        await _messageService.SendMessageAsync(_receivingUser.Id, _sendingUser.Id, "Hi");
+
+        await _messageService.MarkAsReadAsync(_sendingUser.Id, _receivingUser.Id);
+        await _messageService.MarkAsReadAsync(_receivingUser.Id, _sendingUser.Id);
+
+        var senderConvos = await _messageService.GetConversationsAsync(_sendingUser.Id);
+        var receiverConvos = await _messageService.GetConversationsAsync(_receivingUser.Id);
+
+        Assert.False(senderConvos.First().HasUnreadMessages);
+        Assert.False(receiverConvos.First().HasUnreadMessages);
+    }
+
+    [Fact]
+    public async Task GetConversationsAsync_ShouldNotDuplicateUsers()
+    {
+        await _messageService.SendMessageAsync(_sendingUser.Id, _receivingUser.Id, "Msg1");
+        await _messageService.SendMessageAsync(_receivingUser.Id, _sendingUser.Id, "Msg2");
+
+        var convos = await _messageService.GetConversationsAsync(_sendingUser.Id);
+
+        Assert.Single(convos);
+        Assert.Equal(_receivingUser.Id, convos.First().UserId);
+    }
+
+    [Fact]
+    public async Task GetConversationsAsync_ShouldSortUnreadFirst_ThenByLastMessage()
+    {
+        var thirdUser = new User
+        {
+            Username = "third",
+            Email = "third@example.com",
+            PasswordHash = "Abcd1234!",
+            Description = "I am the third user."
+        };
+        Context.Users.Add(thirdUser);
+        Context.SaveChanges();
+
+        await _messageService.SendMessageAsync(thirdUser.Id, _sendingUser.Id, "Unread");
+        await _messageService.SendMessageAsync(_receivingUser.Id, _sendingUser.Id, "Old");
+        await _messageService.MarkAsReadAsync(_sendingUser.Id, _receivingUser.Id);
+
+        var convos = await _messageService.GetConversationsAsync(_sendingUser.Id);
+
+        Assert.Equal(2, convos.Count);
+
+        var first = convos[0];
+        var second = convos[1];
+
+        Assert.True(first.HasUnreadMessages);
+        Assert.False(second.HasUnreadMessages);
+    }
+
+    [Fact]
+    public async Task MarkAsReadAsync_ShouldSetIsReadTrue()
+    {
+        await _messageService.SendMessageAsync(_sendingUser.Id, _receivingUser.Id, "Unread");
+
+        await _messageService.MarkAsReadAsync(_receivingUser.Id, _sendingUser.Id);
+
+        var unread = Context.Messages
+            .Where(m => m.SendingUserId == _sendingUser.Id && m.ReceivingUserId == _receivingUser.Id && !m.IsRead)
+            .ToList();
+
+        Assert.Empty(unread);
     }
 }
