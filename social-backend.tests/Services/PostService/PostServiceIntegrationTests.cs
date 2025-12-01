@@ -6,6 +6,7 @@ using Moq;
 using Xunit.Sdk;
 using Xunit.Abstractions;
 using SocialBackend.Dto;
+using SocialBackend.Exceptions;
 
 namespace social_backend.tests;
 
@@ -101,7 +102,7 @@ public class PostServiceIntegrationTests : TestBase
         int pageSize = 2;
 
         // act & assert
-        await Assert.ThrowsAsync<KeyNotFoundException>(async () =>
+        await Assert.ThrowsAsync<NotFoundException>(async () =>
         {
             await _postService.GetUserPosts(1, pageSize, userId);
         });
@@ -116,7 +117,7 @@ public class PostServiceIntegrationTests : TestBase
         int pageSize = 2;
 
         // act & assert
-        await Assert.ThrowsAsync<KeyNotFoundException>(async () =>
+        await Assert.ThrowsAsync<NotFoundException>(async () =>
         {
             await _postService.GetFollowingPosts(1, pageSize, userId);
         });
