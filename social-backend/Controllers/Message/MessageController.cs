@@ -5,14 +5,11 @@ namespace SocialBackend.Controllers;
 public class MessageController(IMessageService messageService) : ControllerBase
 {
     private readonly IMessageService _messageService = messageService;
-    private int mockUserId = 2;
 
     [HttpPost]
     public async Task<ActionResult<MessageDto>> SendMessage([FromBody] SendMessageRequest request)
     {
-
-        /* var currentUserId = HttpContext.GetUserId(); */
-        var currentUserId = mockUserId;
+        var currentUserId = HttpContext.GetUserId();
 
         var message = await _messageService.SendMessageAsync(
             currentUserId,
@@ -25,10 +22,12 @@ public class MessageController(IMessageService messageService) : ControllerBase
 
     [HttpGet("{receivingUserId}")]
     public async Task<ActionResult<List<MessageDto>>> GetMessages(
-        int receivingUserId,
-        [FromQuery] DateTime? before = null)
+     int receivingUserId,
+     [FromQuery] DateTime? before = null)
     {
-        var currentUserId = mockUserId;
+        var currentUserId = HttpContext.GetUserId();
+
+        await _messageService.MarkAsReadAsync(currentUserId, receivingUserId);
 
         var messages = await _messageService.GetMessagesBetweenUsersAsync(
             currentUserId,
@@ -40,4 +39,13 @@ public class MessageController(IMessageService messageService) : ControllerBase
         return Ok(messages);
     }
 
+    [HttpGet("conversations")]
+    public async Task<ActionResult<List<ConversationDto>>> GetConversations()
+    {
+        var currentUserId = HttpContext.GetUserId();
+
+        var conversations = await _messageService.GetConversationsAsync(currentUserId);
+
+        return Ok(conversations);
+    }
 }
