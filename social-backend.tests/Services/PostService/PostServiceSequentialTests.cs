@@ -1,8 +1,6 @@
 using social_backend.tests.Data;
 using SocialBackend.Models;
 using SocialBackend.Services;
-using Xunit;
-using Moq;
 using Xunit.Sdk;
 using Xunit.Abstractions;
 using SocialBackend.Dto;
@@ -20,11 +18,11 @@ public class PostServiceTestOrderer : ITestCaseOrderer
 }
 
 [TestCaseOrderer("social_backend.tests.PostServiceTestOrderer", "social-backend.tests")]
-public class PostServiceIntegrationTests : TestBase
+public class PostServiceSequentialTests : TestBase
 {
     private readonly PostService _postService = null!;
 
-    public PostServiceIntegrationTests() : base()
+    public PostServiceSequentialTests() : base()
     {
         _postService = new PostService(Context);
     }
@@ -41,7 +39,7 @@ public class PostServiceIntegrationTests : TestBase
     }
 
     [Fact]
-    public async Task Test02_GetPosts_ShouldReturnDtoPosts_TwoPages()
+    public async Task Test01_GetPosts_ShouldReturnDtoPosts_TwoPages()
     {
         // arrange
         int pageSize = 1;
@@ -60,7 +58,7 @@ public class PostServiceIntegrationTests : TestBase
     }
 
     [Fact]
-    public async Task Test03_GetPosts_ShouldReturnDtoPosts_OnePage()
+    public async Task Test02_GetPosts_ShouldReturnDtoPosts_OnePage()
     {
         // arrange
         int pageSize = 2;
@@ -76,7 +74,7 @@ public class PostServiceIntegrationTests : TestBase
     }
 
     [Fact]
-    public async Task Test04_GetUserPosts_ShouldReturnUserPostsDto()
+    public async Task Test03_GetUserPosts_ShouldReturnUserPostsDto()
     {
         // arrange
         var user = await Context.Users.FindAsync(1);
@@ -94,7 +92,7 @@ public class PostServiceIntegrationTests : TestBase
     }
 
     [Fact]
-    public async Task Test05_GetUserPosts_ShouldThrow_WhenNoUser()
+    public async Task Test04_GetUserPosts_ShouldThrow_WhenNoUser()
     {
         // arrange
         var user = await Context.Users.FindAsync(2);
@@ -109,7 +107,7 @@ public class PostServiceIntegrationTests : TestBase
     }
 
     [Fact]
-    public async Task Test06_GetFollowingPosts_ShouldThrow_WhenNoUser()
+    public async Task Test05_GetFollowingPosts_ShouldThrow_WhenNoUser()
     {
         // arrange
         var user = await Context.Users.FindAsync(1337);
@@ -124,7 +122,7 @@ public class PostServiceIntegrationTests : TestBase
     }
 
     [Fact]
-    public async Task Test07_CreatePost_ShouldCreatePost()
+    public async Task Test06_CreatePost_ShouldCreatePost()
     {
         // arrange
         var user = await Context.Users.FindAsync(1);
@@ -148,7 +146,7 @@ public class PostServiceIntegrationTests : TestBase
     }
 
     [Fact]
-    public async Task Test08_GetPosts_ShouldReturnDtoPosts_ThreePages_ThreePosts()
+    public async Task Test07_GetPosts_ShouldReturnDtoPosts_ThreePages_ThreePosts()
     {
         // arrange
         var user = await Context.Users.FindAsync(1);
