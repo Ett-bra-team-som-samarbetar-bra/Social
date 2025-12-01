@@ -40,19 +40,6 @@ public class PostServiceIntegrationTests : TestBase
     }
 
     [Fact]
-    public async Task Test01_GetAllPosts_ShouldReturnAllPosts()
-    {
-        // Arrange + Act
-        var posts = await _postService.GetAllPosts();
-
-        // Assert
-        Assert.NotNull(posts);
-        Assert.Equal(2, posts.Count);
-        Assert.Contains(posts, p => p.Title == "First");
-        Assert.Contains(posts, p => p.Title == "Second");
-    }
-
-    [Fact]
     public async Task Test02_GetPosts_ShouldReturnDtoPosts_TwoPages()
     {
         // arrange
@@ -92,10 +79,11 @@ public class PostServiceIntegrationTests : TestBase
     {
         // arrange
         var user = await Context.Users.FindAsync(1);
+        var userId = user!.Id;
         int pageSize = 2;
 
         // act
-        var page = await _postService.GetUserPosts(1, pageSize, user!);
+        var page = await _postService.GetUserPosts(1, pageSize, userId);
 
         // assert
         Assert.NotNull(page);
@@ -109,12 +97,13 @@ public class PostServiceIntegrationTests : TestBase
     {
         // arrange
         var user = await Context.Users.FindAsync(2);
+        var userId = 1337;
         int pageSize = 2;
 
         // act & assert
-        await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+        await Assert.ThrowsAsync<KeyNotFoundException>(async () =>
         {
-            await _postService.GetUserPosts(1, pageSize, user!);
+            await _postService.GetUserPosts(1, pageSize, userId);
         });
     }
 
@@ -123,12 +112,13 @@ public class PostServiceIntegrationTests : TestBase
     {
         // arrange
         var user = await Context.Users.FindAsync(1337);
+        var userId = 1337;
         int pageSize = 2;
 
         // act & assert
-        await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+        await Assert.ThrowsAsync<KeyNotFoundException>(async () =>
         {
-            await _postService.GetFollowingPosts(1, pageSize, user!);
+            await _postService.GetFollowingPosts(1, pageSize, userId);
         });
     }
 
@@ -137,15 +127,16 @@ public class PostServiceIntegrationTests : TestBase
     {
         // arrange
         var user = await Context.Users.FindAsync(1);
+        var userId = user!.Id;
+
         var dto = new PostCreateDto
         {
-            User = user!,
             Title = "New Post",
             Content = "This is a new post."
         };
 
         // act
-        var postId = await _postService.CreatePost(dto);
+        var postId = await _postService.CreatePost(dto, userId);
 
         // assert
         var createdPost = await Context.Posts.FindAsync(postId);
@@ -160,13 +151,13 @@ public class PostServiceIntegrationTests : TestBase
     {
         // arrange
         var user = await Context.Users.FindAsync(1);
+        var userId = user!.Id;
         var dto = new PostCreateDto
         {
-            User = user!,
             Title = "New Post",
             Content = "This is a new post."
         };
-        await _postService.CreatePost(dto);
+        await _postService.CreatePost(dto, userId);
 
         int pageSize = 1;
 

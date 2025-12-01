@@ -2,14 +2,13 @@ namespace SocialBackend.Services;
 
 public interface IPostService
 {
-    Task<List<PostResponseDto>> GetAllPosts();
-    Task<int> CreatePost(PostCreateDto dto);
+    Task<int> CreatePost(PostCreateDto dto, int userId);
     Task<PaginatedList<PostResponseDto>> GetPosts(int pageIndex, int pageSize);
-    Task<PaginatedList<PostResponseDto>> GetUserPosts(int pageIndex, int pageSize, User user);
-    Task<PaginatedList<PostResponseDto>> GetFollowingPosts(int pageIndex, int pageSize, User user);
-    Task<int> CreateComment(CommentCreateDto dto, int postId);
-    Task<List<CommentResponseDto>> GetAllComments(int postId);
-    Task<PaginatedList<CommentResponseDto>> GetComment(int pageIndex, int pageSize, int postId);
+    Task<PaginatedList<PostResponseDto>> GetUserPosts(int pageIndex, int pageSize, int user);
+    Task<PaginatedList<PostResponseDto>> GetFollowingPosts(int pageIndex, int pageSize, int user);
+    Task<int> CreateComment(CommentCreateDto dto, int postId, int userId);
+    Task<PaginatedList<CommentResponseDto>> GetComments(int pageIndex, int pageSize, int postId);
+    Task<int> UpdateLikeCount(int postId, int userId);
 }
 
 public class PostService(DatabaseContext dbContext) : IPostService
@@ -32,9 +31,10 @@ public class PostService(DatabaseContext dbContext) : IPostService
         return new PaginatedList<PostResponseDto>(dtoPosts, pageIndex, paginatedPosts.TotalPages);
     }
 
-    public async Task<PaginatedList<PostResponseDto>> GetUserPosts(int pageIndex, int pageSize, User user)
+    public async Task<PaginatedList<PostResponseDto>> GetUserPosts(int pageIndex, int pageSize, int userId)
     {
-        ArgumentNullException.ThrowIfNull(user);
+        var user = await _db.Users.FindAsync(userId)
+            ?? throw new KeyNotFoundException("User not found");
 
         var posts = await _db.Posts
             .Where(p => p.UserId == user.Id)
@@ -51,9 +51,10 @@ public class PostService(DatabaseContext dbContext) : IPostService
         return new PaginatedList<PostResponseDto>(dtoPosts, pageIndex, paginatedPosts.TotalPages);
     }
 
-    public async Task<PaginatedList<PostResponseDto>> GetFollowingPosts(int pageIndex, int pageSize, User user)
+    public async Task<PaginatedList<PostResponseDto>> GetFollowingPosts(int pageIndex, int pageSize, int userId)
     {
-        ArgumentNullException.ThrowIfNull(user);
+        var user = await _db.Users.FindAsync(userId)
+            ?? throw new KeyNotFoundException("User not found");
 
         var followingIds = user.Following.Select(u => u.Id).ToList();
 
@@ -73,12 +74,15 @@ public class PostService(DatabaseContext dbContext) : IPostService
         return new PaginatedList<PostResponseDto>(dtoPosts, pageIndex, paginatedPosts.TotalPages);
     }
 
-    public async Task<int> CreatePost(PostCreateDto dto)
+    public async Task<int> CreatePost(PostCreateDto dto, int userId)
     {
+        var user = await _db.Users.FindAsync(userId)
+            ?? throw new KeyNotFoundException("User not found");
+
         var post = new Post
         {
-            UserId = dto.User.Id,
-            User = dto.User,
+            UserId = user.Id,
+            User = user,
             Title = dto.Title,
             Content = dto.Content
         };
@@ -89,15 +93,18 @@ public class PostService(DatabaseContext dbContext) : IPostService
         return post.Id;
     }
 
-    public async Task<int> CreateComment(CommentCreateDto dto, int postId)
+    public async Task<int> CreateComment(CommentCreateDto dto, int postId, int userId)
     {
+        var user = await _db.Users.FindAsync(userId)
+            ?? throw new KeyNotFoundException("User not found");
+
         var post = await _db.Posts.FindAsync(postId)
             ?? throw new KeyNotFoundException("Post not found");
 
         var comment = new Comment
         {
-            UserId = dto.User.Id,
-            User = dto.User,
+            UserId = user.Id,
+            User = user,
             Content = dto.Content
         };
 
@@ -108,7 +115,7 @@ public class PostService(DatabaseContext dbContext) : IPostService
         return comment.Id;
     }
 
-    public async Task<PaginatedList<CommentResponseDto>> GetComment(int pageIndex, int pageSize, int postId)
+    public async Task<PaginatedList<CommentResponseDto>> GetComments(int pageIndex, int pageSize, int postId)
     {
         var post = await _db.Posts
             .Include(p => p.Comments)
@@ -123,25 +130,24 @@ public class PostService(DatabaseContext dbContext) : IPostService
         return new PaginatedList<CommentResponseDto>(dto, pageIndex, paginatedComments.TotalPages);
     }
 
-    public async Task<List<PostResponseDto>> GetAllPosts()
+    public async Task<int> UpdateLikeCount(int postId, int userId)
     {
-        var posts = await _db.Posts
-            .Include(p => p.User)
-            .Include(p => p.Comments)
-            .ToListAsync();
+        var user = await _db.Users.FindAsync(userId)
+            ?? throw new KeyNotFoundException("User not found");
 
-        return posts.Select(ToPostDto).ToList();
-    }
-
-    public async Task<List<CommentResponseDto>> GetAllComments(int postId)
-    {
-        var post = await _db.Posts
-            .Include(p => p.Comments)
-            .ThenInclude(c => c.User)
-            .FirstOrDefaultAsync(p => p.Id == postId)
+        var post = await _db.Posts.FindAsync(postId)
             ?? throw new KeyNotFoundException("Post not found");
 
-        return post.Comments.Select(ToCommentDto).ToList();
+        if (user.LikedPosts.Any(p => p.Id == postId))
+        {
+            return post.LikeCount;
+        }
+
+        post.LikeCount++;
+        user.LikedPosts.Add(post);
+        await _db.SaveChangesAsync();
+
+        return post.LikeCount;
     }
 
     private async Task<PaginatedList<Post>> GetPaginatedPosts(List<Post> posts, int pageIndex, int pageSize)
@@ -171,7 +177,7 @@ public class PostService(DatabaseContext dbContext) : IPostService
             Title = post.Title,
             Content = post.Content,
             LikeCount = post.LikeCount,
-            Comments = post.Comments
+            Comments = post.Comments.Select(ToCommentDto).ToList()
         };
     }
 
