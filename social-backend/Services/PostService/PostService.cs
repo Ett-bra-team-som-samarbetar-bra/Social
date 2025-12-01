@@ -34,7 +34,7 @@ public class PostService(DatabaseContext dbContext) : IPostService
     public async Task<PaginatedList<PostResponseDto>> GetUserPosts(int pageIndex, int pageSize, int userId)
     {
         var user = await _db.Users.FindAsync(userId)
-            ?? throw new KeyNotFoundException("User not found");
+            ?? throw new NotFoundException("User not found");
 
         var posts = await _db.Posts
             .Where(p => p.UserId == user.Id)
@@ -54,7 +54,7 @@ public class PostService(DatabaseContext dbContext) : IPostService
     public async Task<PaginatedList<PostResponseDto>> GetFollowingPosts(int pageIndex, int pageSize, int userId)
     {
         var user = await _db.Users.FindAsync(userId)
-            ?? throw new KeyNotFoundException("User not found");
+            ?? throw new NotFoundException("User not found");
 
         var followingIds = user.Following.Select(u => u.Id).ToList();
 
@@ -77,7 +77,7 @@ public class PostService(DatabaseContext dbContext) : IPostService
     public async Task<int> CreatePost(PostCreateDto dto, int userId)
     {
         var user = await _db.Users.FindAsync(userId)
-            ?? throw new KeyNotFoundException("User not found");
+            ?? throw new NotFoundException("User not found");
 
         var post = new Post
         {
@@ -96,10 +96,10 @@ public class PostService(DatabaseContext dbContext) : IPostService
     public async Task<int> CreateComment(CommentCreateDto dto, int postId, int userId)
     {
         var user = await _db.Users.FindAsync(userId)
-            ?? throw new KeyNotFoundException("User not found");
+            ?? throw new NotFoundException("User not found");
 
         var post = await _db.Posts.FindAsync(postId)
-            ?? throw new KeyNotFoundException("Post not found");
+            ?? throw new NotFoundException("Post not found");
 
         var comment = new Comment
         {
@@ -121,7 +121,7 @@ public class PostService(DatabaseContext dbContext) : IPostService
             .Include(p => p.Comments)
             .ThenInclude(c => c.User)
             .FirstOrDefaultAsync(p => p.Id == postId)
-            ?? throw new KeyNotFoundException("Post not found");
+            ?? throw new NotFoundException("Post not found");
 
         var comments = post.Comments.ToList();
         var paginatedComments = GetPaginatedComments(comments, pageIndex, pageSize);
@@ -133,10 +133,10 @@ public class PostService(DatabaseContext dbContext) : IPostService
     public async Task<int> UpdateLikeCount(int postId, int userId)
     {
         var user = await _db.Users.FindAsync(userId)
-            ?? throw new KeyNotFoundException("User not found");
+            ?? throw new NotFoundException("User not found");
 
         var post = await _db.Posts.FindAsync(postId)
-            ?? throw new KeyNotFoundException("Post not found");
+            ?? throw new NotFoundException("Post not found");
 
         if (user.LikedPosts.Any(p => p.Id == postId))
         {
