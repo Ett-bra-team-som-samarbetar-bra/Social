@@ -36,8 +36,19 @@ public class UserController(IUserService userService) : ControllerBase
         return NoContent();
     }
 
+    [HttpPut]
+    public async Task<ActionResult> FollowUser(UserIdRequest request)
+    {
+        var userId = HttpContext.GetUserId();
+        await _userService.FollowUser(userId, request);
+        return Ok("User followed successfully");
+    }
 
-
-
-
+    [HttpPut]
+    public async Task<ActionResult> UnfollowUser(UserIdRequest request)
+    {
+        var userId = HttpContext.GetUserId();
+        await _userService.UnfollowUser(userId, request);
+        return Ok("User unfollowed successfully");
+    }
 }

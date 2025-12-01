@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -128,5 +129,222 @@ public class UserServiceTests : TestBase
 
         //Assert
         await Assert.ThrowsAsync<UserNotFoundException>(() => _userService.UpdatePassword(request, userId));
+    }
+
+    [Fact]
+    public async Task FollowUser_UpdatesFollowingListForLoggedinUser()
+    {
+        //Arrange
+        var loggedInUserId = 1;
+        var userRequestToFollow = new UserIdRequest
+        {
+            UserId = 2,
+        };
+
+        //Act
+        await _userService.FollowUser(loggedInUserId, userRequestToFollow);
+
+        //Assert
+        var loggedInUser = Context.Users.Include(u => u.Following).First(u => u.Id == loggedInUserId);
+        var userToFollow = Context.Users.First(u => u.Id == userRequestToFollow.UserId);
+
+        Assert.Contains(userToFollow, loggedInUser.Following);
+    }
+
+    [Fact]
+    public async Task FollowUser_UpdatesFollowerListForFollowedUser()
+    {
+        //Arrange
+        var loggedInUserId = 1;
+        var userRequestToFollow = new UserIdRequest
+        {
+            UserId = 2,
+        };
+
+        //Act
+        await _userService.FollowUser(loggedInUserId, userRequestToFollow);
+
+        //Assert
+        var loggedInUser = Context.Users.First(u => u.Id == loggedInUserId);
+        var userToFollow = Context.Users.Include(u => u.Followers).First(u => u.Id == userRequestToFollow.UserId);
+
+        Assert.Contains(loggedInUser, userToFollow.Followers);
+    }
+
+    [Fact]
+    public async Task ValidateFollowAsync_ShouldReturnBothUsersWhenValidateSucceeds()
+    {
+        //Arrange
+        var loggedInUserId = 1;
+        var userToFollowId = 2;
+
+        //Act
+        var (loggedInUser, userToFollow) = await _userService.ValidateFollowAsync(loggedInUserId, userToFollowId);
+
+        //Assert
+        var loggedInUserFromDb = Context.Users.First(u => u.Id == loggedInUserId);
+        var userToFollowFromDb = Context.Users.First(u => u.Id == userToFollowId);
+        Assert.IsType<User>(loggedInUser);
+        Assert.IsType<User>(userToFollow);
+        Assert.Equal(loggedInUserFromDb, loggedInUser);
+        Assert.Equal(userToFollowFromDb, userToFollow);
+    }
+    [Fact]
+    public async Task ValidateFollowAsync_ShouldThrowWhenLoggedInUserIdIsWrong()
+    {
+        //Arrange
+        var loggedInUserId = 500;
+        var userToFollowId = 2;
+
+        //Assert
+        await Assert.ThrowsAsync<UserNotFoundException>(() => _userService.ValidateFollowAsync(loggedInUserId, userToFollowId));
+    }
+
+    [Fact]
+    public async Task ValidateFollowAsync_ShouldThrowWhenUserToFollowIdIsWrong()
+    {
+        //Arrange
+        var loggedInUserId = 1;
+        var userToFollowId = 500;
+
+        //Assert
+        await Assert.ThrowsAsync<UserNotFoundException>(() => _userService.ValidateFollowAsync(loggedInUserId, userToFollowId));
+    }
+
+    [Fact]
+    public async Task ValidateFollowAsync_ShouldThrowWhenBothIdsAreTheSame()
+    {
+        //Arrange
+        var loggedInUserId = 1;
+        var userToFollowId = 1;
+
+        //Assert
+        await Assert.ThrowsAsync<CannotFollowSelfException>(() => _userService.ValidateFollowAsync(loggedInUserId, userToFollowId));
+    }
+
+    [Fact]
+    public async Task ValidateFollowAsync_ShouldThrowWhenUserIsAlreadyFollowed()
+    {
+        //Arrange
+        var loggedInUserId = 1;
+        var userToFollowId = 2;
+
+        var loggedInUser = Context.Users.Include(u => u.Following).First(u => u.Id == loggedInUserId);
+        var userToFollow = Context.Users.First(u => u.Id == userToFollowId);
+        loggedInUser.Following.Add(userToFollow);
+        await Context.SaveChangesAsync();
+
+        //Assert
+        await Assert.ThrowsAsync<AlreadyFollowingException>(() => _userService.ValidateFollowAsync(loggedInUserId, userToFollowId));
+    }
+
+    [Fact]
+    public async Task UnfollowUser_UpdatesFollowingListForLoggedinUser()
+    {
+        //Arrange
+        var loggedInUserId = 1;
+        var userRequestToFollow = new UserIdRequest
+        {
+            UserId = 2,
+        };
+
+        var loggedInUser = Context.Users.Include(u => u.Following).First(u => u.Id == loggedInUserId);
+        var userToFollow = Context.Users.Include(u => u.Followers).First(u => u.Id == userRequestToFollow.UserId);
+        loggedInUser.Following.Add(userToFollow);
+        userToFollow.Followers.Add(loggedInUser);
+
+        //Act
+        await _userService.UnfollowUser(loggedInUserId, userRequestToFollow);
+
+        //Assert
+
+        Assert.DoesNotContain(userToFollow, loggedInUser.Following);
+    }
+
+    [Fact]
+    public async Task UnfollowUser_UpdatesFollowerListForFollowedUser()
+    {
+        //Arrange
+        var loggedInUserId = 1;
+        var userRequestToFollow = new UserIdRequest
+        {
+            UserId = 2,
+        };
+
+        var loggedInUser = Context.Users.Include(u => u.Following).First(u => u.Id == loggedInUserId);
+        var userToFollow = Context.Users.Include(u => u.Followers).First(u => u.Id == userRequestToFollow.UserId);
+        loggedInUser.Following.Add(userToFollow);
+        userToFollow.Followers.Add(loggedInUser);
+
+        //Act
+        await _userService.UnfollowUser(loggedInUserId, userRequestToFollow);
+
+        //Assert
+        Assert.DoesNotContain(loggedInUser, userToFollow.Followers);
+    }
+
+    [Fact]
+    public async Task ValidateUnfollowAsync_ShouldReturnBothUsersWhenValidateSucceeds()
+    {
+        //Arrange
+        var loggedInUserId = 1;
+        var userToFollowId = 2;
+
+        var loggedInUserFromDb = Context.Users.Include(u => u.Following).First(u => u.Id == loggedInUserId);
+        var userToFollowFromDb = Context.Users.Include(u => u.Followers).First(u => u.Id == userToFollowId);
+        loggedInUserFromDb.Following.Add(userToFollowFromDb);
+        userToFollowFromDb.Followers.Add(loggedInUserFromDb);
+
+        //Act
+        var (loggedInUser, userToFollow) = await _userService.ValidateUnfollowAsync(loggedInUserId, userToFollowId);
+
+        //Assert
+        Assert.IsType<User>(loggedInUser);
+        Assert.IsType<User>(userToFollow);
+        Assert.Equal(loggedInUserFromDb, loggedInUser);
+        Assert.Equal(userToFollowFromDb, userToFollow);
+    }
+    [Fact]
+    public async Task ValidateUnFollowAsync_ShouldThrowWhenLoggedInUserIdIsWrong()
+    {
+        //Arrange
+        var loggedInUserId = 500;
+        var userToFollowId = 2;
+
+        //Assert
+        await Assert.ThrowsAsync<UserNotFoundException>(() => _userService.ValidateUnfollowAsync(loggedInUserId, userToFollowId));
+    }
+
+    [Fact]
+    public async Task ValidateUnFollowAsync_ShouldThrowWhenUserToFollowIdIsWrong()
+    {
+        //Arrange
+        var loggedInUserId = 1;
+        var userToFollowId = 500;
+
+        //Assert
+        await Assert.ThrowsAsync<UserNotFoundException>(() => _userService.ValidateUnfollowAsync(loggedInUserId, userToFollowId));
+    }
+
+    [Fact]
+    public async Task ValidateUnFollowAsync_ShouldThrowWhenBothIdsAreTheSame()
+    {
+        //Arrange
+        var loggedInUserId = 1;
+        var userToFollowId = 1;
+
+        //Assert
+        await Assert.ThrowsAsync<CannotUnfollowSelfException>(() => _userService.ValidateUnfollowAsync(loggedInUserId, userToFollowId));
+    }
+
+    [Fact]
+    public async Task ValidateUnFollowAsync_ShouldThrowWhenUserIsNotFollowed()
+    {
+        //Arrange
+        var loggedInUserId = 1;
+        var userToFollowId = 2;
+
+        //Assert
+        await Assert.ThrowsAsync<NotFollowingException>(() => _userService.ValidateUnfollowAsync(loggedInUserId, userToFollowId));
     }
 }
