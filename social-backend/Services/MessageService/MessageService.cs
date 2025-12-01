@@ -10,9 +10,9 @@ public class MessageService(IDatabaseContext context, IUserService userService, 
     int sendingUserId, int receivingUserId, int pageIndex, int pageSize)
     {
         if (pageIndex < 1)
-            throw new ArgumentOutOfRangeException(nameof(pageIndex), "Page index must be greater than 0.");
+            throw new BadRequestException($"{nameof(pageIndex)}, Page index must be greater than 0.");
         if (pageSize < 1)
-            throw new ArgumentOutOfRangeException(nameof(pageSize), "Page size must be greater than 0.");
+            throw new BadRequestException($"{nameof(pageSize)}, Page size must be greater than 0.");
 
         var (sendingUser, receivingUser) = await GetBothUsersAsync(sendingUserId, receivingUserId);
 
@@ -37,10 +37,10 @@ public class MessageService(IDatabaseContext context, IUserService userService, 
     public async Task<MessageDto> SendMessageAsync(int sendingUserId, int receivingUserId, string content)
     {
         if (sendingUserId == receivingUserId)
-            throw new InvalidOperationException("Cannot send a message to oneself.");
+            throw new BadRequestException("Cannot send a message to oneself.");
 
         if (string.IsNullOrWhiteSpace(content))
-            throw new ArgumentException("Message cannot be empty!", nameof(content));
+            throw new BadRequestException($"Message cannot be empty!, {nameof(content)}");
 
         var (sendingUser, receivingUser) = await GetBothUsersAsync(sendingUserId, receivingUserId);
 

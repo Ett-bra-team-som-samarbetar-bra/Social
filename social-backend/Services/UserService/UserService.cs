@@ -23,7 +23,7 @@ namespace SocialBackend.Services
         public async Task<User> GetUserById(UserIdRequest request)
         {
             return await _db.Users.FirstOrDefaultAsync(u => u.Id == request.UserId)
-                ?? throw new UserNotFoundException(request.UserId);
+                ?? throw new NotFoundException($"Could not find user with id {request.UserId}");
         }
 
         public async Task<List<User>> GetAllUsers()
@@ -34,7 +34,7 @@ namespace SocialBackend.Services
         public async Task DeleteUser(int userId)
         {
             var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId)
-                ?? throw new UserNotFoundException(userId);
+                ?? throw new NotFoundException($"Could not find user with id {userId}");
             _db.Users.Remove(user);
             await _db.SaveChangesAsync();
         }
@@ -42,7 +42,7 @@ namespace SocialBackend.Services
         public async Task UpdatePassword(UpdatePasswordRequest request, int userId)
         {
             var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId)
-                ?? throw new UserNotFoundException(userId);
+                ?? throw new NotFoundException($"Could not find user with id {userId}");
             user.PasswordHash = _passwordHelper.HashPassword(request.NewPassword);
         }
 
@@ -59,16 +59,16 @@ namespace SocialBackend.Services
         public async Task<(User, User)> ValidateFollowAsync(int sourceId, int targetId)
         {
             var loggedInUser = await _db.Users.Include(u => u.Following).FirstOrDefaultAsync(u => u.Id == sourceId)
-                ?? throw new UserNotFoundException(sourceId);
+                ?? throw new NotFoundException($"Could not find user with id {sourceId}");
 
             var followedUser = await _db.Users.Include(u => u.Followers).FirstOrDefaultAsync(u => u.Id == targetId)
-                ?? throw new UserNotFoundException(targetId);
+                ?? throw new NotFoundException($"Could not find user with id {sourceId}");
 
             if (loggedInUser.Id == followedUser.Id)
-                throw new CannotFollowSelfException();
+                throw new BadRequestException("Unable to follow your own account");
 
             if (loggedInUser.Following.Contains(followedUser))
-                throw new AlreadyFollowingException();
+                throw new BadRequestException("Unable to follow an account you are already following");
 
             return (loggedInUser, followedUser);
         }
@@ -86,16 +86,16 @@ namespace SocialBackend.Services
         public async Task<(User, User)> ValidateUnfollowAsync(int sourceId, int targetId)
         {
             var loggedInUser = await _db.Users.Include(u => u.Following).FirstOrDefaultAsync(u => u.Id == sourceId)
-                ?? throw new UserNotFoundException(sourceId);
+                ?? throw new NotFoundException($"Could not find user with id {sourceId}");
 
             var followedUser = await _db.Users.Include(u => u.Followers).FirstOrDefaultAsync(u => u.Id == targetId)
-                ?? throw new UserNotFoundException(targetId);
+                ?? throw new NotFoundException($"Could not find user with id {sourceId}");
 
             if (loggedInUser.Id == followedUser.Id)
-                throw new CannotUnfollowSelfException();
+                throw new BadRequestException("Unable to unfollow your own account");
 
             if (!loggedInUser.Following.Contains(followedUser))
-                throw new NotFollowingException();
+                throw new BadRequestException("Unable to unfollow an account you are not following");
 
             return (loggedInUser, followedUser);
         }
