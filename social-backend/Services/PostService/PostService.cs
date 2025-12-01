@@ -129,7 +129,7 @@ public class PostService(DatabaseContext dbContext) : IPostService
         };
 
         _db.Comments.Add(comment);
-        post.Comments.Add(comment); // TODO ???
+        post.Comments.Add(comment);
         await _db.SaveChangesAsync();
 
         return comment.Id;
@@ -144,10 +144,16 @@ public class PostService(DatabaseContext dbContext) : IPostService
             ?? throw new NotFoundException("Post not found");
 
         var comments = post.Comments.ToList();
-        var paginatedComments = GetPaginatedComments(comments, pageIndex, pageSize);
-        var dto = paginatedComments.Items.Select(ToCommentDto).ToList();
 
-        return new PaginatedList<CommentResponseDto>(dto, pageIndex, paginatedComments.TotalPages);
+        var pagedComments = comments
+            .Skip((pageIndex - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+
+        var totalPages = (int)Math.Ceiling((double)comments.Count / pageSize);
+        var dto = pagedComments.Select(ToCommentDto).ToList();
+
+        return new PaginatedList<CommentResponseDto>(dto, pageIndex, totalPages);
     }
 
     public async Task<int> UpdateLikeCount(int postId, int userId)
