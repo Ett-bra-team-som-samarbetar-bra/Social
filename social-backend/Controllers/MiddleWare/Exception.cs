@@ -37,15 +37,8 @@ public class ExceptionMiddleware(RequestDelegate next)
     {
         return ex switch
         {
-            UserNotFoundException => (HttpStatusCode.NotFound, ex.Message),
-            InvalidCredentialsException
-            or UsernameExistsException
-            or ArgumentOutOfRangeException
-            or InvalidOperationException
-            or CannotFollowSelfException
-            or CannotUnfollowSelfException
-            or AlreadyFollowingException
-            or NotFollowingException => (HttpStatusCode.BadRequest, ex.Message),
+            NotFoundException => (HttpStatusCode.NotFound, ex.Message),
+            BadRequestException => (HttpStatusCode.BadRequest, ex.Message),
             _ => (HttpStatusCode.InternalServerError, "An unexpected error occured.")
         };
     }

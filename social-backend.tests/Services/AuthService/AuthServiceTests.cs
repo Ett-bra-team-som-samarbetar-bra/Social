@@ -151,7 +151,7 @@ public class AuthServiceTest : TestBase
             Password = "Grodan Boll"
         };
 
-        await Assert.ThrowsAsync<InvalidCredentialsException>(() => _authService.Login(request, _httpContext));
+        await Assert.ThrowsAsync<BadRequestException>(() => _authService.Login(request, _httpContext));
     }
 
     [Fact]
@@ -168,7 +168,7 @@ public class AuthServiceTest : TestBase
             It.IsAny<string>()))
         .Returns((string password, string hash) => password == hash);
 
-        await Assert.ThrowsAsync<InvalidCredentialsException>(() => _authService.Login(request, _httpContext));
+        await Assert.ThrowsAsync<BadRequestException>(() => _authService.Login(request, _httpContext));
     }
 
     [Fact]
@@ -206,6 +206,6 @@ public class AuthServiceTest : TestBase
         _mockHelper.Setup(h => h.HashPassword(It.IsAny<string>())).Returns((string passwordHash) => passwordHash);
 
         //Assert
-        await Assert.ThrowsAsync<UsernameExistsException>(() => _authService.RegisterAsync(newUser));
+        await Assert.ThrowsAsync<BadRequestException>(() => _authService.RegisterAsync(newUser));
     }
 }

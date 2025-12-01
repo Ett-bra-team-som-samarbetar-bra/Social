@@ -5,11 +5,14 @@ namespace SocialBackend.Controllers;
 public class MessageController(IMessageService messageService) : ControllerBase
 {
     private readonly IMessageService _messageService = messageService;
+    private int mockUserId = 2;
 
     [HttpPost]
     public async Task<ActionResult<MessageDto>> SendMessage([FromBody] SendMessageRequest request)
     {
-        var currentUserId = HttpContext.GetUserId();
+
+        /* var currentUserId = HttpContext.GetUserId(); */
+        var currentUserId = mockUserId;
 
         var message = await _messageService.SendMessageAsync(
             currentUserId,
@@ -21,17 +24,20 @@ public class MessageController(IMessageService messageService) : ControllerBase
     }
 
     [HttpGet("{receivingUserId}")]
-    public async Task<ActionResult<PaginatedList<MessageDto>>> GetMessages(int receivingUserId, int pageIndex = 1)
+    public async Task<ActionResult<List<MessageDto>>> GetMessages(
+        int receivingUserId,
+        [FromQuery] DateTime? before = null)
     {
-        var currentUserId = HttpContext.GetUserId();
+        var currentUserId = mockUserId;
 
         var messages = await _messageService.GetMessagesBetweenUsersAsync(
             currentUserId,
             receivingUserId,
-            pageIndex,
-            20
+            20,
+            before
         );
 
         return Ok(messages);
     }
+
 }
