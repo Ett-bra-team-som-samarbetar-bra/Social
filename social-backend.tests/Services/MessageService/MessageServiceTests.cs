@@ -5,6 +5,8 @@ using Xunit;
 using Moq;
 using Microsoft.AspNetCore.SignalR;
 using Social_Backend.Hubs;
+using Microsoft.AspNetCore.Http.HttpResults;
+using SocialBackend.Exceptions;
 namespace social_backend.tests;
 
 public class MessageServiceTests : TestBase
@@ -61,7 +63,7 @@ public class MessageServiceTests : TestBase
         var content = "";
 
         // Act & Assert
-        await Assert.ThrowsAsync<ArgumentException>(async () =>
+        await Assert.ThrowsAsync<BadRequestException>(async () =>
         {
             await _messageService.SendMessageAsync(_sendingUser.Id, _receivingUser.Id, content);
         });
@@ -107,7 +109,7 @@ public class MessageServiceTests : TestBase
     [Fact]
     public async Task SendMessage_ShouldThrow_WhenSendingToSelf()
     {
-        await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+        await Assert.ThrowsAsync<BadRequestException>(async () =>
         {
             await _messageService.SendMessageAsync(_sendingUser.Id, _sendingUser.Id, "Hello me");
         });
@@ -116,7 +118,7 @@ public class MessageServiceTests : TestBase
     [Fact]
     public async Task GetMessagesBetweenUsers_ShouldThrowWhenInvalidPaginationParameters()
     {
-        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+        await Assert.ThrowsAsync<BadRequestException>(async () =>
         {
             await _messageService.GetMessagesBetweenUsersAsync(
                 _sendingUser.Id,
@@ -126,7 +128,7 @@ public class MessageServiceTests : TestBase
             );
         });
 
-        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+        await Assert.ThrowsAsync<BadRequestException>(async () =>
         {
             await _messageService.GetMessagesBetweenUsersAsync(
                 _sendingUser.Id,

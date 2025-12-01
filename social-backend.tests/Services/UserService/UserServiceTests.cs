@@ -57,7 +57,7 @@ public class UserServiceTests : TestBase
         };
 
         //Assert
-        await Assert.ThrowsAsync<UserNotFoundException>(() => _userService.GetUserById(request));
+        await Assert.ThrowsAsync<NotFoundException>(() => _userService.GetUserById(request));
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public class UserServiceTests : TestBase
         int userId = 1337;
 
         //Assert
-        await Assert.ThrowsAsync<UserNotFoundException>(() => _userService.DeleteUser(userId));
+        await Assert.ThrowsAsync<NotFoundException>(() => _userService.DeleteUser(userId));
     }
 
     [Fact]
@@ -128,7 +128,7 @@ public class UserServiceTests : TestBase
         };
 
         //Assert
-        await Assert.ThrowsAsync<UserNotFoundException>(() => _userService.UpdatePassword(request, userId));
+        await Assert.ThrowsAsync<NotFoundException>(() => _userService.UpdatePassword(request, userId));
     }
 
     [Fact]
@@ -197,7 +197,7 @@ public class UserServiceTests : TestBase
         var userToFollowId = 2;
 
         //Assert
-        await Assert.ThrowsAsync<UserNotFoundException>(() => _userService.ValidateFollowAsync(loggedInUserId, userToFollowId));
+        await Assert.ThrowsAsync<NotFoundException>(() => _userService.ValidateFollowAsync(loggedInUserId, userToFollowId));
     }
 
     [Fact]
@@ -208,7 +208,7 @@ public class UserServiceTests : TestBase
         var userToFollowId = 500;
 
         //Assert
-        await Assert.ThrowsAsync<UserNotFoundException>(() => _userService.ValidateFollowAsync(loggedInUserId, userToFollowId));
+        await Assert.ThrowsAsync<NotFoundException>(() => _userService.ValidateFollowAsync(loggedInUserId, userToFollowId));
     }
 
     [Fact]
@@ -219,7 +219,7 @@ public class UserServiceTests : TestBase
         var userToFollowId = 1;
 
         //Assert
-        await Assert.ThrowsAsync<CannotFollowSelfException>(() => _userService.ValidateFollowAsync(loggedInUserId, userToFollowId));
+        await Assert.ThrowsAsync<BadRequestException>(() => _userService.ValidateFollowAsync(loggedInUserId, userToFollowId));
     }
 
     [Fact]
@@ -235,7 +235,7 @@ public class UserServiceTests : TestBase
         await Context.SaveChangesAsync();
 
         //Assert
-        await Assert.ThrowsAsync<AlreadyFollowingException>(() => _userService.ValidateFollowAsync(loggedInUserId, userToFollowId));
+        await Assert.ThrowsAsync<BadRequestException>(() => _userService.ValidateFollowAsync(loggedInUserId, userToFollowId));
     }
 
     [Fact]
@@ -312,7 +312,7 @@ public class UserServiceTests : TestBase
         var userToFollowId = 2;
 
         //Assert
-        await Assert.ThrowsAsync<UserNotFoundException>(() => _userService.ValidateUnfollowAsync(loggedInUserId, userToFollowId));
+        await Assert.ThrowsAsync<NotFoundException>(() => _userService.ValidateUnfollowAsync(loggedInUserId, userToFollowId));
     }
 
     [Fact]
@@ -323,7 +323,7 @@ public class UserServiceTests : TestBase
         var userToFollowId = 500;
 
         //Assert
-        await Assert.ThrowsAsync<UserNotFoundException>(() => _userService.ValidateUnfollowAsync(loggedInUserId, userToFollowId));
+        await Assert.ThrowsAsync<NotFoundException>(() => _userService.ValidateUnfollowAsync(loggedInUserId, userToFollowId));
     }
 
     [Fact]
@@ -334,7 +334,7 @@ public class UserServiceTests : TestBase
         var userToFollowId = 1;
 
         //Assert
-        await Assert.ThrowsAsync<CannotUnfollowSelfException>(() => _userService.ValidateUnfollowAsync(loggedInUserId, userToFollowId));
+        await Assert.ThrowsAsync<BadRequestException>(() => _userService.ValidateUnfollowAsync(loggedInUserId, userToFollowId));
     }
 
     [Fact]
@@ -345,6 +345,6 @@ public class UserServiceTests : TestBase
         var userToFollowId = 2;
 
         //Assert
-        await Assert.ThrowsAsync<NotFollowingException>(() => _userService.ValidateUnfollowAsync(loggedInUserId, userToFollowId));
+        await Assert.ThrowsAsync<BadRequestException>(() => _userService.ValidateUnfollowAsync(loggedInUserId, userToFollowId));
     }
 }
