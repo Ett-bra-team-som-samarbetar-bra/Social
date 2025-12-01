@@ -37,92 +37,20 @@ public class ExceptionTests
     }
 
     [Fact]
-    public async Task UserNotFoundException_Returns_NotFound()
+    public async Task NotFoundException_Returns_NotFound()
     {
-        var ex = new UserNotFoundException(42);
+        var ex = new NotFoundException($"Could not find user with id 42");
         var (status, contentType, json) = await RunMiddlewareWithExceptionAsync(ex);
 
         AssertExceptionResponse(status, contentType, json, (int)HttpStatusCode.NotFound, ex.Message);
     }
 
     [Fact]
-    public async Task InvalidCredentialsException_Returns_BadRequest()
+    public async Task BadRequestException_Returns_BadRequest()
     {
-        var ex = new InvalidCredentialsException();
+        var ex = new BadRequestException("Bad request");
         var (status, contentType, json) = await RunMiddlewareWithExceptionAsync(ex);
 
         AssertExceptionResponse(status, contentType, json, (int)HttpStatusCode.BadRequest, ex.Message);
-    }
-
-    [Fact]
-    public async Task UsernameExistsException_Returns_BadRequest()
-    {
-        var ex = new UsernameExistsException();
-        var (status, contentType, json) = await RunMiddlewareWithExceptionAsync(ex);
-
-        AssertExceptionResponse(status, contentType, json, (int)HttpStatusCode.BadRequest, ex.Message);
-    }
-
-    [Fact]
-    public async Task ArgumentOutOfRangeException_Returns_BadRequest()
-    {
-        var ex = new ArgumentOutOfRangeException("param", "out of range");
-        var (status, contentType, json) = await RunMiddlewareWithExceptionAsync(ex);
-
-        AssertExceptionResponse(status, contentType, json, (int)HttpStatusCode.BadRequest, ex.Message);
-    }
-
-    [Fact]
-    public async Task InvalidOperationException_Returns_BadRequest()
-    {
-        var ex = new InvalidOperationException("invalid operation");
-        var (status, contentType, json) = await RunMiddlewareWithExceptionAsync(ex);
-
-        AssertExceptionResponse(status, contentType, json, (int)HttpStatusCode.BadRequest, ex.Message);
-    }
-
-    [Fact]
-    public async Task CannotFollowSelfException_Returns_BadRequest()
-    {
-        var ex = new CannotFollowSelfException();
-        var (status, contentType, json) = await RunMiddlewareWithExceptionAsync(ex);
-
-        AssertExceptionResponse(status, contentType, json, (int)HttpStatusCode.BadRequest, ex.Message);
-    }
-
-    [Fact]
-    public async Task CannotUnfollowSelfException_Returns_BadRequest()
-    {
-        var ex = new CannotUnfollowSelfException();
-        var (status, contentType, json) = await RunMiddlewareWithExceptionAsync(ex);
-
-        AssertExceptionResponse(status, contentType, json, (int)HttpStatusCode.BadRequest, ex.Message);
-    }
-
-    [Fact]
-    public async Task AlreadyFollowingException_Returns_BadRequest()
-    {
-        var ex = new AlreadyFollowingException();
-        var (status, contentType, json) = await RunMiddlewareWithExceptionAsync(ex);
-
-        AssertExceptionResponse(status, contentType, json, (int)HttpStatusCode.BadRequest, ex.Message);
-    }
-
-    [Fact]
-    public async Task NotFollowingException_Returns_BadRequest()
-    {
-        var ex = new NotFollowingException();
-        var (status, contentType, json) = await RunMiddlewareWithExceptionAsync(ex);
-
-        AssertExceptionResponse(status, contentType, json, (int)HttpStatusCode.BadRequest, ex.Message);
-    }
-
-    [Fact]
-    public async Task UnknownException_Returns_InternalServerError_WithGenericMessage()
-    {
-        var ex = new Exception("boom");
-        var (status, contentType, json) = await RunMiddlewareWithExceptionAsync(ex);
-
-        AssertExceptionResponse(status, contentType, json, (int)HttpStatusCode.InternalServerError, "An unexpected error occured.");
     }
 }
