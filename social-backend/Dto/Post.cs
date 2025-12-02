@@ -9,13 +9,12 @@ public record PostResponseDto
     public required string Title { get; set; }
     public required string Content { get; set; }
     public int LikeCount { get; set; } = 0;
-    public ICollection<Comment> Comments { get; set; } = [];
+    public ICollection<CommentResponseDto> Comments { get; set; } = [];
     public bool IsEdited => CreatedAt != UpdatedAt;
 }
 
 public record PostCreateDto
 {
-    public required User User { get; set; }
     public required string Title { get; set; }
     public required string Content { get; set; }
 }
@@ -23,6 +22,5 @@ public record PostCreateDto
 public record PostEditDto
 {
     public int Id { get; set; }
-    public required User User { get; set; }
     public required string Content { get; set; }
 }

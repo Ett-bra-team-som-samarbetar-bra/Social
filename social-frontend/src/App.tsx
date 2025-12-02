@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import Main from "./Partials/Main";
-import Header from "./Partials/Header";
 import Footer from "./Partials/Footer";
+import Header from "./Partials/Header";
 
 export default function App() {
 

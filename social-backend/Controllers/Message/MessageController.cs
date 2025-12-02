@@ -21,17 +21,31 @@ public class MessageController(IMessageService messageService) : ControllerBase
     }
 
     [HttpGet("{receivingUserId}")]
-    public async Task<ActionResult<PaginatedList<MessageDto>>> GetMessages(int receivingUserId, int pageIndex = 1)
+    public async Task<ActionResult<List<MessageDto>>> GetMessages(
+     int receivingUserId,
+     [FromQuery] DateTime? before = null)
     {
         var currentUserId = HttpContext.GetUserId();
+
+        await _messageService.MarkAsReadAsync(currentUserId, receivingUserId);
 
         var messages = await _messageService.GetMessagesBetweenUsersAsync(
             currentUserId,
             receivingUserId,
-            pageIndex,
-            20
+            20,
+            before
         );
 
         return Ok(messages);
+    }
+
+    [HttpGet("conversations")]
+    public async Task<ActionResult<List<ConversationDto>>> GetConversations()
+    {
+        var currentUserId = HttpContext.GetUserId();
+
+        var conversations = await _messageService.GetConversationsAsync(currentUserId);
+
+        return Ok(conversations);
     }
 }

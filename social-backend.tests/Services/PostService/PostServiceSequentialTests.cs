@@ -1,11 +1,10 @@
 using social_backend.tests.Data;
 using SocialBackend.Models;
 using SocialBackend.Services;
-using Xunit;
-using Moq;
 using Xunit.Sdk;
 using Xunit.Abstractions;
 using SocialBackend.Dto;
+using SocialBackend.Exceptions;
 
 namespace social_backend.tests;
 
@@ -19,11 +18,11 @@ public class PostServiceTestOrderer : ITestCaseOrderer
 }
 
 [TestCaseOrderer("social_backend.tests.PostServiceTestOrderer", "social-backend.tests")]
-public class PostServiceIntegrationTests : TestBase
+public class PostServiceSequentialTests : TestBase
 {
     private readonly PostService _postService = null!;
 
-    public PostServiceIntegrationTests() : base()
+    public PostServiceSequentialTests() : base()
     {
         _postService = new PostService(Context);
     }
@@ -40,20 +39,7 @@ public class PostServiceIntegrationTests : TestBase
     }
 
     [Fact]
-    public async Task Test01_GetAllPosts_ShouldReturnAllPosts()
-    {
-        // Arrange + Act
-        var posts = await _postService.GetAllPosts();
-
-        // Assert
-        Assert.NotNull(posts);
-        Assert.Equal(2, posts.Count);
-        Assert.Contains(posts, p => p.Title == "First");
-        Assert.Contains(posts, p => p.Title == "Second");
-    }
-
-    [Fact]
-    public async Task Test02_GetPosts_ShouldReturnDtoPosts_TwoPages()
+    public async Task Test01_GetPosts_ShouldReturnDtoPosts_TwoPages()
     {
         // arrange
         int pageSize = 1;
@@ -72,7 +58,7 @@ public class PostServiceIntegrationTests : TestBase
     }
 
     [Fact]
-    public async Task Test03_GetPosts_ShouldReturnDtoPosts_OnePage()
+    public async Task Test02_GetPosts_ShouldReturnDtoPosts_OnePage()
     {
         // arrange
         int pageSize = 2;
@@ -88,14 +74,15 @@ public class PostServiceIntegrationTests : TestBase
     }
 
     [Fact]
-    public async Task Test04_GetUserPosts_ShouldReturnUserPostsDto()
+    public async Task Test03_GetUserPosts_ShouldReturnUserPostsDto()
     {
         // arrange
         var user = await Context.Users.FindAsync(1);
+        var userId = user!.Id;
         int pageSize = 2;
 
         // act
-        var page = await _postService.GetUserPosts(1, pageSize, user!);
+        var page = await _postService.GetUserPosts(1, pageSize, userId);
 
         // assert
         Assert.NotNull(page);
@@ -105,47 +92,50 @@ public class PostServiceIntegrationTests : TestBase
     }
 
     [Fact]
-    public async Task Test05_GetUserPosts_ShouldThrow_WhenNoUser()
+    public async Task Test04_GetUserPosts_ShouldThrow_WhenNoUser()
     {
         // arrange
         var user = await Context.Users.FindAsync(2);
+        var userId = 1337;
         int pageSize = 2;
 
         // act & assert
-        await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+        await Assert.ThrowsAsync<NotFoundException>(async () =>
         {
-            await _postService.GetUserPosts(1, pageSize, user!);
+            await _postService.GetUserPosts(1, pageSize, userId);
         });
     }
 
     [Fact]
-    public async Task Test06_GetFollowingPosts_ShouldThrow_WhenNoUser()
+    public async Task Test05_GetFollowingPosts_ShouldThrow_WhenNoUser()
     {
         // arrange
         var user = await Context.Users.FindAsync(1337);
+        var userId = 1337;
         int pageSize = 2;
 
         // act & assert
-        await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+        await Assert.ThrowsAsync<NotFoundException>(async () =>
         {
-            await _postService.GetFollowingPosts(1, pageSize, user!);
+            await _postService.GetFollowingPosts(1, pageSize, userId);
         });
     }
 
     [Fact]
-    public async Task Test07_CreatePost_ShouldCreatePost()
+    public async Task Test06_CreatePost_ShouldCreatePost()
     {
         // arrange
         var user = await Context.Users.FindAsync(1);
+        var userId = user!.Id;
+
         var dto = new PostCreateDto
         {
-            User = user!,
             Title = "New Post",
             Content = "This is a new post."
         };
 
         // act
-        var postId = await _postService.CreatePost(dto);
+        var postId = await _postService.CreatePost(dto, userId);
 
         // assert
         var createdPost = await Context.Posts.FindAsync(postId);
@@ -156,17 +146,17 @@ public class PostServiceIntegrationTests : TestBase
     }
 
     [Fact]
-    public async Task Test08_GetPosts_ShouldReturnDtoPosts_ThreePages_ThreePosts()
+    public async Task Test07_GetPosts_ShouldReturnDtoPosts_ThreePages_ThreePosts()
     {
         // arrange
         var user = await Context.Users.FindAsync(1);
+        var userId = user!.Id;
         var dto = new PostCreateDto
         {
-            User = user!,
             Title = "New Post",
             Content = "This is a new post."
         };
-        await _postService.CreatePost(dto);
+        await _postService.CreatePost(dto, userId);
 
         int pageSize = 1;
 

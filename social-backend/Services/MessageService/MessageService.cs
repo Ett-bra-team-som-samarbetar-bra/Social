@@ -1,16 +1,25 @@
 namespace SocialBackend.Services;
 
+public interface IMessageService
+{
+    Task<MessageDto> SendMessageAsync(int senderId, int receiverId, string content);
+    Task<List<MessageDto>> GetMessagesBetweenUsersAsync(int userAId, int userBId, int pageSize = 20, DateTime? before = null);
+    Task<List<ConversationDto>> GetConversationsAsync(int currentUserId);
+    Task MarkAsReadAsync(int currentUserId, int otherUserId);
+}
+
 public class MessageService(IDatabaseContext context, IUserService userService, IHubContext<ChatHub> hubContext) : IMessageService
 {
     private readonly IDatabaseContext _context = context;
     private readonly IUserService _userService = userService;
     private readonly IHubContext<ChatHub> _hubContext = hubContext;
 
-    public async Task<PaginatedList<MessageDto>> GetMessagesBetweenUsersAsync(
-    int sendingUserId, int receivingUserId, int pageIndex, int pageSize)
+    public async Task<List<MessageDto>> GetMessagesBetweenUsersAsync(
+        int sendingUserId,
+        int receivingUserId,
+        int pageSize = 20,
+        DateTime? before = null)
     {
-        if (pageIndex < 1)
-            throw new BadRequestException($"{nameof(pageIndex)}, Page index must be greater than 0.");
         if (pageSize < 1)
             throw new BadRequestException($"{nameof(pageSize)}, Page size must be greater than 0.");
 
@@ -20,18 +29,20 @@ public class MessageService(IDatabaseContext context, IUserService userService, 
             .Include(m => m.SendingUser)
             .Include(m => m.ReceivingUser)
             .Where(m => (m.SendingUserId == sendingUserId && m.ReceivingUserId == receivingUserId) ||
-                        (m.SendingUserId == receivingUserId && m.ReceivingUserId == sendingUserId))
-            .OrderBy(m => m.CreatedAt);
+                        (m.SendingUserId == receivingUserId && m.ReceivingUserId == sendingUserId));
 
-        var count = await query.CountAsync();
-        var totalPages = (int)Math.Ceiling(count / (double)pageSize);
+        if (before.HasValue)
+            query = query.Where(m => m.CreatedAt < before.Value);
 
         var messages = await query
-            .Paginate(pageIndex, pageSize)
+            .OrderByDescending(m => m.CreatedAt)
+            .ThenByDescending(m => m.Id)
+            .Take(pageSize)
             .Select(m => ToDto(m))
             .ToListAsync();
 
-        return new PaginatedList<MessageDto>(messages, pageIndex, totalPages);
+        messages.Reverse();
+        return messages;
     }
 
     public async Task<MessageDto> SendMessageAsync(int sendingUserId, int receivingUserId, string content)
@@ -50,7 +61,8 @@ public class MessageService(IDatabaseContext context, IUserService userService, 
             ReceivingUserId = receivingUserId,
             SendingUser = sendingUser,
             ReceivingUser = receivingUser,
-            Content = content
+            Content = content,
+            IsRead = false
         };
 
         _context.Messages.Add(message);
@@ -59,6 +71,44 @@ public class MessageService(IDatabaseContext context, IUserService userService, 
         await BroadcastMessageAsync(messageDto, sendingUserId, receivingUserId);
 
         return messageDto;
+    }
+
+    public async Task<List<ConversationDto>> GetConversationsAsync(int currentUserId)
+    {
+        return await _context.Messages
+            .Include(m => m.SendingUser)
+            .Include(m => m.ReceivingUser)
+            .Where(m => m.SendingUserId == currentUserId || m.ReceivingUserId == currentUserId)
+            .GroupBy(m => m.SendingUserId == currentUserId ? m.ReceivingUserId : m.SendingUserId)
+            .Select(c => new ConversationDto
+            {
+                UserId = c.Key,
+                Username = c.First().SendingUserId == c.Key
+                    ? c.First().SendingUser.Username
+                    : c.First().ReceivingUser.Username,
+                HasUnreadMessages = c.Any(m => m.ReceivingUserId == currentUserId && !m.IsRead),
+                LastMessageAt = c.Max(m => m.CreatedAt)
+            })
+            .OrderByDescending(c => c.HasUnreadMessages)
+            .ThenByDescending(c => c.LastMessageAt)
+            .ToListAsync();
+    }
+
+    public async Task MarkAsReadAsync(int currentUserId, int otherUserId)
+    {
+        var unread = await _context.Messages
+            .Where(m => m.SendingUserId == otherUserId &&
+                        m.ReceivingUserId == currentUserId &&
+                        !m.IsRead)
+            .ToListAsync();
+
+        if (unread.Count == 0)
+            return;
+
+        foreach (var msg in unread)
+            msg.IsRead = true;
+
+        await _context.SaveChangesAsync();
     }
 
     private static MessageDto ToDto(Message message)
