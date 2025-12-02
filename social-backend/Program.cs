@@ -59,7 +59,7 @@ using (var scope = app.Services.CreateScope())
 app.UseCors("AllowFrontend");
 app.MapHub<ChatHub>("/chatHub");
 app.UseMiddleware<ExceptionMiddleware>();
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 //app.UseAuthorization(); todo?
 app.MapControllers();
 app.UseSession();
