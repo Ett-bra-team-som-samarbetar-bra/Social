@@ -1,0 +1,38 @@
+import { useState } from "react";
+import { Nav, Navbar } from "react-bootstrap";
+import { NavLink } from "react-router-dom";
+import routes from "../routes";
+export default function NavBar() {
+    const [expanded, setExpanded] = useState(false);
+
+    return (
+        <div className="nav-nav text-start">
+            <Navbar expanded={expanded} expand="lg" className="w-100 d-flex align-items-center">
+
+                <Navbar.Toggle
+                    aria-controls="root-navbar"
+                    className="bg-primary border-0"
+                    onClick={() => setExpanded(prev => !prev)}
+                />
+
+                <Navbar.Collapse id="root-navbar">
+                    <Nav >
+                        {routes
+                            .filter(r => r.menuLabel)
+                            .map((r, i) => (
+                                <Nav.Link
+                                    key={i}
+                                    as={NavLink}
+                                    to={r.path}
+                                    className="nav-link px-lg-4 text-uppercase"
+                                    onClick={() => setTimeout(() => setExpanded(false), 200)}
+                                >
+                                    [{r.menuLabel}]
+                                </Nav.Link>
+                            ))}
+                    </Nav>
+                </Navbar.Collapse>
+            </Navbar>
+        </div>
+    );
+}
