@@ -1,9 +1,8 @@
-
-
 import Col from "react-bootstrap/esm/Col";
 import RootButton from "../Components/RootButton";
 import Row from "react-bootstrap/esm/Row";
 import { Container, Form } from "react-bootstrap";
+import { useRef } from "react";
 
 const currentUserId = 1;
 
@@ -32,6 +31,20 @@ const messages = [
 ];
 
 export default function MessagePage() {
+    const messagesContainerRef = useRef<HTMLDivElement>(null);
+    const messageEndRef = useRef<HTMLDivElement>(null);
+    
+    const scrollToBottom = () => {
+        requestAnimationFrame(() => {
+            messageEndRef.current?.scrollIntoView({ block: "end", behavior: "smooth" });
+        });
+    };
+
+    const scrollToTop = () => {
+        requestAnimationFrame(() => {
+            messagesContainerRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+        });
+    };
     return (
         <div className="m-auto">
             <Container className=" bg-dark text-primary border border-primary">
@@ -46,12 +59,13 @@ export default function MessagePage() {
 
                             <Col xs="auto" className="d-flex gap-2">
                                 <RootButton keyLabel="L" className="small-button">Load older</RootButton>
-                                <RootButton keyLabel="P" className="small-button">Scroll up</RootButton>
-                                <RootButton keyLabel="N" className="small-button">Scroll down</RootButton>
+                                <RootButton keyLabel="P" className="small-button" onClick={scrollToTop}>Scroll up</RootButton>
+                                <RootButton keyLabel="N" className="small-button" onClick={scrollToBottom}>Scroll down</RootButton>
                             </Col>
                         </Row>
 
                         <div
+                            ref={messagesContainerRef}
                             className="flex-grow-1 overflow-auto border-top border-bottom border-secondary p-2"
                             style={{ minHeight: 500, maxHeight: 500 }}
                         >
@@ -72,6 +86,7 @@ export default function MessagePage() {
                                     </span>
                                 </div>
                             ))}
+                            <div ref={messageEndRef} />
                         </div>
 
                         <Row className="mt-4 align-items-center px-4">
