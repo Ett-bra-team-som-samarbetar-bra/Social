@@ -1,11 +1,12 @@
 import React from "react";
 import { Button } from "react-bootstrap";
+import { useHotKey } from "../Hooks/useHotKey";
 
 interface RootButtonProps {
     onClick?: () => void;
     children?: React.ReactNode;
     className?: string;
-    color?: string; 
+    color?: string;
     keyLabel?: string;
     rounded?: string;
     disabled?: boolean;
@@ -22,6 +23,9 @@ export default function RootButton({
     keyLabel,
     disabled = false,
 }: RootButtonProps) {
+
+    useHotKey(keyLabel, onClick || (() => {}));
+    
     return (
         <Button
             type={type}
