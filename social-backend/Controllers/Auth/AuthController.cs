@@ -19,9 +19,9 @@ public class AuthController(IAuthService authService) : ControllerBase
         return Ok("Register successful");
     }
 
-    public async Task<ActionResult> Me()
+    public async Task<ActionResult<User>> Me()
     {
-        await _authService.GetLoggedInUser(HttpContext);
-        return Ok();
+        var loggedInUser = await _authService.GetLoggedInUser(HttpContext);
+        return Ok(loggedInUser);
     }
 }
