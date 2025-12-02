@@ -14,6 +14,26 @@ export interface User {
   LikedPosts: Post[];
 }
 
+export interface LoginRequest {
+  Username: string;
+  Password: string;
+}
+
+export interface RegisterRequest {
+  Username: string;
+  Email: string;
+  Password: string;
+  Description: string;
+}
+
+export interface UpdatePasswordRequest {
+  NewPassword: string;
+}
+
+export interface UserIdRequest {
+  UserId: number;
+}
+
 export interface AuthContextType {
   user: User | null;
   loading: boolean;
