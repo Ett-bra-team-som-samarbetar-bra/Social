@@ -1,24 +1,34 @@
 import React, { useEffect, useState } from "react";
 import { AuthContext } from "./AuthContext";
-import { type User, type AuthContextType } from "../Types/auth";
+import {
+  type User,
+  type AuthContextType,
+  type LoginRequest,
+  type RegisterRequest,
+} from "../Types/auth";
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const apiUrl = import.meta.env.VITE_API_URL;
+
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/auth/me", { credentials: "include" })
+    fetch(`${apiUrl}/api/auth/me`, { credentials: "include" })
       .then(async (res) => (res.ok ? res.json() : null))
       .then((data) => data && setUser(data))
       .finally(() => setLoading(false));
   }, []);
 
   const login: AuthContextType["login"] = async (username, password) => {
-    const res = await fetch("/api/auth/login", {
+    const request: LoginRequest = { Username: username, Password: password };
+    const res = await fetch(`${apiUrl}/api/auth/login`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify(request),
     });
 
     if (!res.ok) return false;
@@ -28,12 +38,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return true;
   };
 
-  const register: AuthContextType["register"] = async (username, email, password, description) => {
-    const res = await fetch("/api/auth/register", {
+  const register: AuthContextType["register"] = async (
+    username,
+    email,
+    password,
+    description
+  ) => {
+    const request: RegisterRequest = {
+      Username: username,
+      Email: email,
+      Password: password,
+      Description: description,
+    };
+    const res = await fetch(`${apiUrl}/api/auth/register`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, email, password, description }),
+      body: JSON.stringify(request),
     });
 
     if (!res.ok) return false;
