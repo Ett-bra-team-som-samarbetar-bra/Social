@@ -1,12 +1,19 @@
-
+@use 'bootstrap';
 .message-page-wrapper {
-  flex: 1;
+    flex: 1;
 }
 
 .message-timestamp {
-  font-size: 0.7rem;
+    font-size: 0.7rem;
 }
 
 .message-input:focus {
-  box-shadow: none;
+    box-shadow: none;
+}
+
+.form-control::placeholder {
+    color: bootstrap.$primary;
+    opacity: 0.4; 
+    font-family: 'Consolas', monospace;
+    letter-spacing: 1px;
 }
