@@ -51,4 +51,13 @@ public class AuthService(DatabaseContext dbContext, IPasswordHelper passwordHelp
             Description = request.Description
         };
     }
+
+    public async Task<User> GetLoggedInUser(HttpContext context)
+    {
+        var userId = context.Session.GetInt32("UserId");
+
+        var loggedInUser = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId) ?? throw new NotFoundException("No user logged in");
+
+        return loggedInUser;
+    }
 }

@@ -10,6 +10,7 @@ using System.Drawing;
 using Microsoft.AspNetCore.Identity;
 using SocialBackend.Dto;
 using SocialBackend.Exceptions;
+using System.Threading.Tasks;
 namespace social_backend.tests;
 
 public class AuthServiceTest : TestBase
@@ -207,5 +208,44 @@ public class AuthServiceTest : TestBase
 
         //Assert
         await Assert.ThrowsAsync<BadRequestException>(() => _authService.RegisterAsync(newUser));
+    }
+
+    [Fact]
+    public async Task GetLoggedInUser_ShouldReturnUser_WhenSessionHasValidUserId()
+    {
+        // Arrange
+        _session.SetInt32("UserId", 1); // session contains userId = 1
+
+        // Act
+        var user = await _authService.GetLoggedInUser(_httpContext);
+
+        // Assert
+        Assert.NotNull(user);
+        Assert.Equal(1, user.Id);
+        Assert.Equal("Alfred", user.Username);
+    }
+
+    [Fact]
+    public async Task GetLoggedInUser_ShouldThrowNotFound_WhenSessionHasNoUserId()
+    {
+        // Arrange
+        // No value set in session
+
+        // Act + Assert
+        await Assert.ThrowsAsync<NotFoundException>(() =>
+            _authService.GetLoggedInUser(_httpContext)
+        );
+    }
+
+    [Fact]
+    public async Task GetLoggedInUser_ShouldThrowNotFound_WhenUserDoesNotExist()
+    {
+        // Arrange
+        _session.SetInt32("UserId", 999); // session references a missing user
+
+        // Act + Assert
+        await Assert.ThrowsAsync<NotFoundException>(() =>
+            _authService.GetLoggedInUser(_httpContext)
+        );
     }
 }

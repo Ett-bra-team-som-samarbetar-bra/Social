@@ -6,4 +6,5 @@ public interface IAuthService
     void SetUserSession(User user, HttpContext context);
     Task<bool> DoesUserExist(string username);
     User CreateUser(RegisterRequest request, string passwordHash);
+    Task<User> GetLoggedInUser(HttpContext context);
 }
