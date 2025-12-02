@@ -14,10 +14,11 @@ const userList = [
     "RandomUser",
     "RandomUser",
     "KeklordXXX",
-]; export default function ConversationList() {
+];
+export default function ConversationList() {
     return (
         <Col className="conversation-aside ps-3">
-            <h5 className="text-primary mb-3">Users</h5>
+            <h5 className="text-primary mb-3">Messages</h5>
 
             <div className="conversation-list">
                 {userList.map(u => (
