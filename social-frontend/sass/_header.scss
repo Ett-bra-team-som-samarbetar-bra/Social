@@ -12,34 +12,12 @@
         letter-spacing: 1px;
         white-space: nowrap;
     }
-
-    .nav-link {
-        color: bootstrap.$primary !important;
-        font-family: 'Consolas', monospace;
-        font-size: 1rem;
-        letter-spacing: 1px;
-
-        &:hover {
-            color: bootstrap.$secondary !important;
-        }
-
-        &.active {
-            color: bootstrap.$secondary !important;
-            text-shadow: 0 0 4px bootstrap.$secondary;
-        }
-    }
-
-    .navbar-toggler {
-        filter: brightness(1.2);
-    }
 }
 
 .nav-nav {
     .nav-link {
         color: bootstrap.$primary !important;
-        font-family: 'Consolas', monospace;
-        font-size: 1rem;
-        letter-spacing: 1px;
+        font-family: 'Press Start 2P', 'Noto Sans', sans-serif;
 
         &:hover {
             color: bootstrap.$secondary !important;

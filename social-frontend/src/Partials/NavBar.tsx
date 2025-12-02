@@ -6,8 +6,8 @@ export default function NavBar() {
     const [expanded, setExpanded] = useState(false);
 
     return (
-        <div className="nav-nav text-start">
-            <Navbar expanded={expanded} expand="lg" className="w-100 d-flex align-items-center">
+        <div className="nav-nav text-start mt-0">
+            <Navbar expanded={expanded} expand="lg" className="w-100 d-flex align-items-center mt-0 pt-0">
 
                 <Navbar.Toggle
                     aria-controls="root-navbar"
@@ -24,7 +24,7 @@ export default function NavBar() {
                                     key={i}
                                     as={NavLink}
                                     to={r.path}
-                                    className="nav-link px-lg-4 text-uppercase"
+                                    className="nav-link px-lg-4 text-uppercase pt-0"
                                     onClick={() => setTimeout(() => setExpanded(false), 200)}
                                 >
                                     [{r.menuLabel}]
