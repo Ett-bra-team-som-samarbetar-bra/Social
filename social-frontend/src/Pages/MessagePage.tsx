@@ -3,6 +3,7 @@ import RootButton from "../Components/RootButton";
 import Row from "react-bootstrap/esm/Row";
 import { Container, Form } from "react-bootstrap";
 import { useRef } from "react";
+import { useHotKey } from "../Hooks/useHotKey";
 
 const currentUserId = 1;
 
@@ -33,7 +34,19 @@ const messages = [
 export default function MessagePage() {
     const messagesContainerRef = useRef<HTMLDivElement>(null);
     const messageEndRef = useRef<HTMLDivElement>(null);
-    
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useHotKey("Enter", () => {
+        const activeEl = document.activeElement;
+
+        if (activeEl === inputRef.current) {
+            /*   sendMessage(); */
+            return;
+        }
+
+        inputRef.current?.focus();
+    });
+
     const scrollToBottom = () => {
         requestAnimationFrame(() => {
             messageEndRef.current?.scrollIntoView({ block: "end", behavior: "smooth" });
@@ -78,7 +91,7 @@ export default function MessagePage() {
                                     <span className="fw-bold">
                                         {"<"}{msg.sendingUserName}{"> "}
                                     </span>
-                                    {msg.content}
+                                     {msg.content}
 
                                     <span className="position-absolute end-0 small">
                                         {new Date(msg.createdAt).toLocaleDateString()}{" "}
@@ -92,6 +105,7 @@ export default function MessagePage() {
                         <Row className="mt-4 align-items-center px-4">
                             <Col>
                                 <Form.Control
+                                    ref={inputRef}
                                     className="bg-transparent border-primary text-primary rounded-0"
                                     placeholder="Type a message..."
                                 />
