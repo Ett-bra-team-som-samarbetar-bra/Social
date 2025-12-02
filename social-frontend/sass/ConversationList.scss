@@ -1,0 +1,42 @@
+@use "bootstrap";
+
+.conversation-aside {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+.conversation-list {
+    flex-grow: 1; 
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+    overflow-y: auto;
+
+
+    .conversation-item {
+        width: 100%;
+        padding: 0.4rem 0.6rem;
+        color: bootstrap.$primary;
+        font-family: 'Consolas', monospace;
+        font-size: 0.9rem;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: 0.15s ease-in-out;
+        position: relative;
+
+        &:hover {
+            background: rgba(bootstrap.$primary, 0.15);
+            filter: brightness(1.3);
+        }
+
+        &.active {
+            border-color: bootstrap.$secondary;
+            color: bootstrap.$secondary;
+            box-shadow: 0 0 6px rgba(bootstrap.$secondary, 0.6);
+        }
+    }
+}
