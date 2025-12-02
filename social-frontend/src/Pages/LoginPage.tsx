@@ -1,24 +1,46 @@
-import { Form, Button } from "react-bootstrap";
+import { useState } from "react";
+import RootButton from "../Components/RootButton";
+import { useAuth } from "../Hooks/useAuth";
 
 export default function LoginPage() {
-  function onSubmit() {}
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const { login } = useAuth();
+
+  function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    login(username, password);
+  }
+
   return (
-    <>
-      <Form>
-        <Form.Group className="mb-3" controlId="formUsername">
-          <Form.Label>Username</Form.Label>
-          <Form.Control type="text" placeholder="Enter Username" />
-        </Form.Group>
+    <div className="json-box-container">
+      <form onSubmit={onSubmit} className="json-box">
+        <pre className="json-pre">
+          {`{
+  "username": "`}
+          <input
+            className="json-input"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="your username"
+          />
+          {`",
+  "password": "`}
+          <input
+            type="password"
+            className="json-input"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="your password"
+          />
+          {`"
+}`}
+        </pre>
 
-        <Form.Group className="mb-3" controlId="formPassword">
-          <Form.Label>Password</Form.Label>
-          <Form.Control type="password" placeholder="Password" />
-        </Form.Group>
-
-        <Button variant="primary" type="submit" onClick={() => onSubmit()}>
-          Submit
-        </Button>
-      </Form>
-    </>
+        <RootButton keyLabel="Enter" type="submit" className="mt-3 w-100">
+          Login
+        </RootButton>
+      </form>
+    </div>
   );
 }
