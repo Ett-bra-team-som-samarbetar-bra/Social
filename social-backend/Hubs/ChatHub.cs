@@ -1,4 +1,4 @@
-namespace Social_Backend.Hubs;
+namespace SocialBackend.Hubs;
 
 public class ChatHub : Hub
 {

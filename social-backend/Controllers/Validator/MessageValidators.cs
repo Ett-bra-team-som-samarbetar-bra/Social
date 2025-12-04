@@ -1,3 +1,5 @@
+namespace SocialBackend.Controllers;
+
 public class MessageDtoValidator : AbstractValidator<MessageDto>
 {
     public MessageDtoValidator()

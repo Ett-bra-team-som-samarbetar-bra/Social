@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace social_backend.Migrations
+namespace SocialBackend.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
     [Migration("20251125132000_AddMessagesModel")]

@@ -1,4 +1,4 @@
-using BCrypt.Net;
+namespace SocialBackend.Helpers;
 
 public class PasswordHelper : IPasswordHelper
 {

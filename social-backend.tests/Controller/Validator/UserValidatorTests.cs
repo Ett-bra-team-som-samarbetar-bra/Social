@@ -1,9 +1,8 @@
 using FluentValidation.Results;
-// Validators are declared in the global namespace in the main project, so no namespace import is required.
+using SocialBackend.Controllers;
 using SocialBackend.Dto;
-using Xunit;
 
-namespace social_backend.tests.Controller.Validator;
+namespace SocialBackend.tests.Controller.Validator;
 
 public class UserValidatorTests
 {

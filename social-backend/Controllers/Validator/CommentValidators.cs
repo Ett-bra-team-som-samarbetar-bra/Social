@@ -1,3 +1,5 @@
+namespace SocialBackend.Controllers;
+
 public class CommentCreateDtoValidator : AbstractValidator<CommentCreateDto>
 {
     public CommentCreateDtoValidator()

@@ -1,43 +1,40 @@
-using System;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using SocialBackend.Data;
 
+namespace SocialBackend.tests.Data;
 
-namespace social_backend.tests.Data
+public abstract class TestBase : IDisposable
 {
-    public abstract class TestBase : IDisposable
+    private readonly SqliteConnection _connection;
+    protected readonly DatabaseContext Context;
+
+    protected TestBase()
     {
-        private readonly SqliteConnection _connection;
-        protected readonly DatabaseContext Context;
+        // Single in-memory SQLite connection per test instance
+        _connection = new SqliteConnection("DataSource=:memory:");
+        _connection.Open();
 
-        protected TestBase()
-        {
-            // Single in-memory SQLite connection per test instance
-            _connection = new SqliteConnection("DataSource=:memory:");
-            _connection.Open();
+        var options = new DbContextOptionsBuilder<DatabaseContext>()
+            .UseSqlite(_connection)
+            .EnableSensitiveDataLogging()
+            .Options;
 
-            var options = new DbContextOptionsBuilder<DatabaseContext>()
-                .UseSqlite(_connection)
-                .EnableSensitiveDataLogging()
-                .Options;
+        Context = new DatabaseContext(options);
+        Context.Database.EnsureCreated();
+        SeedData();
+    }
 
-            Context = new DatabaseContext(options);
-            Context.Database.EnsureCreated();
-            SeedData();
-        }
+    /// <summary>
+    /// Override in test classes to insert seed data.
+    /// </summary>
+    protected virtual void SeedData()
+    {
+    }
 
-        /// <summary>
-        /// Override in test classes to insert seed data.
-        /// </summary>
-        protected virtual void SeedData()
-        {
-        }
-
-        public void Dispose()
-        {
-            Context.Dispose();
-            _connection.Dispose();
-        }
+    public void Dispose()
+    {
+        Context.Dispose();
+        _connection.Dispose();
     }
 }
