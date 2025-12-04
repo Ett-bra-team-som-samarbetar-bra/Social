@@ -23,7 +23,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   const login: AuthContextType["login"] = async (username, password) => {
-    const request: LoginRequest = { Username: username, Password: password };
+    const request: LoginRequest = { username: username, password: password };
     const res = await fetch(`${apiUrl}/api/auth/login`, {
       method: "POST",
       credentials: "include",
@@ -48,10 +48,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     description
   ) => {
     const request: RegisterRequest = {
-      Username: username,
-      Email: email,
-      Password: password,
-      Description: description,
+      username: username,
+      email: email,
+      password: password,
+      description: description,
     };
 
     const res = await fetch(`${apiUrl}/api/auth/register`, {
