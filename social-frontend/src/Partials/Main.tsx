@@ -2,14 +2,15 @@ import { Outlet } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
 import NavBar from "./NavBar";
 import ConversationList from "../Components/ConversationList";
+import UserInfo from "./UserInfo";
 export default function Main() {
   return (
     <main>
       <Container fluid className="h-100">
         <Row className="h-100">
-          <Col md={3} >
+          <Col md={3}>
             <h5 className="text-secondary mb-3">User Info</h5>
-
+            <UserInfo />
           </Col>
 
           <Col md={6}>
@@ -17,7 +18,7 @@ export default function Main() {
             <Outlet />
           </Col>
 
-          <Col md={3} >
+          <Col md={3}>
             <ConversationList />
           </Col>
         </Row>
