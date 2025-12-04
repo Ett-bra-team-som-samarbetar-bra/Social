@@ -1,20 +1,22 @@
-$font-family-sans-serif: 'consolas, Noto Sans';
+$font-family-sans-serif: 'geo, consolas, Noto Sans';
 $font-size-base: 1.1rem;
 $line-height-base: 1.4;
 $navbar-dark-color: rgba(white, .8) !default;
 $navbar-dark-hover-color: rgba(white, .9) !default;
 $enable-negative-margins: true;
 
-$primary: #EB9A1D;
-$secondary: #FB9B10;
-$light: #FB9B10;
-$info: #52391A;
-$body-bg: #0c0101;
-$dark: #170800;
+$primary: #EB9A1D; // Main text
+$secondary: red;
+$light: #FB9B10; // Hover and selected
+$info: #52391A; // Card bg 1
+$body-bg: #0c0101; // App bg
+$dark: #170800; // Card bg 2
 $danger: #8b2f2c;
 $warning: #F48D60;
 $success: #21866F;
+
 @import '../node_modules/bootstrap/scss/bootstrap.scss';
+@import url('https://fonts.googleapis.com/css2?family=Geo:ital@0;1&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
 
 * {
     box-sizing: border-box;
@@ -25,6 +27,7 @@ $success: #21866F;
 body {
     scrollbar-width: thin;
     scrollbar-color: #FB9B10 #170800;
+    font-family: 'geo', sans-serif;
 }
 
 h1,
@@ -35,4 +38,26 @@ h5,
 h6 {
     font-family: 'Press Start 2P', 'Noto Sans', sans-serif;
     color: $primary;
+}
+
+.Japanse-char-big {
+    font-size: 3rem;
+    color: $primary;
+    font-family: 'VT323', monospace;
+    user-select: none;
+}
+
+.Japanse-char-small {
+    font-size: 1rem;
+    color: $primary;
+    font-family: 'VT323', monospace;
+    user-select: none;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.user-select-none {
+    user-select: none;
 }
