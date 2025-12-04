@@ -7,9 +7,9 @@ export default function Main() {
   return (
     <main>
       <Container fluid className="h-100">
-        <Row className="h-100">
+        <Row className="h-100 px-5">
           <Col md={3}>
-            <h5 className="text-secondary mb-3">User Info</h5>
+            <h5 className="text-primary mb-3">User Info</h5>
             <UserInfo />
           </Col>
 
