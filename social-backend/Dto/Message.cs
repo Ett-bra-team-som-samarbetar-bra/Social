@@ -1,4 +1,5 @@
 public record MessageDto(
+    int Id,
     int SendingUserId,
     string SendingUserName,
     int ReceivingUserId,
