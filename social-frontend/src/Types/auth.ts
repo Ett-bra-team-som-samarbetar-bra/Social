@@ -48,4 +48,5 @@ export interface AuthContextType {
     description: string
   ) => Promise<{ ok: boolean; error?: string }>;
   logout: () => Promise<void>;
+  updateUser: (partialUser: Partial<User>) => void;
 }
