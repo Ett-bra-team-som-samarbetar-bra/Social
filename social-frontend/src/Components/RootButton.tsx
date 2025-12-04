@@ -5,8 +5,10 @@ import { useHotKey } from "../Hooks/useHotKey";
 interface RootButtonProps {
     onClick?: () => void;
     children?: React.ReactNode;
+    backgroundColor?: string;
+    textColor?: string;
+    fontsize?: number;
     className?: string;
-    color?: string;
     keyLabel?: string;
     rounded?: string;
     disabled?: boolean;
@@ -18,24 +20,27 @@ export default function RootButton({
     onClick,
     children,
     className = "",
-    color = "primary",
+    textColor = "dark",
+    backgroundColor = "primary",
+    fontsize = 0.6,
     type = "button",
     keyLabel,
     disabled = false,
 }: RootButtonProps) {
 
-    useHotKey(keyLabel, onClick || (() => {}));
-    
+    useHotKey(keyLabel, onClick || (() => { }));
+
     return (
         <Button
             type={type}
             disabled={disabled}
             onClick={onClick}
+            style={{ fontSize: `${fontsize}rem` }}
             className={`
                 ${className}
                 root-btn
-                bg-${color}
-                text-dark
+                bg-${backgroundColor}
+                text-${textColor}
                 border-0
                 rounded-0      
                 d-flex
@@ -45,9 +50,9 @@ export default function RootButton({
             `}
         >
             {keyLabel && (
-                <span className="root-btn-key">[{keyLabel}]</span>
+                <span className="fw-bold">[{keyLabel}]</span>
             )}
-            <span className="root-btn-text">{children}</span>
+            <span className="fw-bold">{children}</span>
         </Button>
     );
 }
