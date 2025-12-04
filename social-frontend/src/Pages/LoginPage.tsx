@@ -5,11 +5,17 @@ import { useAuth } from "../Hooks/useAuth";
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState<string | null>(null);
   const { login } = useAuth();
 
-  function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    login(username, password);
+    const result = await login(username, password);
+
+    if (!result.ok) {
+      setLoginError(result.error || "Login failed, please try again");
+      return;
+    }
   }
 
   return (
@@ -36,6 +42,14 @@ export default function LoginPage() {
           {`"
 }`}
         </pre>
+
+        {loginError && (
+          <div className="json-error-box">
+            {loginError.split("\n").map((line, i) => (
+              <div key={i}>• {line}</div>
+            ))}
+          </div>
+        )}
 
         <RootButton keyLabel="Enter" type="submit" className="mt-3 w-100">
           Login

@@ -1,48 +1,51 @@
-import type { Message } from "./message";
+import type MessageDto from "./message";
 import type { Post } from "./post";
 
 export interface User {
-  Id: string;
-  Username: string;
-  Email: string;
-  Description: string;
-  CreatedAt: Date;
-  Following: User[];
-  Followers: User[];
-  Messages: Message[];
-  MessaagesReceived: Message[];
-  LikedPosts: Post[];
+  id: number;
+  username: string;
+  email: string;
+  description: string;
+  createdAt: Date;
+  following: User[];
+  followers: User[];
+  messages: MessageDto[];
+  messaagesReceived: MessageDto[];
+  likedPosts: Post[];
 }
 
 export interface LoginRequest {
-  Username: string;
-  Password: string;
+  username: string;
+  password: string;
 }
 
 export interface RegisterRequest {
-  Username: string;
-  Email: string;
-  Password: string;
-  Description: string;
+  username: string;
+  email: string;
+  password: string;
+  description: string;
 }
 
 export interface UpdatePasswordRequest {
-  NewPassword: string;
+  newPassword: string;
 }
 
 export interface UserIdRequest {
-  UserId: number;
+  userId: number;
 }
 
 export interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (
+    email: string,
+    password: string
+  ) => Promise<{ ok: boolean; error?: string }>;
   register: (
     username: string,
     email: string,
     password: string,
     description: string
-  ) => Promise<boolean>;
+  ) => Promise<{ ok: boolean; error?: string }>;
   logout: () => Promise<void>;
 }

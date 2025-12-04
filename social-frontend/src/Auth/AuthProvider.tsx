@@ -31,11 +31,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       body: JSON.stringify(request),
     });
 
-    if (!res.ok) return false;
+    const data = await res.json();
 
-    const loggedInuser = await res.json();
-    setUser(loggedInuser);
-    return true;
+    if (!res.ok) return { ok: false, error: data?.error || "Login failed" };
+
+    setTimeout(() => 1000);
+
+    setUser(data.user);
+    return { ok: true, user: data.user };
   };
 
   const register: AuthContextType["register"] = async (
@@ -50,6 +53,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       Password: password,
       Description: description,
     };
+
     const res = await fetch(`${apiUrl}/api/auth/register`, {
       method: "POST",
       credentials: "include",
@@ -57,11 +61,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       body: JSON.stringify(request),
     });
 
-    if (!res.ok) return false;
+    const data = await res.json();
 
-    const newUser = await res.json();
-    setUser(newUser);
-    return true;
+    if (!res.ok) {
+      return {
+        ok: false,
+        error: data?.error || "Registration failed.",
+      };
+    }
+
+    return {
+      ok: true,
+    };
   };
 
   const logout = async () => {

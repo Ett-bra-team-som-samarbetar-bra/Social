@@ -29,6 +29,7 @@ builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 builder.Services.AddSignalR();
+builder.Services.AddSingleton<IUserIdProvider, SessionUserIdProvider>();
 //Adds in memory session
 builder.Services.AddDistributedMemoryCache();
 
@@ -57,11 +58,11 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseCors("AllowFrontend");
+app.UseSession();
 app.MapHub<ChatHub>("/chatHub");
 app.UseMiddleware<ExceptionMiddleware>();
 //app.UseHttpsRedirection();
 //app.UseAuthorization(); todo?
 app.MapControllers();
-app.UseSession();
 
 app.Run();
