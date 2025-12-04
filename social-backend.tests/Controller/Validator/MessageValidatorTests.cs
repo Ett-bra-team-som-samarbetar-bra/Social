@@ -12,6 +12,7 @@ public class MessageValidatorTests
         // Arrange
         var validator = new MessageDtoValidator();
         var dto = new MessageDto(
+            Id: 1,
             SendingUserId: 1,
             SendingUserName: "sender",
             ReceivingUserId: 2,
@@ -34,6 +35,7 @@ public class MessageValidatorTests
     {
         var validator = new MessageDtoValidator();
         var dto = new MessageDto(
+            Id: 1,
             SendingUserId: sendingUserId,
             SendingUserName: "sender",
             ReceivingUserId: 2,
@@ -56,6 +58,7 @@ public class MessageValidatorTests
     {
         var validator = new MessageDtoValidator();
         var dto = new MessageDto(
+            Id: 1,
             SendingUserId: 1,
             SendingUserName: name,
             ReceivingUserId: 2,
@@ -75,6 +78,7 @@ public class MessageValidatorTests
         var validator = new MessageDtoValidator();
         var longName = new string('a', 51);
         var dto = new MessageDto(
+            Id: 1,
             SendingUserId: 1,
             SendingUserName: longName,
             ReceivingUserId: 2,
@@ -96,6 +100,7 @@ public class MessageValidatorTests
     {
         var validator = new MessageDtoValidator();
         var dto = new MessageDto(
+            Id: 1,
             SendingUserId: 1,
             SendingUserName: "sender",
             ReceivingUserId: receivingUserId,
@@ -118,6 +123,7 @@ public class MessageValidatorTests
     {
         var validator = new MessageDtoValidator();
         var dto = new MessageDto(
+            Id: 1,
             SendingUserId: 1,
             SendingUserName: "sender",
             ReceivingUserId: 2,
@@ -137,6 +143,7 @@ public class MessageValidatorTests
         var validator = new MessageDtoValidator();
         var longName = new string('a', 51);
         var dto = new MessageDto(
+            Id: 1,
             SendingUserId: 1,
             SendingUserName: "sender",
             ReceivingUserId: 2,
@@ -156,6 +163,7 @@ public class MessageValidatorTests
     {
         var validator = new MessageDtoValidator();
         var dto = new MessageDto(
+            Id: 1,
             SendingUserId: 1,
             SendingUserName: "sender",
             ReceivingUserId: 2,
@@ -175,6 +183,7 @@ public class MessageValidatorTests
     {
         var validator = new MessageDtoValidator();
         var dto = new MessageDto(
+            Id: 1,
             SendingUserId: 1,
             SendingUserName: "sender",
             ReceivingUserId: 2,
@@ -196,6 +205,7 @@ public class MessageValidatorTests
     {
         var validator = new MessageDtoValidator();
         var dto = new MessageDto(
+            Id: 1,
             SendingUserId: 1,
             SendingUserName: "sender",
             ReceivingUserId: 2,
@@ -215,6 +225,7 @@ public class MessageValidatorTests
         var validator = new MessageDtoValidator();
         var longContent = new string('a', 301);
         var dto = new MessageDto(
+            Id: 1,
             SendingUserId: 1,
             SendingUserName: "sender",
             ReceivingUserId: 2,
