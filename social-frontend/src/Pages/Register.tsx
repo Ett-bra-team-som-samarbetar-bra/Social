@@ -2,17 +2,22 @@ import { useState } from "react";
 import RootButton from "../Components/RootButton";
 import { useAuth } from "../Hooks/useAuth";
 import { registerSchema } from "../Validation/registerSchema";
+import { useNavigate } from "react-router-dom";
 
 export default function RegisterPage() {
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [description, setDescription] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
+  const [registerSuccess, setRegisterSuccess] = useState<string | null>(null);
   const { register } = useAuth();
 
-  function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    setRegisterSuccess(null);
 
     const result = registerSchema.safeParse({
       username,
@@ -32,7 +37,25 @@ export default function RegisterPage() {
 
     setFormError(null);
 
-    register(username, email, password, description);
+    const registerResult = await register(
+      username,
+      email,
+      password,
+      description
+    );
+
+    if (!registerResult.ok) {
+      setFormError(
+        registerResult.error || "Registration failed. Please try again"
+      );
+      return;
+    }
+
+    setRegisterSuccess("Your account was successfully created!");
+
+    setTimeout(() => {
+      navigate("/login");
+    }, 2500);
   }
 
   return (
@@ -83,6 +106,14 @@ export default function RegisterPage() {
         {formError && (
           <div className="json-error-box">
             {formError.split("\n").map((line, i) => (
+              <div key={i}>• {line}</div>
+            ))}
+          </div>
+        )}
+
+        {registerSuccess && (
+          <div className="json-error-box">
+            {registerSuccess.split("\n").map((line, i) => (
               <div key={i}>• {line}</div>
             ))}
           </div>
