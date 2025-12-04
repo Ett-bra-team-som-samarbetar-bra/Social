@@ -13,23 +13,32 @@ export default function MessagePage() {
     const messagesContainerRef = useRef<HTMLDivElement>(null);
     const messageEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+    const [loadingOlder, setLoadingOlder] = useState(false);
 
     const [messages, setMessages] = useState<MessageDto[]>([]);
 
     const currentUserId = user?.id ?? 0;
     const receivingUserId = Number(id);
 
+    const fetchMessages = async (before?: string) => {
+        const url = new URL(`http://localhost:5174/api/message/${receivingUserId}`);
+        if (before) url.searchParams.append("before", before);
+
+        const res = await fetch(url.toString(), { credentials: "include" });
+        const data: MessageDto[] = await res.json();
+
+        if (before) {
+            setMessages(prev => [...data, ...prev]);
+        } else {
+            setMessages(Array.isArray(data) ? data : []);
+            scrollToBottom();
+        }
+    };
+
     useEffect(() => {
         if (!id) return;
 
-        fetch(`http://localhost:5174/api/message/${receivingUserId}`, { credentials: "include" })
-            .then(res => res.json())
-            .then(data => {
-                setMessages(Array.isArray(data) ? data : []);
-                requestAnimationFrame(() => {
-                    messageEndRef.current?.scrollIntoView({ block: "end", behavior: "smooth" });
-                });
-            });
+        fetchMessages();
     }, [id, receivingUserId]);
 
     const handleReceiveMessage = useCallback((message: MessageDto) => {
@@ -85,6 +94,15 @@ export default function MessagePage() {
         return msg.sendingUserId === receivingUserId ? msg.sendingUserName : msg.receivingUserName;
     }
 
+    const loadOlderMessages = async () => {
+        if (loadingOlder || messages.length === 0) return;
+        setLoadingOlder(true);
+        const oldestMessage = messages[0];
+        await fetchMessages(oldestMessage.createdAt);
+        setLoadingOlder(false);
+        scrollToTop();
+    };
+
     if (loading) return <div>Loading...</div>;
     if (!user) return <div>Please log in</div>;
     if (!id) return <div>Please select a conversation</div>;
@@ -102,7 +120,7 @@ export default function MessagePage() {
                             </Col>
 
                             <Col xs="auto" className="d-flex gap-2">
-                                <RootButton keyLabel="L" className="small-button">Load older</RootButton>
+                                <RootButton keyLabel="L" className="small-button" onClick={loadOlderMessages}>Load older</RootButton>
                                 <RootButton keyLabel="P" className="small-button" onClick={scrollToTop}>Scroll up</RootButton>
                                 <RootButton keyLabel="N" className="small-button" onClick={scrollToBottom}>Scroll down</RootButton>
                             </Col>

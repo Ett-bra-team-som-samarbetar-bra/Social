@@ -15,23 +15,23 @@ export interface User {
 }
 
 export interface LoginRequest {
-  Username: string;
-  Password: string;
+  username: string;
+  password: string;
 }
 
 export interface RegisterRequest {
-  Username: string;
-  Email: string;
-  Password: string;
-  Description: string;
+  username: string;
+  email: string;
+  password: string;
+  description: string;
 }
 
 export interface UpdatePasswordRequest {
-  NewPassword: string;
+  newPassword: string;
 }
 
 export interface UserIdRequest {
-  UserId: number;
+  userId: number;
 }
 
 export interface AuthContextType {
