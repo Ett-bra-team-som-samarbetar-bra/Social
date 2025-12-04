@@ -68,7 +68,7 @@ export default function RegisterPage() {
             className="json-input"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            placeholder="your username"
+            placeholder=""
           />
           {`",
   "password": "`}
@@ -77,7 +77,7 @@ export default function RegisterPage() {
             className="json-input"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="your password"
+            placeholder=""
           />
           {`",
   "email": "`}
@@ -85,7 +85,7 @@ export default function RegisterPage() {
             className="json-input"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="your email"
+            placeholder=""
           />
           {`",
   "description": "`}
@@ -93,7 +93,7 @@ export default function RegisterPage() {
             className="json-input json-textarea"
             value={description}
             onChange={(e) => setDescription(e.target.value.slice(0, 300))}
-            placeholder="your description"
+            placeholder=""
             rows={2}
           />
           {`"

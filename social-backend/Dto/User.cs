@@ -23,4 +23,9 @@ namespace SocialBackend.Dto
     {
         public required int UserId { get; set; }
     }
+
+    public record UpdateDescriptionRequest
+    {
+        public required string NewDescription { get; set; }
+    }
 }
