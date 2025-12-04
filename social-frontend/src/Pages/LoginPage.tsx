@@ -1,14 +1,11 @@
 import { useState } from "react";
 import RootButton from "../Components/RootButton";
 import { useAuth } from "../Hooks/useAuth";
-import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
-  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState<string | null>(null);
-  const [loginSuccess, setLoginSuccess] = useState<string | null>(null);
   const { login } = useAuth();
 
   async function onSubmit(e: React.FormEvent) {
@@ -19,12 +16,6 @@ export default function LoginPage() {
       setLoginError(result.error || "Login failed, please try again");
       return;
     }
-
-    setLoginSuccess("Log in successful. Enjoy your Root Access");
-
-    setTimeout(() => {
-      navigate("/");
-    }, 2500);
   }
 
   return (
@@ -55,14 +46,6 @@ export default function LoginPage() {
         {loginError && (
           <div className="json-error-box">
             {loginError.split("\n").map((line, i) => (
-              <div key={i}>• {line}</div>
-            ))}
-          </div>
-        )}
-
-        {loginSuccess && (
-          <div className="json-error-box">
-            {loginSuccess.split("\n").map((line, i) => (
               <div key={i}>• {line}</div>
             ))}
           </div>

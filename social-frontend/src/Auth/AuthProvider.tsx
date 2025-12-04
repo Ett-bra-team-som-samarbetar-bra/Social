@@ -35,6 +35,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     if (!res.ok) return { ok: false, error: data?.error || "Login failed" };
 
+    setTimeout(() => 1000);
+
     setUser(data.user);
     return { ok: true, user: data.user };
   };
