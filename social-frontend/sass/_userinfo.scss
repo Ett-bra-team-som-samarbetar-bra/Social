@@ -1,0 +1,9 @@
+.user-info-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;          /* full height of the sidebar column */
+}
+
+.logout-button {
+  margin-top: auto;      /* pushes it to the bottom */
+}
