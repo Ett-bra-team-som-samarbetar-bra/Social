@@ -4,7 +4,7 @@ using SocialBackend.Services;
 using SocialBackend.Dto;
 using SocialBackend.Exceptions;
 
-namespace SocialBackend.tests;
+namespace SocialBackend.tests.Services;
 
 public class PostServiceTests : TestBase
 {

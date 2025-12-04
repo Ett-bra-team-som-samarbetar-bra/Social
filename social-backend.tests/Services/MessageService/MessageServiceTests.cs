@@ -3,9 +3,10 @@ using SocialBackend.Models;
 using SocialBackend.Services;
 using Moq;
 using Microsoft.AspNetCore.SignalR;
-using Social_Backend.Hubs;
+using SocialBackend.Hubs;
 using SocialBackend.Exceptions;
-namespace SocialBackend.tests;
+
+namespace SocialBackend.tests.Services;
 
 public class MessageServiceTests : TestBase
 {

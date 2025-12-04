@@ -1,6 +1,6 @@
 using FluentValidation.Results;
+using SocialBackend.Controllers;
 using SocialBackend.Dto;
-using Xunit;
 
 namespace SocialBackend.tests.Controller.Validator;
 

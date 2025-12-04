@@ -1,10 +1,8 @@
 using System.Net;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
-using SocialBackend.Controllers.MiddleWare;
+using SocialBackend.Controllers;
 using SocialBackend.Exceptions;
-using Xunit;
-using static System.Net.HttpStatusCode;
 
 namespace SocialBackend.tests.Controller.MiddleWare;
 
