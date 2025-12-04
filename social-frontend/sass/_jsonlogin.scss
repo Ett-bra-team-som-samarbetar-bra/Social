@@ -14,7 +14,6 @@
   padding: 40px;
   width: 500px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  font-family: "geo", "Consolas", monospace;
 }
 
 .json-pre {
@@ -63,7 +62,6 @@
   font-size: 12px;
   color: #888;
   margin-top: 4px;
-  font-family: "geo", "Consolas", monospace;
 }
 
 .json-error-box {
@@ -75,6 +73,5 @@
   border-radius: 6px;
   color: bootstrap.$dark;
   font-size: 13px;
-  font-family: "geo", monospace;
   white-space: pre-wrap;
 }

@@ -3,39 +3,39 @@ import { Button } from "react-bootstrap";
 import { useHotKey } from "../Hooks/useHotKey";
 
 interface RootButtonProps {
-  onClick?: () => void;
-  children?: React.ReactNode;
-  backgroundColor?: string;
-  textColor?: string;
-  fontsize?: number;
-  className?: string;
-  keyLabel?: string;
-  rounded?: string;
-  disabled?: boolean;
-  size?: "sm" | "md" | "lg";
-  type?: "button" | "submit" | "reset";
+    onClick?: () => void;
+    children?: React.ReactNode;
+    backgroundColor?: string;
+    textColor?: string;
+    fontsize?: number;
+    className?: string;
+    keyLabel?: string;
+    rounded?: string;
+    disabled?: boolean;
+    size?: "sm" | "md" | "lg";
+    type?: "button" | "submit" | "reset";
 }
 
 export default function RootButton({
-  onClick,
-  children,
-  className = "",
-  textColor = "dark",
-  backgroundColor = "primary",
-  fontsize = 1,
-  type = "button",
-  keyLabel,
-  disabled = false,
+    onClick,
+    children,
+    className = "",
+    textColor = "dark",
+    backgroundColor = "primary",
+    fontsize = 16,
+    type = "button",
+    keyLabel,
+    disabled = false,
 }: RootButtonProps) {
-  useHotKey(keyLabel, onClick || (() => {}));
+    useHotKey(keyLabel, onClick || (() => { }));
 
-  return (
-    <Button
-      type={type}
-      disabled={disabled}
-      onClick={onClick}
-      style={{ fontSize: `${fontsize}rem` }}
-      className={`
+    return (
+        <Button
+            type={type}
+            disabled={disabled}
+            onClick={onClick}
+            style={{ fontSize: `${fontsize}px` }}
+            className={`
                 ${className}
                 root-btn
                 bg-${backgroundColor}
@@ -47,9 +47,9 @@ export default function RootButton({
                 justify-content-center
                 gap-2
             `}
-    >
-      {keyLabel && <span className="fw-bold">[{keyLabel}]</span>}
-      <span className="fw-bold">{children}</span>
-    </Button>
-  );
+        >
+            {keyLabel && <span className="fw-bold">[{keyLabel}]</span>}
+            <span className="fw-bold">{children}</span>
+        </Button>
+    );
 }
