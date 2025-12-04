@@ -37,12 +37,15 @@ export interface UserIdRequest {
 export interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (
+    email: string,
+    password: string
+  ) => Promise<{ ok: boolean; error?: string }>;
   register: (
     username: string,
     email: string,
     password: string,
     description: string
-  ) => Promise<boolean>;
+  ) => Promise<{ ok: boolean; error?: string }>;
   logout: () => Promise<void>;
 }
