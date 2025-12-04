@@ -3,6 +3,7 @@ import { Nav, Navbar } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 import routes from "../routes";
 import { useAuth } from "../Hooks/useAuth";
+
 export default function NavBar() {
   const { user } = useAuth();
   const [expanded, setExpanded] = useState(false);

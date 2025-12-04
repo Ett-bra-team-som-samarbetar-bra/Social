@@ -4,33 +4,32 @@
 }
 
 .json-display-box {
-  max-width: 100%;           
-  overflow-x: auto;          
-  white-space: pre-wrap;     
-  word-break: break-word;    
-  padding: 16px;
-  border-radius: 6px;
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  padding: 16px 16px 16px 0px;
 }
 
 .json-display-pre {
-  font-size: 1.5rem;        
-  line-height: 2rem;     
+  font-size: 20px;
+  line-height: 1.6rem;
   font-weight: 400;
 }
 
 /* Each line */
 .json-line {
   margin-left: 10px;
-  margin-top: 10px; 
+  margin-top: 10px;
 }
 
 /* Key styling */
-.json-key {        
+.json-key {
   font-weight: 500;
 }
 
 /* Value styling */
-.json-value {   
+.json-value {
   font-weight: 400;
-  color: #dcdcdc;
+  color: gray;
 }

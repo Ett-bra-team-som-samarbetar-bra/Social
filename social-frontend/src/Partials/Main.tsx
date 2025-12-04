@@ -9,11 +9,10 @@ export default function Main() {
       <Container fluid className="h-100 pb-4">
         <Row className="h-100 px-5">
           <Col md={3} className="h-100 d-flex flex-column flex-grow-1">
-            <h5 className="text-primary mb-3">User Info</h5>
             <UserInfo />
           </Col>
 
-          <Col md={6}>
+          <Col md={6} className="align-items-center d-flex flex-column">
             <NavBar />
             <Outlet />
           </Col>

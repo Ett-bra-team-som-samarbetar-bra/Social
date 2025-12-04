@@ -19,7 +19,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="json-box-container">
+    <div className="json-box-container mt-5">
       <form onSubmit={onSubmit} className="json-box">
         <pre className="json-pre">
           {`{
@@ -27,17 +27,17 @@ export default function LoginPage() {
           <input
             className="json-input"
             value={username}
+            autoComplete="off"
             onChange={(e) => setUsername(e.target.value)}
-            placeholder=""
           />
           {`",
   "password": "`}
           <input
             type="password"
+            autoComplete="off"
             className="json-input"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder=""
           />
           {`"
 }`}
@@ -51,7 +51,7 @@ export default function LoginPage() {
           </div>
         )}
 
-        <RootButton keyLabel="Enter" type="submit" className="mt-3 w-100">
+        <RootButton keyLabel="Enter" type="submit" className="mt-4 w-100">
           Login
         </RootButton>
       </form>
