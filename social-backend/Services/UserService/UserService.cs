@@ -14,6 +14,7 @@ namespace SocialBackend.Services
         Task<(User, User)> ValidateFollowAsync(int sourceId, int targetId);
         Task UnfollowUser(int userId, UserIdRequest request);
         Task<(User, User)> ValidateUnfollowAsync(int sourceId, int targetId);
+        Task UpdateDescription(UpdateDescriptionRequest request, int userId);
     }
     public class UserService(DatabaseContext dbContext, IPasswordHelper passwordHelper) : IUserService
     {
@@ -44,6 +45,15 @@ namespace SocialBackend.Services
             var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId)
                 ?? throw new NotFoundException($"Could not find user with id {userId}");
             user.PasswordHash = _passwordHelper.HashPassword(request.NewPassword);
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task UpdateDescription(UpdateDescriptionRequest request, int userId)
+        {
+            var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId)
+                ?? throw new NotFoundException($"Could not find user with id {userId}");
+            user.Description = request.NewDescription;
+            await _db.SaveChangesAsync();
         }
 
         public async Task FollowUser(int userId, UserIdRequest request)
