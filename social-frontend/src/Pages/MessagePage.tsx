@@ -1,50 +1,70 @@
-import Col from "react-bootstrap/esm/Col";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { Container, Row, Col, Form } from "react-bootstrap";
 import RootButton from "../Components/RootButton";
-import Row from "react-bootstrap/esm/Row";
-import { Container, Form } from "react-bootstrap";
-import { useRef } from "react";
 import { useHotKey } from "../Hooks/useHotKey";
-
-const currentUserId = 1;
-
-const messages = [
-    { id: 1, sendingUserId: 2, sendingUserName: "Chad", content: "Tvätta keken för fan", createdAt: "1990-10-01T10:00:00Z" },
-    { id: 2, sendingUserId: 1, sendingUserName: "KeklordXXX", content: "Kommer aldrig hända fattaruväl", createdAt: "2012-02-01T06:24:00Z" },
-    { id: 3, sendingUserId: 2, sendingUserName: "Chad", content: "Du måste tvätta keken nu!", createdAt: "2025-11-01T12:02:00Z" },
-    { id: 4, sendingUserId: 1, sendingUserName: "KeklordXXX", content: "Nej", createdAt: "2025-11-01T12:05:00Z" },
-    { id: 5, sendingUserId: 2, sendingUserName: "Chad", content: "Jo", createdAt: "2025-11-01T12:06:00Z" },
-    { id: 6, sendingUserId: 1, sendingUserName: "KeklordXXX", content: "Nej", createdAt: "2025-11-01T12:07:00Z" },
-    { id: 7, sendingUserId: 2, sendingUserName: "Chad", content: "Jo", createdAt: "2025-11-01T12:08:00Z" },
-    { id: 8, sendingUserId: 1, sendingUserName: "KeklordXXX", content: "Nej", createdAt: "2025-11-01T12:09:00Z" },
-    { id: 9, sendingUserId: 2, sendingUserName: "Chad", content: "Jo", createdAt: "2025-11-01T12:10:00Z" },
-    { id: 4, sendingUserId: 1, sendingUserName: "KeklordXXX", content: "Nej", createdAt: "2025-11-01T12:05:00Z" },
-    { id: 5, sendingUserId: 2, sendingUserName: "Chad", content: "Jo", createdAt: "2025-11-01T12:06:00Z" },
-    { id: 6, sendingUserId: 1, sendingUserName: "KeklordXXX", content: "Nej", createdAt: "2025-11-01T12:07:00Z" },
-    { id: 7, sendingUserId: 2, sendingUserName: "Chad", content: "Jo", createdAt: "2025-11-01T12:08:00Z" },
-    { id: 8, sendingUserId: 1, sendingUserName: "KeklordXXX", content: "Nej", createdAt: "2025-11-01T12:09:00Z" },
-    { id: 9, sendingUserId: 2, sendingUserName: "Chad", content: "Jo", createdAt: "2025-11-01T12:10:00Z" },
-    { id: 4, sendingUserId: 1, sendingUserName: "KeklordXXX", content: "Nej", createdAt: "2025-11-01T12:05:00Z" },
-    { id: 5, sendingUserId: 2, sendingUserName: "Chad", content: "Jo", createdAt: "2025-11-01T12:06:00Z" },
-    { id: 6, sendingUserId: 1, sendingUserName: "KeklordXXX", content: "Nej", createdAt: "2025-11-01T12:07:00Z" },
-    { id: 7, sendingUserId: 2, sendingUserName: "Chad", content: "Jo", createdAt: "2025-11-01T12:08:00Z" },
-    { id: 8, sendingUserId: 1, sendingUserName: "KeklordXXX", content: "Nej", createdAt: "2025-11-01T12:09:00Z" },
-    { id: 9, sendingUserId: 2, sendingUserName: "Chad", content: "Jo", createdAt: "2025-11-01T12:10:00Z" },
-];
+import { useSignalR } from "../Hooks/useSignalR";
+import { useAuth } from "../Hooks/useAuth";
+import { useParams } from "react-router-dom";
+import type MessageDto from "../Types/message";
 
 export default function MessagePage() {
+    const { user, loading } = useAuth();
+    const { id } = useParams();
     const messagesContainerRef = useRef<HTMLDivElement>(null);
     const messageEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
-    useHotKey("Enter", () => {
-        const activeEl = document.activeElement;
+    const [messages, setMessages] = useState<MessageDto[]>([]);
 
-        if (activeEl === inputRef.current) {
-            /*   sendMessage(); */
-            return;
+    const currentUserId = user?.id ?? 0;
+    const receivingUserId = Number(id);
+
+    useEffect(() => {
+        if (!id) return;
+
+        fetch(`http://localhost:5174/api/message/${receivingUserId}`, { credentials: "include" })
+            .then(res => res.json())
+            .then(data => {
+                setMessages(Array.isArray(data) ? data : []);
+                requestAnimationFrame(() => {
+                    messageEndRef.current?.scrollIntoView({ block: "end", behavior: "smooth" });
+                });
+            });
+    }, [id, receivingUserId]);
+
+    const handleReceiveMessage = useCallback((message: MessageDto) => {
+        const isRelevant =
+            (message.sendingUserId === currentUserId && message.receivingUserId === receivingUserId) ||
+            (message.sendingUserId === receivingUserId && message.receivingUserId === currentUserId);
+
+        if (isRelevant) {
+            setMessages(prev => [...prev, message]);
+
+            setTimeout(() => {
+                scrollToBottom();
+            }, 50);
         }
+    }, [currentUserId, receivingUserId]);
 
-        inputRef.current?.focus();
+    const { sendMessage } = useSignalR(currentUserId, handleReceiveMessage);
+
+    const handleSend = useCallback(() => {
+        if (inputRef.current?.value.trim()) {
+            sendMessage({ receivingUserId, content: inputRef.current.value });
+            inputRef.current.value = "";
+        }
+    }, [sendMessage, receivingUserId]);
+
+    useHotKey("Enter", () => {
+        const input = inputRef.current;
+
+        if (!input) return;
+
+        if (document.activeElement === input) {
+            handleSend();
+        } else {
+            input.focus();
+        }
     });
 
     const scrollToBottom = () => {
@@ -58,15 +78,26 @@ export default function MessagePage() {
             messagesContainerRef.current?.scrollTo({ top: 0, behavior: "smooth" });
         });
     };
+
+    const getOtherUsername = () => {
+        const msg = messages.find(m => m.sendingUserId === receivingUserId || m.receivingUserId === receivingUserId);
+        if (!msg) return "";
+        return msg.sendingUserId === receivingUserId ? msg.sendingUserName : msg.receivingUserName;
+    }
+
+    if (loading) return <div>Loading...</div>;
+    if (!user) return <div>Please log in</div>;
+    if (!id) return <div>Please select a conversation</div>;
+
     return (
         <div className="m-auto">
-            <Container className=" bg-dark text-primary border border-primary">
+            <Container className="bg-dark text-primary border border-primary">
                 <Row>
                     <Col className="d-flex flex-column px-0 py-4">
                         <Row className="align-items-between mb-4 px-4">
                             <Col>
                                 <h3 className="text-secondary m-0">
-                                    @{messages[1].sendingUserName}
+                                    @{getOtherUsername()}
                                 </h3>
                             </Col>
 
@@ -85,14 +116,10 @@ export default function MessagePage() {
                             {messages.map(msg => (
                                 <div
                                     key={msg.id}
-                                    className={`position-relative mb-2 ${msg.sendingUserId === currentUserId ? "text-primary" : "text-secondary"
-                                        }`}
+                                    className={`position-relative mb-2 ${msg.sendingUserId === currentUserId ? "text-primary" : "text-secondary"}`}
                                 >
-                                    <span className="fw-bold">
-                                        {"<"}{msg.sendingUserName}{"> "}
-                                    </span>
-                                     {msg.content}
-
+                                    <span className="fw-bold">{"<"}{msg.sendingUserName}{"> "}</span>
+                                    {msg.content}
                                     <span className="position-absolute end-0 small">
                                         {new Date(msg.createdAt).toLocaleDateString()}{" "}
                                         {new Date(msg.createdAt).toLocaleTimeString()}
@@ -108,10 +135,16 @@ export default function MessagePage() {
                                     ref={inputRef}
                                     className="bg-transparent border-primary text-primary rounded-0"
                                     placeholder="Type a message..."
+                                    onKeyDown={e => {
+                                        if (e.key === "Enter" && !e.shiftKey) {
+                                            e.preventDefault();
+                                            handleSend();
+                                        }
+                                    }}
                                 />
                             </Col>
                             <Col xs="auto">
-                                <RootButton keyLabel="Enter">Send</RootButton>
+                                <RootButton keyLabel="Enter" onClick={handleSend}>Send</RootButton>
                             </Col>
                         </Row>
                     </Col>
