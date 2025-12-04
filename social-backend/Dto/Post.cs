@@ -2,8 +2,9 @@ namespace SocialBackend.Dto;
 
 public record PostResponseDto
 {
+    public int Id { get; set; }
     public int UserId { get; set; }
-    public required string UserName { get; set; }
+    public required string Username { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     public required string Title { get; set; }
