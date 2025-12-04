@@ -8,7 +8,7 @@ using SocialBackend.Data;
 
 #nullable disable
 
-namespace social_backend.Migrations
+namespace SocialBackend.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
     [Migration("20251202144712_Fix")]

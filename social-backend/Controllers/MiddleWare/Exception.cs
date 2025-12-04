@@ -1,4 +1,4 @@
-namespace SocialBackend.Controllers.MiddleWare;
+namespace SocialBackend.Controllers;
 
 public class ExceptionMiddleware(RequestDelegate next)
 {

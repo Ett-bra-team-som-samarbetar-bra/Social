@@ -1,11 +1,12 @@
-using social_backend.tests.Data;
+using SocialBackend.tests.Data;
 using SocialBackend.Models;
 using SocialBackend.Services;
 using Moq;
 using Microsoft.AspNetCore.SignalR;
-using Social_Backend.Hubs;
+using SocialBackend.Hubs;
 using SocialBackend.Exceptions;
-namespace social_backend.tests;
+
+namespace SocialBackend.tests.Services;
 
 public class MessageServiceTests : TestBase
 {

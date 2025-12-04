@@ -1,3 +1,5 @@
+namespace SocialBackend.Helpers;
+
 public static class HttpContextExtensions
 {
     public static int GetUserId(this HttpContext ctx)

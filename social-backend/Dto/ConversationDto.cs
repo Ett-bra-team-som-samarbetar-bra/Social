@@ -1,3 +1,5 @@
+namespace SocialBackend.Dto;
+
 public class ConversationDto
 {
     public int UserId { get; set; }

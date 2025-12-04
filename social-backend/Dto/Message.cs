@@ -1,3 +1,5 @@
+namespace SocialBackend.Dto;
+
 public record MessageDto(
     int Id,
     int SendingUserId,

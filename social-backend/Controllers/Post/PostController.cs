@@ -1,4 +1,4 @@
-﻿namespace social_backend.Controllers;
+﻿namespace SocialBackend.Controllers;
 
 [ApiController]
 [Route("api/post")]

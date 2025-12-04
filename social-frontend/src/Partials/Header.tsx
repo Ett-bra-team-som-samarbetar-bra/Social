@@ -31,7 +31,7 @@ export default function Header() {
               keyLabel="I"
               textColor="primary"
               backgroundColor="transparent"
-              fontsize={0.8}
+              fontsize={14}
               onClick={() => { alert("TODO"); }}
             >
               Info

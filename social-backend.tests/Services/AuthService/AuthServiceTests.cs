@@ -1,17 +1,15 @@
-using social_backend.tests.Data;
-using SocialBackend.Data;
+using SocialBackend.tests.Data;
 using SocialBackend.Models;
 using SocialBackend.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Session;
 using Moq;
-using System.Drawing;
-using Microsoft.AspNetCore.Identity;
 using SocialBackend.Dto;
 using SocialBackend.Exceptions;
-using System.Threading.Tasks;
-namespace social_backend.tests;
+using SocialBackend.Helpers;
+
+namespace SocialBackend.tests.Services;
 
 public class AuthServiceTest : TestBase
 {
@@ -37,7 +35,6 @@ public class AuthServiceTest : TestBase
 
         Context.SaveChanges();
     }
-
 
     [Fact]
     public void CreateUser_ShouldCreateANewUser()

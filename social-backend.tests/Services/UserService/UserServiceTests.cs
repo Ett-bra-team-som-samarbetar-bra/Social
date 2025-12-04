@@ -1,14 +1,13 @@
-using System.Runtime.CompilerServices;
-using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using social_backend.tests.Data;
+using SocialBackend.tests.Data;
 using SocialBackend.Dto;
 using SocialBackend.Exceptions;
 using SocialBackend.Models;
 using SocialBackend.Services;
+using SocialBackend.Helpers;
 
-namespace social_backend.tests;
+namespace SocialBackend.tests.Services;
 
 public class UserServiceTests : TestBase
 {

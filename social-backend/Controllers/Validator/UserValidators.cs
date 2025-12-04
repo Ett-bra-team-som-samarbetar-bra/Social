@@ -1,3 +1,5 @@
+namespace SocialBackend.Controllers;
+
 public class LoginRequestValidator : AbstractValidator<LoginRequest>
 {
     public LoginRequestValidator()
