@@ -1,35 +1,32 @@
 @use 'bootstrap';
 
-.app-header {
-    margin-bottom: 4rem;
-    padding: 0.5rem 1rem;
+.nav-nav {
+  .nav-link {
+    color: bootstrap.$primary !important;
+    font-family: 'Press Start 2P';
 
-    h1 {
-        font-family: 'Press Start 2P', 'Noto Sans', sans-serif;
-        font-size: 1.4rem;
-        color: bootstrap.$primary;
-        margin: 0;
-        letter-spacing: 1px;
-        white-space: nowrap;
+    &:hover {
+      color: bootstrap.$light !important;
     }
+
+    &.active {
+      color: bootstrap.$light !important;
+      text-shadow: 0 0 4px bootstrap.$light;
+    }
+  }
+
+  .navbar-toggler {
+    filter: brightness(1.2);
+  }
 }
 
-.nav-nav {
-    .nav-link {
-        color: bootstrap.$primary !important;
-        font-family: 'Press Start 2P', 'Noto Sans', sans-serif;
-
-        &:hover {
-            color: bootstrap.$secondary !important;
-        }
-
-        &.active {
-            color: bootstrap.$secondary !important;
-            text-shadow: 0 0 4px bootstrap.$secondary;
-        }
-    }
-
-    .navbar-toggler {
-        filter: brightness(1.2);
-    }
+.ascii-logo {
+  color: bootstrap.$light;
+  font-size: 0.4rem;
+  margin: 0;
+  line-height: 1;
+  border: none;
+  white-space: pre;
+  background: none;
+  padding: 0;
 }

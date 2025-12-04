@@ -8,7 +8,7 @@
 }
 
 .conversation-list {
-    flex-grow: 1; 
+    flex-grow: 1;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -34,9 +34,9 @@
         }
 
         &.active {
-            border-color: bootstrap.$secondary;
-            color: bootstrap.$secondary;
-            box-shadow: 0 0 6px rgba(bootstrap.$secondary, 0.6);
+            border-color: bootstrap.$light;
+            color: bootstrap.$light;
+            box-shadow: 0 0 6px rgba(bootstrap.$light, 0.6);
         }
     }
 }

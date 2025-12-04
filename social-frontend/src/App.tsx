@@ -11,7 +11,7 @@ export default function App() {
     left: 0,
     behavior: 'instant'
   });
-  
+
   return (
     <>
       <Header />
