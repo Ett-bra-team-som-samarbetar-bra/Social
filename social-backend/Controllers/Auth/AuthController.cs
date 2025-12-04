@@ -9,14 +9,14 @@ public class AuthController(IAuthService authService) : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult> Login(LoginRequest request)
     {
-        await _authService.Login(request, HttpContext);
-        return Ok("Log in successful");
+        var user = await _authService.Login(request, HttpContext);
+        return Ok(new { user });
     }
     [HttpPost("register")]
     public async Task<ActionResult> Register(RegisterRequest request)
     {
         await _authService.RegisterAsync(request);
-        return Ok("Register successful");
+        return Ok(new { message = "Register successful" });
     }
     [HttpGet("me")]
     public async Task<ActionResult<User>> Me()
