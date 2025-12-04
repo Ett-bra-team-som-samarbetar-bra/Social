@@ -1,27 +1,26 @@
 ﻿namespace social_backend.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/post")]
 public class PostController(IPostService postService) : ControllerBase
 {
     private readonly IPostService _postService = postService;
 
-    [HttpGet("{pageIndex}/{pageSize}")]
+    [HttpGet("{pageIndex:int?}/{pageSize:int?}")]
     public async Task<ActionResult<List<PostResponseDto>>> GetPosts(int pageIndex = 1, int pageSize = 10)
     {
         var posts = await _postService.GetPosts(pageIndex, pageSize);
         return Ok(posts);
     }
 
-    [HttpGet("user-posts/{pageIndex}/{pageSize}")]
-    public async Task<ActionResult<List<PostResponseDto>>> GetUserPosts(int pageIndex = 1, int pageSize = 10)
+    [HttpGet("user-posts/{userId}/{pageIndex:int?}/{pageSize:int?}")]
+    public async Task<ActionResult<List<PostResponseDto>>> GetUserPosts(int userId, int pageIndex = 1, int pageSize = 10)
     {
-        var UserId = HttpContext.GetUserId();
-        var userPosts = await _postService.GetUserPosts(pageIndex, pageSize, UserId);
+        var userPosts = await _postService.GetUserPosts(pageIndex, pageSize, userId);
         return Ok(userPosts);
     }
 
-    [HttpGet("follower-posts/{pageIndex}/{pageSize}")]
+    [HttpGet("follower-posts/{pageIndex:int?}/{pageSize:int?}")]
     public async Task<ActionResult<List<PostResponseDto>>> GetFollowingPosts(int pageIndex = 1, int pageSize = 10)
     {
         var UserId = HttpContext.GetUserId();
