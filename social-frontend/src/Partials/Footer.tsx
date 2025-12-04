@@ -9,7 +9,7 @@ export default function Footer() {
     <footer>
       <DividerLine variant="primary" />
 
-      <Row className="m-0 py-2 pb-3">
+      <Row className="m-0 py-3">
         <Col md={3} className="d-flex align-items-center justify-content-left">
           <span className="Japanse-char-big ps-5 cursor-pointer" onClick={() => navigate("/")}> 根鍵 </span>
         </Col>

@@ -7,7 +7,7 @@ $enable-negative-margins: true;
 
 $primary: #EB9A1D; // Main text
 $light: #FB9B10; // Hover and selected
-$secondary: red;
+$secondary: gray; // Disabled text
 $info: #52391A; // Card bg 1
 $body-bg: #0c0101; // App bg
 $dark: #170800; // Card bg 2
@@ -16,7 +16,6 @@ $warning: #F48D60;
 $success: #21866F;
 
 @import '../node_modules/bootstrap/scss/bootstrap.scss';
-@import url('https://fonts.googleapis.com/css2?family=Geo:ital@0;1&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
 
 * {
     box-sizing: border-box;

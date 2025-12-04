@@ -3,17 +3,14 @@
 .json-box-container {
   display: flex;
   justify-content: start;
-  margin-top: 60px;
 }
 
 .json-box {
   background: bootstrap.$dark;
   color: #c5c5c5;
-  border: 2px solid bootstrap.$primary;
-  border-radius: 8px;
+  border: 1px solid bootstrap.$primary;
   padding: 40px;
   width: 500px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .json-pre {
@@ -27,16 +24,15 @@
   background: transparent;
   border: none;
   border-bottom: 1px dashed #555;
-  color: #dcdcdc;
+  color: #a7a7a7;
   font-family: inherit;
   font-size: inherit;
-  width: 200px;
   padding: 0 4px;
 }
 
 .json-input:focus {
   outline: none;
-  border-bottom: 1px solid #4fa3ff;
+  border-bottom: 1px dashed bootstrap.$primary;
 }
 
 .json-input::placeholder {
@@ -54,7 +50,7 @@
 }
 
 .json-textarea:focus {
-  border-bottom: 1px solid #4fa3ff;
+  border-bottom: 1px dashed bootstrap.$primary;
 }
 
 .char-counter {
@@ -70,7 +66,6 @@
   background: bootstrap.$primary;
   border: 1px solid bootstrap.$dark;
   padding: 10px 12px;
-  border-radius: 6px;
   color: bootstrap.$dark;
   font-size: 13px;
   white-space: pre-wrap;

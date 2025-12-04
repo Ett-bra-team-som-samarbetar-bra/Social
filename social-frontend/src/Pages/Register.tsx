@@ -59,13 +59,14 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="json-box-container">
+    <div className="json-box-container mt-5">
       <form onSubmit={onSubmit} className="json-box">
         <pre className="json-pre">
           {`{
   "username": "`}
           <input
             className="json-input"
+            autoComplete="off"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder=""
@@ -74,6 +75,7 @@ export default function RegisterPage() {
   "password": "`}
           <input
             type="password"
+            autoComplete="off"
             className="json-input"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -83,6 +85,7 @@ export default function RegisterPage() {
   "email": "`}
           <input
             className="json-input"
+            autoComplete="off"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder=""
@@ -91,6 +94,7 @@ export default function RegisterPage() {
   "description": "`}
           <textarea
             className="json-input json-textarea"
+            autoComplete="off"
             value={description}
             onChange={(e) => setDescription(e.target.value.slice(0, 300))}
             placeholder=""
@@ -98,7 +102,7 @@ export default function RegisterPage() {
           />
           {`"
 }`}
-          <div className="char-counter">
+          <div className="char-counter text-center">
             {300 - description.length} characters left for description
           </div>
         </pre>
@@ -119,7 +123,7 @@ export default function RegisterPage() {
           </div>
         )}
 
-        <RootButton keyLabel="Enter" type="submit" className="mt-3 w-100">
+        <RootButton keyLabel="Enter" type="submit" className="mt-4 w-100">
           Register
         </RootButton>
       </form>

@@ -16,6 +16,7 @@ export default function UserInfo() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const { user, logout, updateUser } = useAuth();
+
   function handleLogout() {
     logout();
   }
@@ -101,7 +102,7 @@ export default function UserInfo() {
   }
 
   const prefilledData = {
-    username: "null",
+    name: "null",
     email: "undefined",
     description:
       "a̶̭̦̹̲̟̟͑͌͊ẃ̵̫͙̪̰̤̭́͌̈́̏͗l̴̞̼͇͛͑̌̎͑͜ơ̵̹̖̖̈d̴͓̜̰͉̆͘ḱ̶ͅl̶̢̤̞̝̭͙̄͆̽͊ơ̴͕̠̈̎͂̿̐̂j̷̤͔͔̞̪̜͇͌̊̊̋̉l̷̘̣̗̋̂͑v̴̯̣̻̰̯̘̓͌͜ņ̸̛̗̙̳͌̈́͌̈́̈́̕á̸͕̺̫̏̌w̶̹͕̩̽̊l̵̥̰̟̄̊̽͐̉͘͝ḳ̵͕̉̐d̶̛̹̮̭̺̯̼̾̋͂j̶̧̞͙̖͈̰̙̎͘͠a̸̡͈̳͕͍̎͒͗̅̀͝l̷͔̲̫̯̑ͅd̵͉̮̯͚̖̙́̓͐͐̄́w̴̬͔̋̌͑̔̔̚͜ḏ̶̢͇̋́j̷͙̪͙̒̈́k̴̠̹͖͎̄̒a̴̯͗͘͠w̵͙̫̲̿j̶̫̼̇̃̇d̸̨̮̠̝̗͜͠k̸͎̺̊̅̍̍͘w̸̳̆̇a̵̢̢̯̥̜̖̓̅̆̍͋j̷͓̐̄̍͆̕d̶̺̝̥͕͈̀̍́ķ̵̛̠̳̱͉͎̈̀̀̀å̵̜̱͙̲̣̙̥͆̃͐w̵̛̩͔͙̥̎͛͂̓̊̽l̴̟͐d̶̢̛̯͔̄͠k̸̡̿ã̵̖̠̜͚̈́̽́̕͜l̷̦͔͎͙͓͇͔͑͊ḳ̶͈̭̘͛̆́͝͝͝l̶̨̛̲͓̰̘̓̿̋̉̂͝n̵̙̬͑̓̎̌̚͝b̷͔̍̈́ͅķ̶̛̥̣̻̍̉n̸̛͇̘̓͠ͅk̶͎̘̐͊̒ĺ̸̺̟̖̺͌̀j̸̧̤̣̒͋̄̏̈̏d̶̳̑̈́̚f̴͔̍̕ȧ̶̞͈͕̝̪̭̉l̵͕̭̺͊̔̉̈́̄̕k̴̡̛̦̠̪̭̪̄̊̍͗̐͂w̶̟̜͒̋̃d̷̞̟̈́a̸̠̳̓̇̑̋̐̐ḻ̸̨̳̰̩̅ḱ̸̖̗̯̣̫͍̦d̴͚̠̥̥̱͑̓̊̚ͅa̶̻͈̩͗͗̏͘͝ͅl̶̘̟̙̥̹̽͋͊̅̕d̸̥͌͋̓k̷̻͑͐ă̴̦̹͍͉̿͌̔ṋ̶͚͓͓̻̱̫̍̈̄͆͘j̶͇͇͈͉̹́̀̅̓n̸͚̬̰̪̿̓a̵͚̹̖̿̓̾͠͝ĵ̵̳͇̼̱̭̿͜k̷̹͕̯͎̗̹̽̆͌̿̽ͅl̶̩͍̤̰̏͗̈́̓̎̆͜d̶̞̮̳̿̂",
@@ -109,16 +110,19 @@ export default function UserInfo() {
 
   const profileData = user
     ? {
-        username: user.username,
-        email: user.email,
-        description: user.description,
-      }
+      username: user.username,
+      email: user.email,
+      description: user.description,
+    }
     : prefilledData;
+
   return (
     <div className="user-info-wrapper">
+      <h5 className="text-primary mb-3">[U]User</h5>
+
       <JsonDisplay data={profileData} />
 
-      {editMode === "password" && (
+      {editMode === "password" && user && (
         <div className=" mt-3">
           <pre className="json-pre">
             {`{
@@ -128,7 +132,6 @@ export default function UserInfo() {
               className="json-input"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="your new password"
             />
             {`"
 }`}
@@ -168,7 +171,7 @@ export default function UserInfo() {
         </div>
       )}
 
-      {editMode === "description" && (
+      {editMode === "description" && user && (
         <div className="mt-3">
           <pre className="json-pre">
             {`{
@@ -178,7 +181,6 @@ export default function UserInfo() {
               rows={2}
               value={newDescription}
               onChange={(e) => setNewDescription(e.target.value.slice(0, 300))}
-              placeholder="your new description"
             />
             {`"
 }`}

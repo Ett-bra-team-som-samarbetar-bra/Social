@@ -1,7 +1,9 @@
 import { Container, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import DividerLine from "../Components/DividerLine";
 import RootButton from "../Components/RootButton";
+import InfoModal from "../Components/InfoModal";
 
 const asciiLogo = `
 ██████   ██████   ██████  ████████     █████   ██████  ██████ ███████ ███████ ███████
@@ -13,6 +15,7 @@ const asciiLogo = `
 
 export default function Header() {
   const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
 
   return (
     <header>
@@ -32,15 +35,16 @@ export default function Header() {
               textColor="primary"
               backgroundColor="transparent"
               fontsize={14}
-              onClick={() => { alert("TODO"); }}
+              onClick={() => setShowModal(true)}
             >
               Info
             </RootButton>
           </Col>
-
         </Row>
       </Container>
       <DividerLine variant="primary" className="mb-4" />
-    </header >
+
+      <InfoModal show={showModal} onClose={() => setShowModal(false)} />
+    </header>
   );
 }
