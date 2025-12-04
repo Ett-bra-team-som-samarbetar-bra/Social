@@ -22,7 +22,7 @@ export default function RootButton({
     className = "",
     textColor = "dark",
     backgroundColor = "primary",
-    fontsize = 0.6,
+    fontsize = 16,
     type = "button",
     keyLabel,
     disabled = false,
@@ -35,7 +35,7 @@ export default function RootButton({
             type={type}
             disabled={disabled}
             onClick={onClick}
-            style={{ fontSize: `${fontsize}rem` }}
+            style={{ fontSize: `${fontsize}px` }}
             className={`
                 ${className}
                 root-btn
