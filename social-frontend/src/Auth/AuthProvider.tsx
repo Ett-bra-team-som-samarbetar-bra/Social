@@ -23,7 +23,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   const login: AuthContextType["login"] = async (username, password) => {
-    const request: LoginRequest = { Username: username, Password: password };
+    const request: LoginRequest = { username: username, password: password };
     const res = await fetch(`${apiUrl}/api/auth/login`, {
       method: "POST",
       credentials: "include",
@@ -37,8 +37,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     setTimeout(() => 1000);
 
-    setUser(data.user);
-    return { ok: true, user: data.user };
+    setUser(data);
+    return { ok: true, user: data };
   };
 
   const register: AuthContextType["register"] = async (
@@ -48,10 +48,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     description
   ) => {
     const request: RegisterRequest = {
-      Username: username,
-      Email: email,
-      Password: password,
-      Description: description,
+      username: username,
+      email: email,
+      password: password,
+      description: description,
     };
 
     const res = await fetch(`${apiUrl}/api/auth/register`, {
@@ -84,8 +84,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setUser(null);
   };
 
+  const updateUser = (partialUser: Partial<User>) => {
+    setUser((prev) => (prev ? { ...prev, ...partialUser } : prev));
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider
+      value={{ user, loading, login, register, logout, updateUser }}
+    >
       {children}
     </AuthContext.Provider>
   );

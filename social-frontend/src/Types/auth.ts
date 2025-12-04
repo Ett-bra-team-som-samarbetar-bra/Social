@@ -10,7 +10,7 @@ export interface User {
   following: User[];
   followers: User[];
   messages: MessageDto[];
-  messaagesReceived: MessageDto[];
+  messagesReceived: MessageDto[];
   likedPosts: Post[];
 }
 
@@ -48,4 +48,5 @@ export interface AuthContextType {
     description: string
   ) => Promise<{ ok: boolean; error?: string }>;
   logout: () => Promise<void>;
+  updateUser: (partialUser: Partial<User>) => void;
 }

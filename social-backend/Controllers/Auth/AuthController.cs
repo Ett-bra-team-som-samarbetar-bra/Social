@@ -10,7 +10,7 @@ public class AuthController(IAuthService authService) : ControllerBase
     public async Task<ActionResult> Login(LoginRequest request)
     {
         var user = await _authService.Login(request, HttpContext);
-        return Ok(new { user });
+        return Ok(user);
     }
     [HttpPost("register")]
     public async Task<ActionResult> Register(RegisterRequest request)
@@ -23,5 +23,11 @@ public class AuthController(IAuthService authService) : ControllerBase
     {
         var loggedInUser = await _authService.GetLoggedInUser(HttpContext);
         return Ok(loggedInUser);
+    }
+    [HttpPost("logout")]
+    public async Task<ActionResult<User>> Logout()
+    {
+        _authService.Logout(HttpContext);
+        return NoContent();
     }
 }

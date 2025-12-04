@@ -347,4 +347,56 @@ public class UserServiceTests : TestBase
         //Assert
         await Assert.ThrowsAsync<BadRequestException>(() => _userService.ValidateUnfollowAsync(loggedInUserId, userToFollowId));
     }
+
+    [Fact]
+    public async Task UpdateDescription_ShouldUpdateDescription_WhenUserExists()
+    {
+        // Arrange
+        int userId = 1;
+        var request = new UpdateDescriptionRequest
+        {
+            NewDescription = "Updated description"
+        };
+
+        // Act
+        await _userService.UpdateDescription(request, userId);
+
+        // Assert
+        var updatedUser = await Context.Users.FirstAsync(u => u.Id == userId);
+        Assert.Equal("Updated description", updatedUser.Description);
+    }
+
+    [Fact]
+    public async Task UpdateDescription_ShouldThrowNotFound_WhenUserDoesNotExist()
+    {
+        // Arrange
+        int userId = 1337;
+        var request = new UpdateDescriptionRequest
+        {
+            NewDescription = "Should not matter"
+        };
+
+        // Act & Assert
+        await Assert.ThrowsAsync<NotFoundException>(() =>
+            _userService.UpdateDescription(request, userId)
+        );
+    }
+
+    [Fact]
+    public async Task UpdateDescription_ShouldPersistChangesToDatabase()
+    {
+        // Arrange
+        int userId = 2;
+        var request = new UpdateDescriptionRequest
+        {
+            NewDescription = "Persistence Test"
+        };
+
+        // Act
+        await _userService.UpdateDescription(request, userId);
+
+        // Assert — re-query context to ensure persistence
+        var persisted = await Context.Users.AsNoTracking().FirstAsync(u => u.Id == userId);
+        Assert.Equal("Persistence Test", persisted.Description);
+    }
 }

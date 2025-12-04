@@ -5,6 +5,8 @@
 @use "messagePage";
 @use "ConversationList";
 @use "jsonlogin";
+@use 'jsondisplay';
+@use 'userinfo';
 
 // Import fonts from Google Fonts
 @import url('https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');

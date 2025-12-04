@@ -34,6 +34,15 @@ public class RegisterRequestValidator : AbstractValidator<RegisterRequest>
     }
 }
 
+public class UpdateDescriptionRequestValidator : AbstractValidator<UpdateDescriptionRequest>
+{
+    public UpdateDescriptionRequestValidator()
+    {
+
+        RuleFor(x => x.NewDescription).NotEmpty().WithMessage("Description must not be empty").MaximumLength(300).WithMessage("Description must be at most 300 characters");
+    }
+}
+
 public class UpdatePasswordRequestValidator : AbstractValidator<UpdatePasswordRequest>
 {
     public UpdatePasswordRequestValidator()

@@ -27,7 +27,6 @@ export default function RootButton({
     keyLabel,
     disabled = false,
 }: RootButtonProps) {
-
     useHotKey(keyLabel, onClick || (() => { }));
 
     return (
@@ -49,9 +48,7 @@ export default function RootButton({
                 gap-2
             `}
         >
-            {keyLabel && (
-                <span className="fw-bold">[{keyLabel}]</span>
-            )}
+            {keyLabel && <span className="fw-bold">[{keyLabel}]</span>}
             <span className="fw-bold">{children}</span>
         </Button>
     );
