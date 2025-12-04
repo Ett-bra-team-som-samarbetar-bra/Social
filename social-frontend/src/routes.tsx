@@ -1,4 +1,5 @@
 import type { JSX } from "react";
+import type { LoaderFunction } from "react-router-dom";
 import StartPage from "./Pages/StartPage";
 import MessagePage from "./Pages/MessagePage";
 import LoginPage from "./Pages/LoginPage";
@@ -8,15 +9,32 @@ interface Route {
   element: JSX.Element;
   path: string;
   menuLabel?: string;
-  loader?: Function;
+  loader?: LoaderFunction;
   children?: Route[];
+  requiresAuth?: boolean;
+  guestOnly?: boolean;
 }
 
 const routes: Route[] = [
-  { element: <StartPage />, path: "", menuLabel: "Start" },
-  { element: <MessagePage />, path: "messages", menuLabel: "Messages" },
-  { element: <LoginPage />, path: "login", menuLabel: "Login" },
-  { element: <RegisterPage />, path: "register", menuLabel: "Register" },
+  { element: <StartPage />, path: "", menuLabel: "Start", requiresAuth: true },
+  {
+    element: <MessagePage />,
+    path: "messages",
+    menuLabel: "Messages",
+    requiresAuth: true,
+  },
+  {
+    element: <LoginPage />,
+    path: "login",
+    menuLabel: "Login",
+    guestOnly: true,
+  },
+  {
+    element: <RegisterPage />,
+    path: "register",
+    menuLabel: "Register",
+    guestOnly: true,
+  },
 ];
 
 export default routes;
