@@ -6,7 +6,7 @@ using SocialBackend.Exceptions;
 using Xunit;
 using static System.Net.HttpStatusCode;
 
-namespace social_backend.tests.Controller.MiddleWare;
+namespace SocialBackend.tests.Controller.MiddleWare;
 
 public class ExceptionTests
 {

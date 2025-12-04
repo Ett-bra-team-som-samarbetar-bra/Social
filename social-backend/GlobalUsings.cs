@@ -7,9 +7,10 @@ global using System.Net;
 global using SocialBackend.Models;
 global using SocialBackend.Services;
 global using SocialBackend.Data;
-global using SocialBackend.Controllers.MiddleWare;
+global using SocialBackend.Controllers;
 global using SocialBackend.Dto;
 global using SocialBackend.Exceptions;
-global using Social_Backend.Hubs;
+global using SocialBackend.Hubs;
 global using Microsoft.AspNetCore.SignalR;
-
+global using SocialBackend.Helpers;
+global using FluentValidation.AspNetCore;

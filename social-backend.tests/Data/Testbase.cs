@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using SocialBackend.Data;
 
 
-namespace social_backend.tests.Data
+namespace SocialBackend.tests.Data
 {
     public abstract class TestBase : IDisposable
     {

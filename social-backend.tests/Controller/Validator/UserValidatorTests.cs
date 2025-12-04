@@ -3,7 +3,7 @@ using FluentValidation.Results;
 using SocialBackend.Dto;
 using Xunit;
 
-namespace social_backend.tests.Controller.Validator;
+namespace SocialBackend.tests.Controller.Validator;
 
 public class UserValidatorTests
 {

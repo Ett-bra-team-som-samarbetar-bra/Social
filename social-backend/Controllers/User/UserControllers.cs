@@ -1,6 +1,4 @@
-using social_backend.Migrations;
-
-namespace social_backend.Controllers;
+namespace SocialBackend.Controllers;
 
 [ApiController]
 [Route("api/user")]

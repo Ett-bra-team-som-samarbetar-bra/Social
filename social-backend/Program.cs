@@ -1,5 +1,3 @@
-using FluentValidation.AspNetCore;
-
 var builder = WebApplication.CreateBuilder();
 
 builder.Services.AddCors(options =>
@@ -27,14 +25,11 @@ builder.Services.AddScoped<IPasswordHelper, PasswordHelper>();
 
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
-
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<IUserIdProvider, SessionUserIdProvider>();
-//Adds in memory session
-builder.Services.AddDistributedMemoryCache();
+builder.Services.AddDistributedMemoryCache(); // In memory session
 
-
-//Adds and configures sessioncookie
+// Sessioncookie
 builder.Services.AddSession(options =>
 {
     options.Cookie.Name = ".RootAccess.Session";
@@ -48,8 +43,6 @@ builder.Services.AddSession(options =>
 builder.Logging.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Warning);
 
 var app = builder.Build();
-
-// if (app.Environment.IsDevelopment()) {}
 
 using (var scope = app.Services.CreateScope())
 {

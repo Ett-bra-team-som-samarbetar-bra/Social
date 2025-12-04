@@ -1,4 +1,4 @@
-using social_backend.tests.Data;
+using SocialBackend.tests.Data;
 using SocialBackend.Models;
 using SocialBackend.Services;
 using Xunit.Sdk;
@@ -6,7 +6,7 @@ using Xunit.Abstractions;
 using SocialBackend.Dto;
 using SocialBackend.Exceptions;
 
-namespace social_backend.tests;
+namespace SocialBackend.tests;
 
 public class PostServiceTestOrderer : ITestCaseOrderer
 {

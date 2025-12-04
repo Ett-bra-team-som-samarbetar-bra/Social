@@ -7,7 +7,7 @@ using SocialBackend.Data;
 
 #nullable disable
 
-namespace social_backend.Migrations
+namespace SocialBackend.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
     partial class SocialContextModelSnapshot : ModelSnapshot

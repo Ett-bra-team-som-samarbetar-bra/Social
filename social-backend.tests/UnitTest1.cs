@@ -1,4 +1,4 @@
-﻿namespace social_backend.tests;
+﻿namespace SocialBackend.tests;
 
 public class UnitTest1
 {

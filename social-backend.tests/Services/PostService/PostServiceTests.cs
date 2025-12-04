@@ -1,10 +1,10 @@
-using social_backend.tests.Data;
+using SocialBackend.tests.Data;
 using SocialBackend.Models;
 using SocialBackend.Services;
 using SocialBackend.Dto;
 using SocialBackend.Exceptions;
 
-namespace social_backend.tests;
+namespace SocialBackend.tests;
 
 public class PostServiceTests : TestBase
 {

@@ -1,4 +1,4 @@
-using social_backend.tests.Data;
+using SocialBackend.tests.Data;
 using SocialBackend.Data;
 using SocialBackend.Models;
 using SocialBackend.Services;
@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using SocialBackend.Dto;
 using SocialBackend.Exceptions;
 using System.Threading.Tasks;
-namespace social_backend.tests;
+namespace SocialBackend.tests;
 
 public class AuthServiceTest : TestBase
 {

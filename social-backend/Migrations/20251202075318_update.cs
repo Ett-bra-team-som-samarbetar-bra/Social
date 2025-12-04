@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace social_backend.Migrations
+namespace SocialBackend.Migrations
 {
     /// <inheritdoc />
     public partial class update : Migration

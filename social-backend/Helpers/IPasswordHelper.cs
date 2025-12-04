@@ -1,3 +1,5 @@
+namespace SocialBackend.Helpers;
+
 public interface IPasswordHelper
 {
     string HashPassword(string password);
