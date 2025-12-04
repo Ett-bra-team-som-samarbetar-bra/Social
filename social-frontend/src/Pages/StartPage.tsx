@@ -1,7 +1,9 @@
 import RootButton from "../Components/RootButton";
 import { useEffect, useState } from "react";
-import { type Post } from "../Types/post";
+import { type Post, type PostCreateDto } from "../Types/post";
 import { useAuth } from "../Hooks/useAuth";
+import CreatePost from "../Components/CreatePostComponent";
+import PostComponent from "../Components/PostComponent";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -17,11 +19,12 @@ export default function StartPage() {
   const [pageSize, setPageSize] = useState<number>(10);
 
   const endpoints = {
-    all: `${apiUrl}/api/post/${pageIndex}/${pageSize}`,
+    all: `${apiUrl}/api/post/all/${pageIndex}/${pageSize}`,
     following: `${apiUrl}/api/post/follower-posts/${pageIndex}/${pageSize}`,
     mine: `${apiUrl}/api/post/user-posts/${user?.id}/${pageIndex}/${pageSize}`,
   };
   useEffect(() => {
+    if (activeTab === "mine" && !user?.id) return;
     let ignore = false;
 
     async function fetchPosts() {
@@ -50,9 +53,25 @@ export default function StartPage() {
     };
   }, [activeTab]);
 
+  async function handleSubmit(title: string, content: string) {
+    const request: PostCreateDto = { title: title, content: content };
+    const result = await fetch(`${apiUrl}/api/post`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(request),
+    });
+
+    if (!result.ok) {
+      setError("Failed to create post");
+
+      setLoading(false);
+    }
+  }
   return (
-    <>
-      <div className="tab-buttons d-flex">
+    <div>
+      <CreatePost onSubmit={handleSubmit} />
+      <div className="tab-buttons d-flex gap-2">
         <RootButton onClick={() => setActiveTab("all")}>All</RootButton>
         <RootButton onClick={() => setActiveTab("following")}>
           Following
@@ -69,13 +88,17 @@ export default function StartPage() {
       {error && <div className="text-danger text-center mt-3">{error}</div>}
       {/* Posts */}
       {!loading &&
-        posts &&
         posts.map((post) => (
-          <div key={post.title} className="post-card">
-            <h4>{post.title}</h4>
-            <p>{post.content}</p>
-          </div>
+          <PostComponent
+            key={post.id}
+            title={post.title}
+            content={post.content}
+            username={post.username}
+            userId={post.userId}
+            onLike={() => console.log("Liked:", post.id)}
+            onComment={() => console.log("Comment on:", post.id)}
+          />
         ))}
-    </>
+    </div>
   );
 }

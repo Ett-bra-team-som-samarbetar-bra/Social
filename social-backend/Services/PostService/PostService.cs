@@ -196,8 +196,9 @@ public class PostService(DatabaseContext dbContext) : IPostService
     {
         return new PostResponseDto
         {
+            Id = post.Id,
             UserId = post.UserId,
-            UserName = post.User.Username,
+            Username = post.User.Username,
             CreatedAt = post.CreatedAt,
             UpdatedAt = post.UpdatedAt,
             Title = post.Title,

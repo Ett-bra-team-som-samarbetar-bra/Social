@@ -6,7 +6,7 @@ public class PostController(IPostService postService) : ControllerBase
 {
     private readonly IPostService _postService = postService;
 
-    [HttpGet("{pageIndex:int?}/{pageSize:int?}")]
+    [HttpGet("all/{pageIndex:int?}/{pageSize:int?}")]
     public async Task<ActionResult<List<PostResponseDto>>> GetPosts(int pageIndex = 1, int pageSize = 10)
     {
         var posts = await _postService.GetPosts(pageIndex, pageSize);
@@ -24,7 +24,7 @@ public class PostController(IPostService postService) : ControllerBase
     public async Task<ActionResult<List<PostResponseDto>>> GetFollowingPosts(int pageIndex = 1, int pageSize = 10)
     {
         var UserId = HttpContext.GetUserId();
-        var userPosts = await _postService.GetUserPosts(pageIndex, pageSize, UserId);
+        var userPosts = await _postService.GetFollowingPosts(pageIndex, pageSize, UserId);
         return Ok(userPosts);
     }
 

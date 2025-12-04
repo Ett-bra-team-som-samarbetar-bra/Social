@@ -1,4 +1,6 @@
 export interface Post {
+  id: number;
+  userId: number;
   username: string;
   createdAt: Date;
   updatedAt: Date;
@@ -9,12 +11,19 @@ export interface Post {
   isEdited: boolean;
 }
 
-/*public int UserId { get; set; }
-    public required string UserName { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
+export interface PostCreateDto {
+  title: string;
+  content: string;
+}
+
+/*public record PostCreateDto
+{
     public required string Title { get; set; }
     public required string Content { get; set; }
-    public int LikeCount { get; set; } = 0;
-    public ICollection<CommentResponseDto> Comments { get; set; } = [];
-    public bool IsEdited => CreatedAt != UpdatedAt; */
+}
+
+public record PostEditDto
+{
+    public int Id { get; set; }
+    public required string Content { get; set; }
+} */
