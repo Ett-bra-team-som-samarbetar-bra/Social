@@ -28,7 +28,7 @@ export default function LoginPage() {
             className="json-input"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            placeholder="your username"
+            placeholder=""
           />
           {`",
   "password": "`}
@@ -37,7 +37,7 @@ export default function LoginPage() {
             className="json-input"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="your password"
+            placeholder=""
           />
           {`"
 }`}

@@ -2,16 +2,16 @@ import type { Message } from "./message";
 import type { Post } from "./post";
 
 export interface User {
-  Id: string;
-  Username: string;
-  Email: string;
-  Description: string;
-  CreatedAt: Date;
-  Following: User[];
-  Followers: User[];
-  Messages: Message[];
-  MessaagesReceived: Message[];
-  LikedPosts: Post[];
+  id: string;
+  username: string;
+  email: string;
+  description: string;
+  createdAt: Date;
+  following: User[];
+  followers: User[];
+  messages: Message[];
+  messaagesReceived: Message[];
+  likedPosts: Post[];
 }
 
 export interface LoginRequest {

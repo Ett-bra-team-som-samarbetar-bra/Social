@@ -37,8 +37,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     setTimeout(() => 1000);
 
-    setUser(data.user);
-    return { ok: true, user: data.user };
+    setUser(data);
+    return { ok: true, user: data };
   };
 
   const register: AuthContextType["register"] = async (
