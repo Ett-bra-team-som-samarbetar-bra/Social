@@ -40,6 +40,13 @@ h6 {
     color: $primary;
 }
 
+html,
+body,
+#root {
+    height: 100%;
+    min-height: 100%;
+}
+
 .Japanse-char-big {
     font-size: 3rem;
     color: $primary;
