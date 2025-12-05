@@ -19,12 +19,6 @@ const routes: Route[] = [
   { element: <StartPage />, path: "", menuLabel: "Start", requiresAuth: true },
   { element: <MessagePage />, path: "messages/:id" },
   {
-    element: <MessagePage />,
-    path: "messages",
-    menuLabel: "Messages",
-    requiresAuth: true,
-  },
-  {
     element: <LoginPage />,
     path: "login",
     menuLabel: "Login",

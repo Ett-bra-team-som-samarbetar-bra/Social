@@ -30,10 +30,9 @@ export default function ConversationList() {
 
     // TODO: Set up SignalR listener 
 
-
     return (
         <Col className="conversation-aside ps-3">
-            <h5 className="text-primary mb-3">[M]Messages</h5>
+            <h6 className="text-primary mb-3">[M]Messages</h6>
 
             <div className="conversation-list">
                 {conversations.map(c => (

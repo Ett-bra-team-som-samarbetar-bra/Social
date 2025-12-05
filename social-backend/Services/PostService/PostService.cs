@@ -3,8 +3,8 @@ namespace SocialBackend.Services;
 public interface IPostService
 {
     Task<PaginatedList<PostResponseDto>> GetPosts(int pageIndex, int pageSize);
-    Task<PaginatedList<PostResponseDto>> GetUserPosts(int pageIndex, int pageSize, int user);
-    Task<PaginatedList<PostResponseDto>> GetFollowingPosts(int pageIndex, int pageSize, int user);
+    Task<PaginatedList<PostResponseDto>> GetUserPosts(int pageIndex, int pageSize, int userId);
+    Task<PaginatedList<PostResponseDto>> GetFollowingPosts(int pageIndex, int pageSize, int userId);
     Task<int> CreatePost(PostCreateDto dto, int userId);
     Task<int> DeletePost(int postId, int userId);
     Task<int> CreateComment(CommentCreateDto dto, int postId, int userId);
@@ -22,14 +22,18 @@ public class PostService(DatabaseContext dbContext) : IPostService
             .Include(p => p.User)
             .Include(p => p.Comments)
             .OrderBy(b => b.CreatedAt)
-            .Skip((pageIndex - 1) * pageSize)
-            .Take(pageSize)
             .ToListAsync();
 
-        var paginatedPosts = await GetPaginatedPosts(posts, pageIndex, pageSize);
-        var dtoPosts = paginatedPosts.Items.Select(ToPostDto).ToList();
+        var paginatedPosts = posts
+            .Skip((pageIndex - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
 
-        return new PaginatedList<PostResponseDto>(dtoPosts, pageIndex, paginatedPosts.TotalPages);
+        var count = posts.Count;
+        var result = await GetPaginatedPosts(paginatedPosts, count, pageIndex, pageSize);
+        var dtoPosts = result.Items.Select(ToPostDto).ToList();
+
+        return new PaginatedList<PostResponseDto>(dtoPosts, pageIndex, result.TotalPages);
     }
 
     public async Task<PaginatedList<PostResponseDto>> GetUserPosts(int pageIndex, int pageSize, int userId)
@@ -42,22 +46,31 @@ public class PostService(DatabaseContext dbContext) : IPostService
             .Include(p => p.User)
             .Include(p => p.Comments)
             .OrderBy(b => b.CreatedAt)
-            .Skip((pageIndex - 1) * pageSize)
-            .Take(pageSize)
             .ToListAsync();
 
-        var paginatedPosts = await GetPaginatedPosts(posts, pageIndex, pageSize);
-        var dtoPosts = paginatedPosts.Items.Select(ToPostDto).ToList();
+        var paginatedPosts = posts
+            .Skip((pageIndex - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
 
-        return new PaginatedList<PostResponseDto>(dtoPosts, pageIndex, paginatedPosts.TotalPages);
+        var count = posts.Count;
+        var result = await GetPaginatedPosts(paginatedPosts, count, pageIndex, pageSize);
+        var dtoPosts = result.Items.Select(ToPostDto).ToList();
+
+        return new PaginatedList<PostResponseDto>(dtoPosts, pageIndex, result.TotalPages);
     }
 
     public async Task<PaginatedList<PostResponseDto>> GetFollowingPosts(int pageIndex, int pageSize, int userId)
     {
-        var user = await _db.Users.FindAsync(userId)
+        var user = await _db.Users
+            .Include(u => u.Following)
+            .FirstOrDefaultAsync(u => u.Id == userId)
             ?? throw new NotFoundException("User not found");
 
         var followingIds = user.Following.Select(u => u.Id).ToList();
+
+        if (followingIds.Count == 0)
+            throw new NotFoundException("User is not following anyone");
 
         var posts = await _db.Posts
             .Where(p => followingIds.Contains(p.UserId))
@@ -65,14 +78,18 @@ public class PostService(DatabaseContext dbContext) : IPostService
             .Include(p => p.Comments)
                 .ThenInclude(c => c.User)
             .OrderBy(b => b.CreatedAt)
-            .Skip((pageIndex - 1) * pageSize)
-            .Take(pageSize)
             .ToListAsync();
 
-        var paginatedPosts = await GetPaginatedPosts(posts, pageIndex, pageSize);
-        var dtoPosts = paginatedPosts.Items.Select(ToPostDto).ToList();
+        var paginatedPosts = posts
+            .Skip((pageIndex - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
 
-        return new PaginatedList<PostResponseDto>(dtoPosts, pageIndex, paginatedPosts.TotalPages);
+        var count = posts.Count;
+        var result = await GetPaginatedPosts(paginatedPosts, count, pageIndex, pageSize);
+        var dtoPosts = result.Items.Select(ToPostDto).ToList();
+
+        return new PaginatedList<PostResponseDto>(dtoPosts, pageIndex, result.TotalPages);
     }
 
     public async Task<int> CreatePost(PostCreateDto dto, int userId)
@@ -181,11 +198,9 @@ public class PostService(DatabaseContext dbContext) : IPostService
         return post.LikeCount;
     }
 
-    private async Task<PaginatedList<Post>> GetPaginatedPosts(List<Post> posts, int pageIndex, int pageSize)
+    private static async Task<PaginatedList<Post>> GetPaginatedPosts(List<Post> posts, int count, int pageIndex, int pageSize)
     {
-        var count = await _db.Posts.CountAsync();
         var totalPages = (int)Math.Ceiling(count / (double)pageSize);
-
         return new PaginatedList<Post>(posts, pageIndex, totalPages);
     }
 

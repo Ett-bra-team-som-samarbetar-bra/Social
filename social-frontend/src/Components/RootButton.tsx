@@ -45,11 +45,10 @@ export default function RootButton({
                 d-flex
                 align-items-center
                 justify-content-center
-                gap-2
             `}
         >
-            {keyLabel && <span className="fw-bold">[{keyLabel}]</span>}
-            <span className="fw-bold">{children}</span>
+            {keyLabel && <span>[{keyLabel}]</span>}
+            <span>{children}</span>
         </Button>
     );
 }
