@@ -7,19 +7,38 @@
     overflow: hidden;
 }
 
+.conversation-list:focus {
+    outline: none;
+}
+
+.conversation-list.focused {
+    border: 1px solid bootstrap.$primary !important;
+    background-color: bootstrap.$dark !important;
+}
+
+.conversation-aside>h5 {
+    margin-bottom: 0;
+}
+
+.conversation-list {
+    margin-top: 0;
+}
+
+.conversation-aside h5 {
+    font-size: 20px;
+}
+
 .conversation-list {
     flex-grow: 1;
+    height: 100%;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
     width: 100%;
-    overflow-y: auto;
-
 
     .conversation-item {
         width: 100%;
-        padding: 0.4rem 0.6rem;
+        padding: 0.4rem;
         color: bootstrap.$primary;
         font-size: 0.9rem;
         letter-spacing: 1px;
@@ -29,13 +48,12 @@
 
         &:hover {
             background: rgba(bootstrap.$primary, 0.15);
-            filter: brightness(1.3);
         }
 
-        &.active {
-            border-color: bootstrap.$light;
+        &.selected {
+            background: rgba(bootstrap.$primary, 0.3);
             color: bootstrap.$light;
-            box-shadow: 0 0 6px rgba(bootstrap.$light, 0.6);
+            font-weight: 600;
         }
     }
 }

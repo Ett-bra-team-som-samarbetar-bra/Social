@@ -103,47 +103,69 @@ export default function MessagePage() {
         scrollToTop();
     };
 
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            const input = inputRef.current;
+
+            if (e.key === "Escape") {
+                if (document.activeElement === input) {
+                    e.preventDefault();
+                    input?.blur();
+                }
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, []);
+
+
     if (loading) return <div>Loading...</div>;
     if (!user) return <div>Please log in</div>;
     if (!id) return <div>Please select a conversation</div>;
-
     return (
-        <div className="m-auto">
-            <Container className="bg-dark text-primary border border-primary">
+        <div className="message-page d-flex flex-column h-100 w-100">
+            <Container className="bg-dark text-primary border border-primary flex-column d-flex h-100">
+
                 <Row>
                     <Col className="d-flex flex-column px-0 py-4">
                         <Row className="align-items-between mb-4 px-4">
                             <Col>
-                                <h3 className="text-secondary m-0">
+                                <h3 className="text-primary m-0">
                                     @{getOtherUsername()}
                                 </h3>
                             </Col>
 
                             <Col xs="auto" className="d-flex gap-2">
-                                <RootButton keyLabel="L" className="small-button" onClick={loadOlderMessages}>Load older</RootButton>
-                                <RootButton keyLabel="P" className="small-button" onClick={scrollToTop}>Scroll up</RootButton>
-                                <RootButton keyLabel="N" className="small-button" onClick={scrollToBottom}>Scroll down</RootButton>
+                                <RootButton keyLabel="O" className="small-button" fontsize={12} onClick={loadOlderMessages}>Load old</RootButton>
+                                <RootButton keyLabel="U" className="small-button" fontsize={12} onClick={scrollToTop}>up</RootButton>
+                                <RootButton keyLabel="N" className="small-button" fontsize={12} onClick={scrollToBottom}>down</RootButton>
                             </Col>
                         </Row>
 
                         <div
                             ref={messagesContainerRef}
-                            className="flex-grow-1 overflow-auto border-top border-bottom border-secondary p-2"
-                            style={{ minHeight: 500, maxHeight: 500 }}
+                            className="flex-grow-1 overflow-auto border-top border-bottom border-primary p-2"
+                            style={{ height: "50vh" }}
                         >
                             {messages.map(msg => (
-                                <div
-                                    key={msg.id}
-                                    className={`position-relative mb-2 ${msg.sendingUserId === currentUserId ? "text-primary" : "text-secondary"}`}
-                                >
-                                    <span className="fw-bold">{"<"}{msg.sendingUserName}{"> "}</span>
-                                    {msg.content}
-                                    <span className="position-absolute end-0 small">
-                                        {new Date(msg.createdAt).toLocaleDateString()}{" "}
+                                <div key={msg.id} className="message-row text-primary mb-2">
+                                    <div className="message-text">
+                                        <span className="fw-bold">
+                                            {"<"}{msg.sendingUserName}{"> "}
+                                        </span>
+                                        {msg.content}
+                                    </div>
+
+                                    <span className="message-timestamp small">
+                                        <span className="msg-date">
+                                            {new Date(msg.createdAt).toLocaleDateString()}
+                                        </span>{" "}
                                         {new Date(msg.createdAt).toLocaleTimeString()}
                                     </span>
                                 </div>
                             ))}
+
                             <div ref={messageEndRef} />
                         </div>
 
