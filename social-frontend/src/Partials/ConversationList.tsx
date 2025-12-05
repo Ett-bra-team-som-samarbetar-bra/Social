@@ -1,6 +1,6 @@
 import { Col } from "react-bootstrap";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useSignalR } from "../Hooks/useSignalR";
 import { useAuth } from "../Hooks/useAuth";
 import { useHotKey } from "../Hooks/useHotKey";
@@ -19,6 +19,8 @@ export default function ConversationList() {
     const navigate = useNavigate();
     const { user } = useAuth();
     const listRef = useRef<HTMLDivElement>(null);
+    const location = useLocation();
+    const activeChatId = Number(location.pathname.split("/").pop());
 
     const fetchConversations = async () => {
         const res = await fetch("http://localhost:5174/api/message/conversations", {
@@ -37,10 +39,23 @@ export default function ConversationList() {
         fetchConversations();
     }, [user]);
 
-    useSignalR(user?.id ?? 0, () => {
-        fetchConversations();
-    });
+    useEffect(() => {
+        if (user && activeChatId) {
+            const timer = setTimeout(() => {
+                fetchConversations();
+            }, 300);
+            return () => clearTimeout(timer);
+        }
+    }, [activeChatId, user]);
 
+    useSignalR(user?.id ?? 0, (msg) => {
+        const isActiveChat = msg.sendingUserId === activeChatId || msg.receivingUserId === activeChatId;
+
+        if (!isActiveChat) {
+            fetchConversations();
+        }
+    });
+    
     useHotKey("M", () => {
         setFocused(true);
         setSelectedIndex(0);
@@ -81,14 +96,15 @@ export default function ConversationList() {
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, [focused, selectedIndex, conversations, navigate]);
 
-
     const handleMouseSelect = (index: number) => {
         setSelectedIndex(index);
     };
 
+    const messageHeading = user ? "[M]Messages" : "[░▒▓]Mess■ges̴͊";
+
     return (
         <Col className="conversation-aside ">
-            <h5 className="text-primary mb-3 text-uppercase">[M]Messages</h5>
+            <h5 className="text-primary mb-3 text-uppercase">{messageHeading}</h5>
 
             <div
                 ref={listRef}
@@ -108,10 +124,10 @@ export default function ConversationList() {
                         }}
                         onMouseEnter={() => handleMouseSelect(i)}
                     >
-                        @{c.username}
+                        @{c.username} {c.hasUnreadMessages && <span className="text-primary">⬤</span>}
                     </div>
                 ))}
             </div>
-        </Col>
+        </Col >
     );
 }
