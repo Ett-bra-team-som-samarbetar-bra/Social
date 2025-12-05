@@ -5,6 +5,7 @@ import MessagePage from "./Pages/MessagePage";
 import LoginPage from "./Pages/LoginPage";
 import RegisterPage from "./Pages/Register";
 import NotFoundPage from "./Pages/NotFoundPage";
+import UserPage from "./Pages/UserPage";
 
 interface Route {
   element: JSX.Element;
@@ -21,6 +22,11 @@ const routes: Route[] = [
     element: <StartPage />,
     path: "",
     menuLabel: "Start",
+    requiresAuth: true
+  },
+  {
+    element: <UserPage />,
+    path: "user/:id",
     requiresAuth: true
   },
   {

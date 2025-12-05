@@ -22,6 +22,18 @@ export interface UserDto {
   likedPostIds: number[];
 }
 
+export interface UserProfileDto {
+  id: number;
+  username: string;
+  description: string;
+  createdAt: Date;
+  postCount: number;
+  followerCount: number;
+  followingCount: number;
+  isFollowing: boolean;
+  isOwnProfile: boolean;
+}
+
 export interface LoginRequest {
   username: string;
   password: string;

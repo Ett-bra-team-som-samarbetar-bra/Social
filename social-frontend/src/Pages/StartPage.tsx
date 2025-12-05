@@ -9,7 +9,9 @@ const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function StartPage() {
   const { user, updateUser } = useAuth();
-  const [activeTab, setActiveTab] = useState<"all" | "following" | "mine">("all");
+  const [activeTab, setActiveTab] = useState<"all" | "following" | "mine">(
+    "all"
+  );
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -52,9 +54,8 @@ export default function StartPage() {
     return () => {
       ignore = true;
     };
-  }, [activeTab, user?.id]); // <- Add missing dependency so mine loads correctly
+  }, [activeTab, user?.id]);
 
-  // Handle creating posts
   async function handleSubmit(title: string, content: string) {
     const request: PostCreateDto = { title, content };
     const result = await fetch(`${apiUrl}/api/post`, {
@@ -70,14 +71,10 @@ export default function StartPage() {
     }
   }
 
-  // Handle liking posts
   async function handleLike(id: number) {
-    // Optimistic LikeCount bump
-    setPosts(prev =>
-      prev.map(post =>
-        post.id === id
-          ? { ...post, likeCount: post.likeCount + 1 }
-          : post
+    setPosts((prev) =>
+      prev.map((post) =>
+        post.id === id ? { ...post, likeCount: post.likeCount + 1 } : post
       )
     );
 
@@ -90,11 +87,9 @@ export default function StartPage() {
       setError("Something went wrong.");
 
       // Rollback UI
-      setPosts(prev =>
-        prev.map(post =>
-          post.id === id
-            ? { ...post, likeCount: post.likeCount - 1 }
-            : post
+      setPosts((prev) =>
+        prev.map((post) =>
+          post.id === id ? { ...post, likeCount: post.likeCount - 1 } : post
         )
       );
 
@@ -102,7 +97,7 @@ export default function StartPage() {
     }
 
     // Update UserDto likedPostIds
-    updateUser(prev => ({
+    updateUser((prev) => ({
       ...prev,
       likedPostIds: [...prev.likedPostIds, id],
     }));
@@ -114,16 +109,21 @@ export default function StartPage() {
 
       <div className="tab-buttons d-flex gap-2">
         <RootButton onClick={() => setActiveTab("all")}>All</RootButton>
-        <RootButton onClick={() => setActiveTab("following")}>Following</RootButton>
+        <RootButton onClick={() => setActiveTab("following")}>
+          Following
+        </RootButton>
         <RootButton onClick={() => setActiveTab("mine")}>My Posts</RootButton>
       </div>
 
-      {loading && <div className="text-center text-secondary mt-3">Loading...</div>}
+      {loading && (
+        <div className="text-center text-secondary mt-3">Loading...</div>
+      )}
       {error && <div className="text-danger text-center mt-3">{error}</div>}
 
       {!loading &&
         posts.map((post) => (
           <PostComponent
+            id={post.userId}
             key={post.id}
             title={post.title}
             content={post.content}
