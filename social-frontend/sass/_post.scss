@@ -44,3 +44,12 @@
   font-family: "Noto Sans", sans-serif;
   color: bootstrap.$primary;
 }
+
+.clickable {
+  cursor: pointer;
+
+  &:hover {
+    color: bootstrap.$primary;
+    text-decoration: underline;
+  }
+}

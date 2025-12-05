@@ -1,0 +1,48 @@
+@use "bootstrap";
+
+.user-profile-box {
+  border: 1px solid bootstrap.$primary;
+  background: bootstrap.$dark;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  color: bootstrap.$primary;
+}
+
+.user-profile-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.user-profile-username {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: bootstrap.$primary;
+  margin: 0;
+  font-family: "Press Start 2P", monospace; // Retro look
+}
+
+.user-profile-description {
+  font-size: 1rem;
+  color: bootstrap.$primary;
+  opacity: 0.9;
+  margin: 0;
+}
+
+.user-profile-meta {
+  font-size: 0.85rem;
+  color: bootstrap.$primary;
+  opacity: 0.8;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+
+.user-stats {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  color: bootstrap.$primary;
+  font-size: 0.9rem;
+}

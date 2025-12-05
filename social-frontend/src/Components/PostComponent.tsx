@@ -1,6 +1,8 @@
 import RootButton from "../Components/RootButton";
+import { useNavigate } from "react-router-dom";
 
 interface PostComponentProps {
+  id: number;
   title: string;
   content: string;
   username: string;
@@ -14,6 +16,7 @@ interface PostComponentProps {
 }
 
 export default function PostComponent({
+  id,
   title,
   content,
   username,
@@ -24,12 +27,18 @@ export default function PostComponent({
   onComment,
   hasLiked,
 }: PostComponentProps) {
+  const navigate = useNavigate();
   const date = new Date(createdAt);
   const dateFormatted = date.toLocaleString();
   return (
     <div className="post-box">
-      <div className="post-header gap-3">
-        <h2 className="post-title">@{username} -</h2>
+      <div className="post-header gap-3 ">
+        <h2
+          onClick={() => navigate(`/user/${id}`)}
+          className="post-title clickable"
+        >
+          @{username}
+        </h2>
         <h4 className="post-title">{title}</h4>
       </div>
 
@@ -52,7 +61,12 @@ export default function PostComponent({
       </div>
 
       <div className="post-actions d-flex gap-2 mt-3">
-        <RootButton keyLabel="L" onClick={onLike} disabled={hasLiked} className="flex-grow-1">
+        <RootButton
+          keyLabel="L"
+          onClick={onLike}
+          disabled={hasLiked}
+          className="flex-grow-1"
+        >
           {hasLiked ? "Liked ❤︎" : "Like"}
         </RootButton>
 
