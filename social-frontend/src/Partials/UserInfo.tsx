@@ -116,9 +116,11 @@ export default function UserInfo() {
     }
     : prefilledData;
 
+  const userHeading = user ? `[U]User` : "[■]U■eṛ̶̛̘̉";
+
   return (
     <div className="user-info-wrapper">
-      <h6 className="text-primary mb-3">[U]User</h6>
+      <h6 className="text-primary mb-3">{userHeading}</h6>
 
       <JsonDisplay data={profileData} />
 
