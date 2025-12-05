@@ -3,6 +3,7 @@ import { Container, Row, Col } from "react-bootstrap";
 import NavBar from "./NavBar";
 import ConversationList from "../Components/ConversationList";
 import UserInfo from "./UserInfo";
+
 export default function Main() {
   return (
     <main>

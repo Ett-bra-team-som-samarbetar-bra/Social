@@ -118,7 +118,7 @@ export default function UserInfo() {
 
   return (
     <div className="user-info-wrapper">
-      <h5 className="text-primary mb-3">[U]User</h5>
+      <h6 className="text-primary mb-3">[U]User</h6>
 
       <JsonDisplay data={profileData} />
 
