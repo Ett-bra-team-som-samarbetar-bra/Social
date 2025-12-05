@@ -6,7 +6,7 @@ public static class HttpContextExtensions
     {
         var id = ctx.Session.GetInt32("UserId");
         if (id == null)
-            throw new UnauthorizedAccessException();
+            throw new UnauthorizedAccessException("No user found in session");
 
         return id.Value;
     }

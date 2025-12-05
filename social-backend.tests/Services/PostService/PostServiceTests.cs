@@ -183,15 +183,16 @@ public class PostServiceTests : TestBase
     }
 
     [Fact]
-    public async Task GetFollowingPosts_ReturnsEmptyArray_WhenNoFollowedUsersPosts()
+    public async Task GetFollowingPosts_Throws_WhenNoFollowedUsersPosts()
     {
         var user1 = CreateTestUser("TestUser1");
         Context.SaveChanges();
 
         var postService = new PostService(Context);
-        var result = await postService.GetFollowingPosts(pageIndex: 1, pageSize: 3, user1.Id);
-
-        Assert.Empty(result.Items);
+        await Assert.ThrowsAsync<NotFoundException>(async () =>
+        {
+            await postService.GetFollowingPosts(pageIndex: 1, pageSize: 3, user1.Id);
+        });
     }
 
     [Fact]

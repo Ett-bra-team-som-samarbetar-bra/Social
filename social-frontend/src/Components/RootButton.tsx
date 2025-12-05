@@ -45,7 +45,6 @@ export default function RootButton({
                 d-flex
                 align-items-center
                 justify-content-center
-                gap-2
             `}
         >
             {keyLabel && <span>[{keyLabel}]</span>}
