@@ -4,6 +4,7 @@ import StartPage from "./Pages/StartPage";
 import MessagePage from "./Pages/MessagePage";
 import LoginPage from "./Pages/LoginPage";
 import RegisterPage from "./Pages/Register";
+import NotFoundPage from "./Pages/NotFoundPage";
 
 interface Route {
   element: JSX.Element;
@@ -16,8 +17,16 @@ interface Route {
 }
 
 const routes: Route[] = [
-  { element: <StartPage />, path: "", menuLabel: "Start", requiresAuth: true },
-  { element: <MessagePage />, path: "messages/:id" },
+  {
+    element: <StartPage />,
+    path: "",
+    menuLabel: "Start",
+    requiresAuth: true
+  },
+  {
+    element: <MessagePage />,
+    path: "messages/:id"
+  },
   {
     element: <LoginPage />,
     path: "login",
@@ -30,6 +39,11 @@ const routes: Route[] = [
     menuLabel: "Register",
     guestOnly: true,
   },
+  {
+    element: <NotFoundPage />,
+    path: "*",
+    guestOnly: false,
+  }
 ];
 
 export default routes;
