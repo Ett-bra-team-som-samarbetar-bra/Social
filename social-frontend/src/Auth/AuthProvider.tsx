@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { AuthContext } from "./AuthContext";
 import {
-  type User,
+  type UserDto,
   type AuthContextType,
   type LoginRequest,
   type RegisterRequest,
@@ -12,7 +12,7 @@ const apiUrl = import.meta.env.VITE_API_URL;
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserDto | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -84,8 +84,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setUser(null);
   };
 
-  const updateUser = (partialUser: Partial<User>) => {
-    setUser((prev) => (prev ? { ...prev, ...partialUser } : prev));
+  const updateUser = (
+    partialUserOrFn: Partial<UserDto> | ((prev: UserDto) => Partial<UserDto>)
+  ) => {
+    setUser(prev => {
+      if (!prev) return prev;
+
+      const patch =
+        typeof partialUserOrFn === "function"
+          ? partialUserOrFn(prev)
+          : partialUserOrFn;
+
+      return { ...prev, ...patch };
+    });
   };
 
   return (

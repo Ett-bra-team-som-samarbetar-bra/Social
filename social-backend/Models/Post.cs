@@ -10,6 +10,8 @@ public class Post
     public required string Title { get; set; }
     public required string Content { get; set; }
     public int LikeCount { get; set; } = 0;
+
+    public ICollection<User> LikedBy { get; set; } = [];
     public ICollection<Comment> Comments { get; set; } = [];
     public bool IsEdited => CreatedAt != UpdatedAt;
 }

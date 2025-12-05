@@ -158,8 +158,12 @@ public class PostService(DatabaseContext dbContext) : IPostService
 
     public async Task<int> UpdateLikeCount(int postId, int userId)
     {
-        var user = await _db.Users.FindAsync(userId)
+        var user = await _db.Users.Include(u => u.LikedPosts).FirstOrDefaultAsync(u => u.Id == userId)
             ?? throw new NotFoundException("User not found");
+
+        Console.WriteLine("User liked posts BEFORE: " +
+            string.Join(",", user.LikedPosts.Select(p => p.Id)));
+
 
         var post = await _db.Posts.FindAsync(postId)
             ?? throw new NotFoundException("Post not found");
@@ -171,6 +175,7 @@ public class PostService(DatabaseContext dbContext) : IPostService
 
         post.LikeCount++;
         user.LikedPosts.Add(post);
+        Console.WriteLine("Adding post: " + postId);
         await _db.SaveChangesAsync();
 
         return post.LikeCount;

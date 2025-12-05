@@ -32,6 +32,22 @@ public class DatabaseContext : DbContext, IDatabaseContext
             .HasForeignKey(m => m.ReceivingUserId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        modelBuilder.Entity<User>()
+            .HasMany(u => u.Following)
+            .WithMany(u => u.Followers)
+            .UsingEntity(j => j.ToTable("UserFollowers"));
+
+        modelBuilder.Entity<User>()
+            .HasMany(u => u.LikedPosts)
+            .WithMany(p => p.LikedBy)
+            .UsingEntity(j => j.ToTable("UserLikedPosts"));
+
+        modelBuilder.Entity<Post>()
+            .HasOne(p => p.User)
+            .WithMany(u => u.Posts)
+            .HasForeignKey(p => p.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
     }
 
     public async Task<int> SaveChangesAsync()

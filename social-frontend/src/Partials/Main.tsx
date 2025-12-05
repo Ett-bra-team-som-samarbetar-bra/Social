@@ -12,7 +12,7 @@ export default function Main() {
             <UserInfo />
           </Col>
 
-          <Col md={6} className="align-items-center d-flex flex-column">
+          <Col md={6} className=" d-flex flex-column">
             <NavBar />
             <Outlet />
           </Col>

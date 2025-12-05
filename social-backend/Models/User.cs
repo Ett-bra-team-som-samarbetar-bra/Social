@@ -12,5 +12,6 @@ public class User
     public ICollection<User> Followers { get; set; } = [];
     public ICollection<Message> MessagesSent { get; set; } = [];
     public ICollection<Message> MessagesReceived { get; set; } = [];
-    public ICollection<Post> LikedPosts = [];
+    public ICollection<Post> Posts { get; set; } = [];
+    public ICollection<Post> LikedPosts { get; set; } = [];
 }
