@@ -3,12 +3,12 @@ namespace SocialBackend.Services;
 public interface IAuthService
 {
     Task RegisterAsync(RegisterRequest request);
-    Task<User> Login(LoginRequest request, HttpContext context);
+    Task<UserDto> Login(LoginRequest request, HttpContext context);
     void Logout(HttpContext context);
     void SetUserSession(User user, HttpContext context);
     Task<bool> DoesUserExist(string username);
     User CreateUser(RegisterRequest request, string passwordHash);
-    Task<User> GetLoggedInUser(HttpContext context);
+    Task<UserDto> GetLoggedInUser(HttpContext context);
 }
 
 public class AuthService(DatabaseContext dbContext, IPasswordHelper passwordHelper) : IAuthService
@@ -28,9 +28,9 @@ public class AuthService(DatabaseContext dbContext, IPasswordHelper passwordHelp
         await _db.SaveChangesAsync();
     }
 
-    public async Task<User> Login(LoginRequest request, HttpContext context)
+    public async Task<UserDto> Login(LoginRequest request, HttpContext context)
     {
-        var user = await _db.Users.SingleOrDefaultAsync(u => u.Username == request.Username);
+        var user = await _db.Users.Include(u => u.LikedPosts).SingleOrDefaultAsync(u => u.Username == request.Username);
         if (user == null)
             throw new BadRequestException("Incorrect username or password");
 
@@ -39,7 +39,7 @@ public class AuthService(DatabaseContext dbContext, IPasswordHelper passwordHelp
         else
             throw new BadRequestException("Incorrect username or password");
 
-        return user;
+        return user.ToDto();
     }
 
     public void Logout(HttpContext context) => context.Session.Clear();
@@ -61,12 +61,12 @@ public class AuthService(DatabaseContext dbContext, IPasswordHelper passwordHelp
         };
     }
 
-    public async Task<User> GetLoggedInUser(HttpContext context)
+    public async Task<UserDto> GetLoggedInUser(HttpContext context)
     {
         var userId = context.Session.GetInt32("UserId");
 
-        var loggedInUser = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId) ?? throw new NotFoundException("No user logged in");
+        var loggedInUser = await _db.Users.Include(u => u.LikedPosts).FirstOrDefaultAsync(u => u.Id == userId) ?? throw new NotFoundException("No user logged in");
 
-        return loggedInUser;
+        return loggedInUser.ToDto();
     }
 }

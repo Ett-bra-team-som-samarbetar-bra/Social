@@ -28,3 +28,13 @@ public record UpdateDescriptionRequest
 {
     public required string NewDescription { get; set; }
 }
+
+
+public class UserDto
+{
+    public int Id { get; set; }
+    public required string Username { get; set; }
+    public required string Email { get; set; }
+    public required string Description { get; set; }
+    public List<int> LikedPostIds { get; set; } = [];
+}
