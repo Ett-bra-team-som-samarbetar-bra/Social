@@ -6,7 +6,7 @@ import { useSignalR } from "../Hooks/useSignalR";
 import { useAuth } from "../Hooks/useAuth";
 import { useParams } from "react-router-dom";
 import type MessageDto from "../Types/message";
-import React from "react";
+import RenderChat from "../Components/RenderChat";
 
 export default function MessagePage() {
     const { user, loading } = useAuth();
@@ -126,16 +126,12 @@ export default function MessagePage() {
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, []);
 
-    const isSameDay = (a: Date, b: Date) =>
-        a.toDateString() === b.toDateString();
-
     if (loading) return <div>Loading...</div>;
     if (!user) return <div>Please log in</div>;
     if (!id) return <div>Please select a conversation</div>;
     return (
         <div className="message-page d-flex flex-column h-100 w-100">
             <Container className="bg-dark text-primary border border-primary flex-column d-flex h-100">
-
                 <Row className="h-100">
                     <Col className="d-flex flex-column px-0 py-4 h-100">
                         <Row className="align-items-between mb-4 px-4">
@@ -152,48 +148,11 @@ export default function MessagePage() {
                             </Col>
                         </Row>
 
-                        <div
-                            ref={messagesContainerRef}
-                            className="flex-grow-1 overflow-auto border-top border-bottom border-primary p-2"
-                            style={{ height: "50vh" }}
-                        >
-                            {messages.map((msg, i) => {
-                                const currentDate = new Date(msg.createdAt);
-                                const prevMsg = messages[i - 1];
-                                const prevDate = prevMsg ? new Date(prevMsg.createdAt) : null;
-
-                                const showDateHeader =
-                                    !prevMsg || (prevDate && !isSameDay(currentDate, prevDate));
-
-                                return (
-                                    <React.Fragment key={msg.id}>
-                                        {showDateHeader && (
-                                            <div className="text-start text-primary my-2">
-                                                {currentDate.toDateString() === new Date().toDateString()
-                                                    ? "Today"
-                                                    : currentDate.toLocaleDateString()}
-                                            </div>
-                                        )}
-                                        {msg.content.split("\n").map((line, index) => (
-                                            <div key={msg.id + "-" + index} className="message-row text-primary mb-1 ">
-                                                <div className="text-nowrap">
-                                                    <span>
-                                                        [{currentDate.toLocaleTimeString(undefined, { timeStyle: "short" })}]
-                                                    </span>{" "}
-                                                    <span className="fw-bold">
-                                                        {"<"}{msg.sendingUserName}{">"}
-                                                    </span>
-                                                </div>
-                                                <div className="flex-fill">
-                                                    {line || "\u00A0"}
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </React.Fragment>
-                                );
-                            })}
-                            <div ref={messageEndRef} />
-                        </div>
+                        <RenderChat
+                            messages={messages}
+                            messagesContainerRef={messagesContainerRef}
+                            messageEndRef={messageEndRef}
+                        />
 
                         <Row
                             className="mt-4 px-4 d-flex flex-row"
