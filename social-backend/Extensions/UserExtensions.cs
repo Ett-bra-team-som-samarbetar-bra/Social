@@ -15,4 +15,20 @@ public static class UserExtensions
             LikedPostIds = user.LikedPosts.Select(p => p.Id).ToList()
         };
     }
+
+    public static UserProfileDto ToProfileDto(this User user, int? viewerId = null)
+    {
+        return new UserProfileDto
+        {
+            Id = user.Id,
+            Username = user.Username,
+            Description = user.Description,
+            CreatedAt = user.CreatedAt,
+            PostCount = user.Posts.Count,
+            FollowerCount = user.Followers.Count,
+            FollowingCount = user.Following.Count,
+            IsFollowing = viewerId != null && user.Followers.Any(f => f.Id == viewerId),
+            IsOwnProfile = viewerId == user.Id
+        };
+    }
 }
