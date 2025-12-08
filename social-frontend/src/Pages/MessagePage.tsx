@@ -4,7 +4,7 @@ import RootButton from "../Components/RootButton";
 import { useHotKey } from "../Hooks/useHotKey";
 import { useSignalR } from "../Hooks/useSignalR";
 import { useAuth } from "../Hooks/useAuth";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import type MessageDto from "../Types/message";
 import RenderChat from "../Components/RenderChat";
 
@@ -16,6 +16,7 @@ export default function MessagePage() {
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const [loadingOlder, setLoadingOlder] = useState(false);
     const [messages, setMessages] = useState<MessageDto[]>([]);
+    const navigate = useNavigate(); 
     const currentUserId = user?.id ?? 0;
     const receivingUserId = Number(id);
 
@@ -136,7 +137,8 @@ export default function MessagePage() {
                     <Col className="d-flex flex-column px-0 py-4 h-100">
                         <Row className="align-items-between mb-4 px-4">
                             <Col>
-                                <h3 className="text-primary m-0">
+                                <h3 className="text-primary m-0 cursor-pointer"
+                                    onClick={() => navigate(`/user/${receivingUserId}`)}>
                                     @{otherUsername}
                                 </h3>
                             </Col>

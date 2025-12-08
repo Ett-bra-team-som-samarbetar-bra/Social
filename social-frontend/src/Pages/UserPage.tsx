@@ -123,6 +123,7 @@ export default function UserPage() {
   return (
     <div>
       <UserProfileComponent
+        userId={userData.id}
         username={userData.username}
         description={userData.description}
         createdAt={userData.createdAt}
