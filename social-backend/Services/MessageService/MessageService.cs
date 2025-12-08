@@ -119,7 +119,7 @@ public class MessageService(IDatabaseContext context, IUserService userService, 
             message.SendingUser.Username,
             message.ReceivingUserId,
             message.ReceivingUser.Username,
-            message.CreatedAt,
+            DateTime.SpecifyKind(message.CreatedAt, DateTimeKind.Utc),
             message.Content
         );
     }

@@ -219,8 +219,8 @@ public class PostService(DatabaseContext dbContext) : IPostService
             Id = post.Id,
             UserId = post.UserId,
             Username = post.User.Username,
-            CreatedAt = post.CreatedAt,
-            UpdatedAt = post.UpdatedAt,
+            CreatedAt = DateTime.SpecifyKind(post.CreatedAt, DateTimeKind.Utc),
+            UpdatedAt = DateTime.SpecifyKind(post.UpdatedAt, DateTimeKind.Utc),
             Title = post.Title,
             Content = post.Content,
             LikeCount = post.LikeCount,
@@ -235,7 +235,7 @@ public class PostService(DatabaseContext dbContext) : IPostService
             UserId = comment.UserId,
             UserName = comment.User.Username,
             Content = comment.Content,
-            CreatedAt = comment.CreatedAt
+            CreatedAt = DateTime.SpecifyKind(comment.CreatedAt, DateTimeKind.Utc)
         };
     }
 }
