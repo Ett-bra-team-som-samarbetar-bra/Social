@@ -34,6 +34,7 @@ try
     builder.Services.AddSignalR();
     builder.Services.AddSingleton<IUserIdProvider, SessionUserIdProvider>();
     builder.Services.AddDistributedMemoryCache();
+    builder.Logging.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Warning);
 
     // Sessioncookie
     builder.Services.AddSession(options =>

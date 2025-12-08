@@ -50,6 +50,8 @@ export default function ConversationList() {
     });
 
     useHotKey("M", () => {
+        if (!user) return;
+
         setFocused(true);
         listRef.current?.focus();
     });
@@ -109,12 +111,12 @@ export default function ConversationList() {
     const messageHeading = user ? "[M]Messages" : "[░▒▓]Mess■ges̴͊";
 
     return (
-        <Col className="conversation-aside">
-            <h5 className="text-primary mb-3 text-uppercase">{messageHeading}</h5>
+        <Col className="conversation-aside ">
+            <h5 className="text-primary mb-3 keybind-header">{messageHeading}</h5>
             <div
                 ref={listRef}
                 tabIndex={0}
-                className={`p-2 conversation-list ${focused ? "focused" : ""}`}
+                className={`conversation-list ${focused ? "focused" : ""}`}
                 onBlur={() => setFocused(false)}
             >
                 {user && (
