@@ -27,12 +27,13 @@ public class PostServiceTests : TestBase
     }
 
     [Fact]
-    public async Task GetPosts_ReturnsEmptyArray_WhenNoPosts()
+    public async Task GetPosts_ShouldThrow_WhenNoPosts()
     {
         var postService = new PostService(Context, CreateLogger<PostService>());
-        var result = await postService.GetPosts(pageIndex: 1, pageSize: 3);
-
-        Assert.Empty(result.Items);
+        await Assert.ThrowsAsync<NotFoundException>(async () =>
+        {
+            await postService.GetPosts(pageIndex: 1, pageSize: 3);
+        });
     }
 
     [Fact]
@@ -127,15 +128,16 @@ public class PostServiceTests : TestBase
     }
 
     [Fact]
-    public async Task GetUserPosts_ReturnsEmptyArray_WhenUserHasNoPosts()
+    public async Task GetUserPosts_ShouldThrow_WhenUserHasNoPosts()
     {
         var user1 = CreateTestUser("TestUser1");
         Context.SaveChanges();
 
         var postService = new PostService(Context, CreateLogger<PostService>());
-        var result = await postService.GetUserPosts(pageIndex: 1, pageSize: 3, user1.Id);
-
-        Assert.Empty(result.Items);
+        await Assert.ThrowsAsync<NotFoundException>(async () =>
+        {
+            await postService.GetUserPosts(pageIndex: 1, pageSize: 3, user1.Id);
+        });
     }
 
     [Fact]

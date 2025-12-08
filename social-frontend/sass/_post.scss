@@ -9,10 +9,6 @@
   color: #ddd;
 }
 
-.post-box:last-child {
-  margin-bottom: 2rem;
-}
-
 .post-header {
   display: flex;
   justify-content: flex-start;
@@ -59,4 +55,12 @@
 
 .post-outline {
   border: 1px solid bootstrap.$primary;
+}
+
+.post-tab-fixed-size {
+  width: 130px;
+}
+
+.post-button-fixed-size {
+  width: 160px;
 }
