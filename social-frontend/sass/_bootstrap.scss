@@ -76,3 +76,16 @@ body,
 .user-select-none {
     user-select: none;
 }
+
+.keybind-header {
+    margin-left: -5px;
+}
+
+.overflow-y-auto {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.overflow-y-auto::-webkit-scrollbar {
+    display: none;
+}

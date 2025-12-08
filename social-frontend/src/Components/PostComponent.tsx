@@ -29,51 +29,54 @@ export default function PostComponent({
 }: PostComponentProps) {
   const navigate = useNavigate();
   const date = new Date(createdAt);
-  const dateFormatted = date.toLocaleString();
+  const dateFormatted = date.toLocaleString().slice(0, -3);
+
   return (
     <div className="post-box">
-      <div className="post-header gap-3 ">
-        <h2
-          onClick={() => navigate(`/user/${id}`)}
-          className="post-title clickable"
-        >
-          @{username}
-        </h2>
-        <h4 className="post-title">{title}</h4>
+      <h2 className="post-title clickable ms-1 mb-2"
+        onClick={() => navigate(`/user/${id}`)}>
+        @{username}
+      </h2>
+
+      <div className="post-header gap-3 d-flex justify-content-between align-items-center">
+        <div className="d-flex gap-3 align-items-center">
+          <h4 className="post-title">[{title}]</h4>
+        </div>
       </div>
 
-      <div className="post-body">
+      <div className="post-body mt-3 ms-1">
         <pre className="post-content">{content}</pre>
       </div>
 
-      <div className="d-flex align-items-center justify-content-end gap-4 mt-2 post-info">
-        <div className="d-flex align-items-center gap-1">
-          <i className="bi bi-heart-fill"></i> {likes}
+      <div className="post-actions d-flex justify-content-between align-items-center mt-1 ms-1">
+        <div className="d-flex align-items-center gap-3 post-info">
+          <div className="d-flex align-items-center gap-1">
+            <i className="bi bi-heart-fill"></i> {likes}
+          </div>
+
+          <div className="d-flex align-items-center gap-1">
+            <i className="bi bi-chat-left-text-fill"></i> {commentCount}
+          </div>
+
+          <div className="d-flex align-items-center gap-1">
+            <i className="bi bi-clock-fill"></i> {dateFormatted}
+          </div>
         </div>
 
-        <div className="d-flex align-items-center gap-1">
-          <i className="bi bi-chat-left-text-fill"></i> {commentCount}
-        </div>
+        <div className="d-flex gap-2">
+          <RootButton
+            keyLabel="L"
+            onClick={onLike}
+            disabled={hasLiked}
+          >
+            {hasLiked ? "Liked" : "Like"}
+          </RootButton>
 
-        <div className="d-flex align-items-center gap-1">
-          <i className="bi bi-clock-fill"></i> {dateFormatted}
+          <RootButton keyLabel="C" onClick={onComment}>
+            Comment
+          </RootButton>
         </div>
       </div>
-
-      <div className="post-actions d-flex gap-2 mt-3">
-        <RootButton
-          keyLabel="L"
-          onClick={onLike}
-          disabled={hasLiked}
-          className="flex-grow-1"
-        >
-          {hasLiked ? "Liked ❤︎" : "Like"}
-        </RootButton>
-
-        <RootButton keyLabel="C" onClick={onComment} className="flex-grow-1">
-          Comment
-        </RootButton>
-      </div>
-    </div>
+    </div >
   );
 }

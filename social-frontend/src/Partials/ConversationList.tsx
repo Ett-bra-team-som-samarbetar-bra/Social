@@ -100,7 +100,7 @@ export default function ConversationList() {
 
     return (
         <Col className="conversation-aside ">
-            <h5 className="text-primary mb-3 text-uppercase">{messageHeading}</h5>
+            <h5 className="text-primary mb-3 keybind-header">{messageHeading}</h5>
             <div
                 ref={listRef}
                 tabIndex={0}

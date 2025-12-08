@@ -1,7 +1,7 @@
 import RootButton from "../Components/RootButton";
+import { useAuth } from "../Hooks/useAuth";
 import { useEffect, useState } from "react";
 import { type Post, type PostCreateDto } from "../Types/post";
-import { useAuth } from "../Hooks/useAuth";
 import CreatePost from "../Components/CreatePostComponent";
 import PostComponent from "../Components/PostComponent";
 
@@ -9,7 +9,7 @@ const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function StartPage() {
   const { user, updateUser } = useAuth();
-  const [activeTab, setActiveTab] = useState<"all" | "following" | "mine">(
+  const [activeTab, setActiveTab] = useState<"all" | "following" | "mine" | "create">(
     "all"
   );
   const [posts, setPosts] = useState<Post[]>([]);
@@ -22,11 +22,14 @@ export default function StartPage() {
     all: `${apiUrl}/api/post/all/${pageIndex}/${pageSize}`,
     following: `${apiUrl}/api/post/follower-posts/${pageIndex}/${pageSize}`,
     mine: `${apiUrl}/api/post/user-posts/${user?.id}/${pageIndex}/${pageSize}`,
+    create: "",
   };
 
   // Fetch posts
   useEffect(() => {
     if (activeTab === "mine" && !user?.id) return;
+    if (activeTab === "create") return;
+
     let ignore = false;
 
     async function fetchPosts() {
@@ -69,6 +72,8 @@ export default function StartPage() {
       setError("Failed to create post");
       setLoading(false);
     }
+
+    setActiveTab("all");
   }
 
   async function handleLike(id: number) {
@@ -104,41 +109,54 @@ export default function StartPage() {
   }
 
   return (
-    <div className=" overflow-y-auto">
-      <CreatePost onSubmit={handleSubmit} />
-
-      <div className="tab-buttons d-flex gap-2">
-        <RootButton onClick={() => setActiveTab("all")}>All</RootButton>
-        <RootButton onClick={() => setActiveTab("following")}>
-          Following
-        </RootButton>
-        <RootButton onClick={() => setActiveTab("mine")}>My Posts</RootButton>
+    <div className="d-flex flex-column h-100">
+      <div className="tab-buttons d-flex gap-1 justify-content-between">
+        <div className="d-flex gap-1">
+          <RootButton className="post-outline" onClick={() => setActiveTab("all")}>Global</RootButton>
+          <RootButton className="post-outline" onClick={() => setActiveTab("following")}>Follow</RootButton>
+          <RootButton className="post-outline" onClick={() => setActiveTab("mine")}>Mine</RootButton>
+        </div>
+        <RootButton className="post-outline" onClick={() => setActiveTab("create")}>Create</RootButton>
       </div>
 
-      {loading && (
-        <div className="text-center text-secondary mt-3">Loading...</div>
+      {activeTab === "create" ? (
+        <div className="">
+          <CreatePost
+            onSubmit={handleSubmit}
+            userId={user!.id}
+            username={user!.username}
+          />
+        </div>
+      ) : (
+        <>
+
+          {loading && (
+            <div className="text-center text-primary mt-3">Loading...</div>
+          )}
+
+          {error && <div className="text-danger text-center mt-3">{error}</div>}
+
+          <div className="d-flex flex-column overflow-y-auto gap-3 h-100 post-outline mb-4">
+            {!loading &&
+              posts.map((post) => (
+                <PostComponent
+                  id={post.userId}
+                  key={post.id}
+                  title={post.title}
+                  content={post.content}
+                  username={post.username}
+                  userId={post.userId}
+                  likes={post.likeCount}
+                  commentCount={post.comments.length}
+                  createdAt={post.createdAt}
+                  onLike={() => handleLike(post.id)}
+                  onComment={() => console.log("Comment on:", post.id)}
+                  hasLiked={user?.likedPostIds?.includes(post.id) ?? false}
+                />
+              ))}
+          </div>
+        </>
       )}
-      {error && <div className="text-danger text-center mt-3">{error}</div>}
-      <div className="d-flex flex-column gap-3">
-
-        {!loading &&
-          posts.map((post) => (
-            <PostComponent
-              id={post.userId}
-              key={post.id}
-              title={post.title}
-              content={post.content}
-              username={post.username}
-              userId={post.userId}
-              likes={post.likeCount}
-              commentCount={post.comments.length}
-              createdAt={post.createdAt}
-              onLike={() => handleLike(post.id)}
-              onComment={() => console.log("Comment on:", post.id)}
-              hasLiked={user?.likedPostIds?.includes(post.id) ?? false}
-            />
-          ))}
-      </div>
     </div>
   );
 }

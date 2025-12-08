@@ -68,6 +68,7 @@ export default function RegisterPage() {
             className="json-input"
             autoComplete="off"
             value={username}
+            maxLength={30}
             onChange={(e) => setUsername(e.target.value)}
             placeholder=""
           />

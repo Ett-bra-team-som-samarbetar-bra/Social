@@ -1,14 +1,8 @@
-/* Only affects the readonly JSON display */
-.json-display-container {
-  margin-top: 20px;
-}
-
 .json-display-box {
   max-width: 100%;
   overflow-x: auto;
   white-space: pre-wrap;
   word-break: break-word;
-  padding: 16px 16px 16px 0px;
 }
 
 .json-display-pre {

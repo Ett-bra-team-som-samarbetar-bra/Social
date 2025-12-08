@@ -30,7 +30,7 @@ export default function Footer() {
   }, [user]);
 
   return (
-    <footer>
+    <footer className="mt-4">
       <DividerLine variant="primary" />
 
       <Row className="m-0 align-items-center py-2">
