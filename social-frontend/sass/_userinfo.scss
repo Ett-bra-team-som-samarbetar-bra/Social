@@ -1,9 +1,22 @@
+@use "bootstrap";
+
 .user-info-wrapper {
   display: flex;
   flex-direction: column;
-  height: 100%;          /* full height of the sidebar column */
+  height: 100%;
 }
 
 .logout-button {
-  margin-top: auto;      /* pushes it to the bottom */
+  margin-top: auto;
+}
+
+.user-info-border:focus {
+  outline: none;
+  height: 100%;
+}
+
+.user-info-border.focused {
+  border: 1px solid bootstrap.$primary !important;
+  background-color: bootstrap.$dark !important;
+  height: 100%;
 }

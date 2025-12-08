@@ -57,6 +57,8 @@ export default function ConversationList() {
     });
 
     useHotKey("M", () => {
+        if (!user) return;
+
         setFocused(true);
         listRef.current?.focus();
     });
@@ -102,12 +104,12 @@ export default function ConversationList() {
             <div
                 ref={listRef}
                 tabIndex={0}
-                className={`p-2 conversation-list ${focused ? "focused" : ""}`}
+                className={`conversation-list ${focused ? "focused" : ""}`}
                 onBlur={() => setFocused(false)}
             >
                 {user && <>
-                    <p className="text-primary">Hit [SPACE] to choose</p>
-                    <p className="text-primary">Hit [ESC] to escape</p>
+                    <p className="text-primary my-0">[SPACE] to choose</p>
+                    <p className="text-primary">[ESC] to escape</p>
                 </>}
                 {conversations.map((c, i) => (
                     <div
