@@ -1,10 +1,11 @@
-import RootButton from "../Components/RootButton";
 import { useAuth } from "../Hooks/useAuth";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { type Post, type PostCreateDto } from "../Types/post";
 import CreatePost from "../Components/CreatePostComponent";
+import RootButton from "../Components/RootButton";
 import PostComponent from "../Components/PostComponent";
-import { useNavigate } from "react-router-dom";
+import PostAlertMessage from "../Components/PostAlertMessage";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -44,7 +45,14 @@ export default function StartPage() {
       });
 
       if (!result.ok) {
-        if (!ignore) setError("Failed to load posts");
+        if (!ignore) {
+          try {
+            const errorData = await result.json();
+            setError(errorData.error || `HTTP ${result.status}: ${result.statusText}`);
+          } catch {
+            setError(`HTTP ${result.status}: ${result.statusText}`);
+          }
+        }
         setLoading(false);
         return;
       }
@@ -136,14 +144,18 @@ export default function StartPage() {
       ) : (
         <>
           {loading && (
-            <div className="text-center text-primary mt-3">Loading...</div>
+            <PostAlertMessage
+              message={"Loading..."}
+              isErrorMessage={false} />
           )}
-
-          {error && <div className="text-danger text-center mt-3">{error}</div>}
-
-          <div className="d-flex flex-column overflow-y-auto gap-3 h-100 post-outline mb-4">
-            {!loading &&
-              posts.map((post) => (
+          {error &&
+            <PostAlertMessage
+              message={error}
+              isErrorMessage={true} />
+          }
+          {!loading && !error &&
+            <div className="d-flex flex-column overflow-y-auto gap-3 post-outline mb-4">
+              {posts.map((post) => (
                 <PostComponent
                   id={post.userId}
                   key={post.id}
@@ -159,7 +171,8 @@ export default function StartPage() {
                   hasLiked={user?.likedPostIds?.includes(post.id) ?? false}
                 />
               ))}
-          </div>
+            </div>
+          }
         </>
       )}
     </div>

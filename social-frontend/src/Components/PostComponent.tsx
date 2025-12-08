@@ -66,13 +66,18 @@ export default function PostComponent({
         <div className="d-flex gap-2">
           <RootButton
             keyLabel="L"
+            fontsize={13}
             onClick={onLike}
             disabled={hasLiked}
           >
             {hasLiked ? "Liked" : "Like"}
           </RootButton>
 
-          <RootButton keyLabel="C" onClick={onComment}>
+          <RootButton
+            keyLabel="C"
+            onClick={onComment}
+            fontsize={13}
+          >
             Comment
           </RootButton>
         </div>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import DividerLine from "../Components/DividerLine";
 import RootButton from "../Components/RootButton";
 import InfoModal from "../Components/InfoModal";
+import { useAuth } from "../Hooks/useAuth";
 
 const asciiLogo = `
 ██████   ██████   ██████  ████████     █████   ██████  ██████ ███████ ███████ ███████
@@ -14,8 +15,10 @@ const asciiLogo = `
 `;
 
 export default function Header() {
-  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [showModal, setShowModal] = useState(false);
+
+  const navigate = useNavigate();
 
   return (
     <header>
@@ -30,6 +33,18 @@ export default function Header() {
           </Col>
 
           <Col md={4} className="d-flex align-items-center justify-content-end">
+            {user && (
+              <RootButton
+                className=""
+                keyLabel="L"
+                onClick={() => { logout(); }}
+                textColor="primary"
+                backgroundColor="transparent"
+                fontsize={14}
+              >
+                Logout
+              </RootButton>
+            )}
             <RootButton
               keyLabel="I"
               textColor="primary"
