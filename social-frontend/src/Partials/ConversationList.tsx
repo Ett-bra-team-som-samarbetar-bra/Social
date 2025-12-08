@@ -105,8 +105,10 @@ export default function ConversationList() {
                 className={`p-2 conversation-list ${focused ? "focused" : ""}`}
                 onBlur={() => setFocused(false)}
             >
-                <p className="text-primary">Hit [SPACE] to choose</p>
-                <p className="text-primary">Hit [ESC] to escape</p>
+                {user && <>
+                    <p className="text-primary">Hit [SPACE] to choose</p>
+                    <p className="text-primary">Hit [ESC] to escape</p>
+                </>}
                 {conversations.map((c, i) => (
                     <div
                         key={c.userId}
