@@ -28,6 +28,10 @@
     font-size: 20px;
 }
 
+h5 {
+    font-size: 20px;
+}
+
 .conversation-list {
     flex-grow: 1;
     height: 100%;
@@ -38,22 +42,11 @@
 
     .conversation-item {
         width: 100%;
-        padding: 0.4rem;
+        padding: 0.2rem;
         color: bootstrap.$primary;
         font-size: 0.9rem;
-        letter-spacing: 1px;
         cursor: pointer;
-        transition: 0.15s ease-in-out;
         position: relative;
-
-        &:hover {
-            background: rgba(bootstrap.$primary, 0.15);
-        }
-
-        &.selected {
-            background: rgba(bootstrap.$primary, 0.3);
-            color: bootstrap.$light;
-            font-weight: 600;
-        }
+        white-space: pre;
     }
 }
