@@ -12,12 +12,9 @@ try
 
     builder.Host.UseSerilog((context, services, loggerConfiguration) =>
         loggerConfiguration
-            .ReadFrom.Configuration(context.Configuration)
             .ReadFrom.Services(services)
             .Enrich.FromLogContext()
             .Enrich.WithThreadId()
-            .Enrich.WithEnvironmentName()
-            .Enrich.WithMachineName()
             .WriteTo.Console());
 
     builder.Services.AddControllers();
@@ -35,6 +32,18 @@ try
     builder.Services.AddSingleton<IUserIdProvider, SessionUserIdProvider>();
     builder.Services.AddDistributedMemoryCache();
     builder.Logging.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Warning);
+
+    //Authentication
+    builder.Services.AddAuthentication("AuthCookie")
+    .AddCookie("AuthCookie", options =>
+    {
+        options.LoginPath = "/api/auth/login";
+        options.AccessDeniedPath = "/api/auth/denied";
+        options.Cookie.Name = "AuthCookie";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SameSite = SameSiteMode.None;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    });
 
     // Sessioncookie
     builder.Services.AddSession(options =>
@@ -86,7 +95,8 @@ try
     app.MapHub<ChatHub>("/chatHub");
     app.UseMiddleware<ExceptionMiddleware>();
     //app.UseHttpsRedirection();
-    //app.UseAuthorization(); todo?
+    app.UseAuthentication();
+    app.UseAuthorization();
     app.MapControllers();
 
     app.Run();

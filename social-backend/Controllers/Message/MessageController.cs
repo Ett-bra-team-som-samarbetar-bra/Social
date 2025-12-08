@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authorization;
+
 namespace SocialBackend.Controllers;
 
 [ApiController]
@@ -6,6 +8,7 @@ public class MessageController(IMessageService messageService) : ControllerBase
 {
     private readonly IMessageService _messageService = messageService;
 
+    [Authorize]
     [HttpPost]
     public async Task<ActionResult<MessageDto>> SendMessage([FromBody] SendMessageRequest request)
     {
@@ -20,6 +23,7 @@ public class MessageController(IMessageService messageService) : ControllerBase
         return Ok(message);
     }
 
+    [Authorize]
     [HttpGet("{receivingUserId}")]
     public async Task<ActionResult<List<MessageDto>>> GetMessages(
      int receivingUserId,
@@ -39,6 +43,7 @@ public class MessageController(IMessageService messageService) : ControllerBase
         return Ok(messages);
     }
 
+    [Authorize]
     [HttpGet("conversations")]
     public async Task<ActionResult<List<ConversationDto>>> GetConversations()
     {
@@ -49,6 +54,7 @@ public class MessageController(IMessageService messageService) : ControllerBase
         return Ok(conversations);
     }
 
+    [Authorize]
     [HttpPost("{otherUserId}/read")]
     public async Task<IActionResult> MarkAsRead(int otherUserId)
     {

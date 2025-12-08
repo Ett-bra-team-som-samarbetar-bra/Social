@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authorization;
+
 namespace SocialBackend.Controllers;
 
 [ApiController]
@@ -6,6 +8,7 @@ public class AuthController(IAuthService authService) : ControllerBase
 {
     private readonly IAuthService _authService = authService;
 
+    [AllowAnonymous]
     [HttpPost("login")]
     public async Task<ActionResult> Login(LoginRequest request)
     {
@@ -13,6 +16,7 @@ public class AuthController(IAuthService authService) : ControllerBase
         return Ok(user);
     }
 
+    [AllowAnonymous]
     [HttpPost("register")]
     public async Task<ActionResult> Register(RegisterRequest request)
     {
@@ -20,6 +24,7 @@ public class AuthController(IAuthService authService) : ControllerBase
         return Ok(new { message = "Register successful" });
     }
 
+    [Authorize]
     [HttpGet("me")]
     public async Task<ActionResult<User>> Me()
     {
@@ -27,10 +32,11 @@ public class AuthController(IAuthService authService) : ControllerBase
         return Ok(loggedInUser);
     }
 
+    [Authorize]
     [HttpPost("logout")]
     public async Task<ActionResult> Logout()
     {
-        _authService.Logout(HttpContext);
+        await _authService.Logout(HttpContext);
         return Ok("Logout successful");
     }
 }

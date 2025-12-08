@@ -1,11 +1,15 @@
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+
 namespace SocialBackend.Services;
 
 public interface IAuthService
 {
     Task RegisterAsync(RegisterRequest request);
     Task<UserDto> Login(LoginRequest request, HttpContext context);
-    void Logout(HttpContext context);
-    void SetUserSession(User user, HttpContext context);
+    Task Logout(HttpContext context);
+    Task SetUserSession(User user, HttpContext context);
     Task<bool> DoesUserExist(string username);
     User CreateUser(RegisterRequest request, string passwordHash);
     Task<UserDto> GetLoggedInUser(HttpContext context);
@@ -43,7 +47,7 @@ public class AuthService(DatabaseContext dbContext, IPasswordHelper passwordHelp
         }
 
         if (_passwordHelper.IsPasswordVerified(request.Password, user.PasswordHash))
-            SetUserSession(user, context);
+            await SetUserSession(user, context);
         else
         {
             _logger.LogWarning("Login failed: invalid password for {Username}", request.Username);
@@ -55,13 +59,28 @@ public class AuthService(DatabaseContext dbContext, IPasswordHelper passwordHelp
         return user.ToDto();
     }
 
-    public void Logout(HttpContext context)
+    public async Task Logout(HttpContext context)
     {
         var userId = context.Session.GetInt32("UserId");
+        await context.SignOutAsync("AuthCookie");
         context.Session.Clear();
         _logger.LogInformation("User {UserId} logged out", userId);
     }
-    public void SetUserSession(User user, HttpContext context) => context.Session.SetInt32("UserId", user.Id);
+    public async Task SetUserSession(User user, HttpContext context)
+    {
+        context.Session.SetInt32("UserId", user.Id);
+
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Name, user.Username),
+        };
+
+        var identity = new ClaimsIdentity(claims, "AuthCookie");
+        var principal = new ClaimsPrincipal(identity);
+
+        await context.SignInAsync("AuthCookie", principal);
+    }
 
     public async Task<bool> DoesUserExist(string username)
     {
