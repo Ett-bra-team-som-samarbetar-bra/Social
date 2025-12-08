@@ -4,6 +4,9 @@ using SocialBackend.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Session;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.DependencyInjection;
+using System.Security.Claims;
 using Moq;
 using SocialBackend.Dto;
 using SocialBackend.Exceptions;
@@ -17,14 +20,27 @@ public class AuthServiceTest : TestBase
     private readonly DefaultHttpContext _httpContext;
     private readonly TestSession _session;
     private readonly Mock<IPasswordHelper> _mockHelper;
+    private readonly Mock<IAuthenticationService> _authServiceMock;
     public AuthServiceTest()
     {
         _mockHelper = new Mock<IPasswordHelper>();
+        _authServiceMock = new Mock<IAuthenticationService>();
         _authService = new AuthService(Context, _mockHelper.Object, CreateLogger<AuthService>());
 
         _httpContext = new DefaultHttpContext();
         _session = new TestSession();
         _httpContext.Features.Set<ISessionFeature>(new SessionFeature { Session = _session });
+
+        _authServiceMock
+            .Setup(a => a.SignInAsync(It.IsAny<HttpContext>(), It.IsAny<string>(), It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthenticationProperties?>()))
+            .Returns(Task.CompletedTask);
+        _authServiceMock
+            .Setup(a => a.SignOutAsync(It.IsAny<HttpContext>(), It.IsAny<string>(), It.IsAny<AuthenticationProperties?>()))
+            .Returns(Task.CompletedTask);
+
+        _httpContext.RequestServices = new ServiceCollection()
+            .AddSingleton(_authServiceMock.Object)
+            .BuildServiceProvider();
     }
 
     protected override void SeedData()
@@ -101,6 +117,7 @@ public class AuthServiceTest : TestBase
         //Assert
         var actual = _httpContext.Session.GetInt32("UserId");
         Assert.Equal(expected, actual);
+        _authServiceMock.Verify(a => a.SignInAsync(_httpContext, "AuthCookie", It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthenticationProperties?>()), Times.Once);
     }
 
     [Fact]
@@ -116,6 +133,7 @@ public class AuthServiceTest : TestBase
         //Assert
         Assert.False(_httpContext.Session.TryGetValue("UserId", out _));
         Assert.Empty(_session.Keys);
+        _authServiceMock.Verify(a => a.SignOutAsync(_httpContext, "AuthCookie", It.IsAny<AuthenticationProperties?>()), Times.Once);
     }
 
     [Fact]
@@ -138,6 +156,7 @@ public class AuthServiceTest : TestBase
 
         //Assert
         Assert.Equal(request.Username, result.Username);
+        _authServiceMock.Verify(a => a.SignInAsync(_httpContext, "AuthCookie", It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthenticationProperties?>()), Times.Once);
     }
 
     [Fact]

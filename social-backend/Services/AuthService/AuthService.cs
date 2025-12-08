@@ -61,7 +61,6 @@ public class AuthService(DatabaseContext dbContext, IPasswordHelper passwordHelp
 
     public async Task Logout(HttpContext context)
     {
-
         var userId = context.Session.GetInt32("UserId");
         await context.SignOutAsync("AuthCookie");
         context.Session.Clear();
@@ -69,6 +68,8 @@ public class AuthService(DatabaseContext dbContext, IPasswordHelper passwordHelp
     }
     public async Task SetUserSession(User user, HttpContext context)
     {
+        context.Session.SetInt32("UserId", user.Id);
+
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
@@ -79,7 +80,6 @@ public class AuthService(DatabaseContext dbContext, IPasswordHelper passwordHelp
         var principal = new ClaimsPrincipal(identity);
 
         await context.SignInAsync("AuthCookie", principal);
-        context.Session.SetInt32("UserId", user.Id);
     }
 
     public async Task<bool> DoesUserExist(string username)
