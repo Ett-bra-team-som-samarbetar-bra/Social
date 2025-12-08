@@ -53,11 +53,12 @@ export default function UserProfileComponent({
         </RootButton>
         <RootButton
           keyLabel="T"
-          onClick={() => navigate(`/messages/${userId}`)}
+          onClick={() => navigate(`/messages/${userId}`, { state: { username } })}
           disabled={isOwnProfile}
         >
           Chat
         </RootButton>
+
       </div>
     </div>
   );

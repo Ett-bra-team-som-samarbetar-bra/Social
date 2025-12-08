@@ -4,7 +4,7 @@ import RootButton from "../Components/RootButton";
 import { useHotKey } from "../Hooks/useHotKey";
 import { useSignalR } from "../Hooks/useSignalR";
 import { useAuth } from "../Hooks/useAuth";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import type MessageDto from "../Types/message";
 import RenderChat from "../Components/RenderChat";
 
@@ -16,9 +16,11 @@ export default function MessagePage() {
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const [loadingOlder, setLoadingOlder] = useState(false);
     const [messages, setMessages] = useState<MessageDto[]>([]);
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
     const currentUserId = user?.id ?? 0;
     const receivingUserId = Number(id);
+    const location = useLocation();
+    const stateUsername = (location.state as { username?: string })?.username;
 
     const fetchMessages = async (before?: string) => {
         const url = new URL(`http://localhost:5174/api/message/${receivingUserId}`);
@@ -99,9 +101,12 @@ export default function MessagePage() {
         });
     };
 
-    const otherUsername = messages[0]?.sendingUserId === receivingUserId
-        ? messages[0]?.sendingUserName
-        : messages[0]?.receivingUserName;
+    const otherUsername =
+        stateUsername ??
+        (messages[0]?.sendingUserId === receivingUserId
+            ? messages[0]?.sendingUserName
+            : messages[0]?.receivingUserName) ??
+        "Unknown";
 
     const loadOlderMessages = async () => {
         if (loadingOlder || messages.length === 0) return;
