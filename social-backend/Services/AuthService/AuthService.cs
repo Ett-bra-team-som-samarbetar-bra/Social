@@ -11,38 +11,56 @@ public interface IAuthService
     Task<UserDto> GetLoggedInUser(HttpContext context);
 }
 
-public class AuthService(DatabaseContext dbContext, IPasswordHelper passwordHelper) : IAuthService
+public class AuthService(DatabaseContext dbContext, IPasswordHelper passwordHelper, ILogger<AuthService> logger) : IAuthService
 {
     private readonly IDatabaseContext _db = dbContext;
     private readonly IPasswordHelper _passwordHelper = passwordHelper;
+    private readonly ILogger<AuthService> _logger = logger;
 
     public async Task RegisterAsync(RegisterRequest request)
     {
         if (await DoesUserExist(request.Username))
+        {
+            _logger.LogWarning("Registration failed: username {Username} already exists", request.Username);
             throw new BadRequestException("Username already exists");
+        }
 
         var passwordHash = _passwordHelper.HashPassword(request.Password);
         var user = CreateUser(request, passwordHash);
 
         _db.Users.Add(user);
         await _db.SaveChangesAsync();
+        _logger.LogInformation("User {Username} registered with id {UserId}", request.Username, user.Id);
     }
 
     public async Task<UserDto> Login(LoginRequest request, HttpContext context)
     {
         var user = await _db.Users.Include(u => u.LikedPosts).SingleOrDefaultAsync(u => u.Username == request.Username);
         if (user == null)
+        {
+            _logger.LogWarning("Login failed: username {Username} not found", request.Username);
             throw new BadRequestException("Incorrect username or password");
+        }
 
         if (_passwordHelper.IsPasswordVerified(request.Password, user.PasswordHash))
             SetUserSession(user, context);
         else
+        {
+            _logger.LogWarning("Login failed: invalid password for {Username}", request.Username);
             throw new BadRequestException("Incorrect username or password");
+        }
+
+        _logger.LogInformation("User {Username} logged in with id {UserId}", request.Username, user.Id);
 
         return user.ToDto();
     }
 
-    public void Logout(HttpContext context) => context.Session.Clear();
+    public void Logout(HttpContext context)
+    {
+        var userId = context.Session.GetInt32("UserId");
+        context.Session.Clear();
+        _logger.LogInformation("User {UserId} logged out", userId);
+    }
     public void SetUserSession(User user, HttpContext context) => context.Session.SetInt32("UserId", user.Id);
 
     public async Task<bool> DoesUserExist(string username)
@@ -66,6 +84,7 @@ public class AuthService(DatabaseContext dbContext, IPasswordHelper passwordHelp
         var userId = context.Session.GetInt32("UserId");
 
         var loggedInUser = await _db.Users.Include(u => u.LikedPosts).FirstOrDefaultAsync(u => u.Id == userId) ?? throw new NotFoundException("No user logged in");
+        _logger.LogDebug("Retrieved logged in user {UserId}", loggedInUser.Id);
 
         return loggedInUser.ToDto();
     }
