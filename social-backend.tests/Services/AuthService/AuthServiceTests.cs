@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Session;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using System.Security.Claims;
+using System.Linq;
 using Moq;
 using SocialBackend.Dto;
 using SocialBackend.Exceptions;
@@ -117,7 +118,15 @@ public class AuthServiceTest : TestBase
         //Assert
         var actual = _httpContext.Session.GetInt32("UserId");
         Assert.Equal(expected, actual);
-        _authServiceMock.Verify(a => a.SignInAsync(_httpContext, "AuthCookie", It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthenticationProperties?>()), Times.Once);
+        _authServiceMock.Verify(a => a.SignInAsync(
+            _httpContext,
+            "AuthCookie",
+            It.Is<ClaimsPrincipal>(p =>
+                p.Claims.Any(c => c.Type == ClaimTypes.NameIdentifier && c.Value == user.Id.ToString()) &&
+                p.Identity != null &&
+                p.Identity.Name == user.Username),
+            It.IsAny<AuthenticationProperties?>()),
+            Times.Once);
     }
 
     [Fact]
@@ -156,7 +165,15 @@ public class AuthServiceTest : TestBase
 
         //Assert
         Assert.Equal(request.Username, result.Username);
-        _authServiceMock.Verify(a => a.SignInAsync(_httpContext, "AuthCookie", It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthenticationProperties?>()), Times.Once);
+        _authServiceMock.Verify(a => a.SignInAsync(
+            _httpContext,
+            "AuthCookie",
+            It.Is<ClaimsPrincipal>(p =>
+                p.Claims.Any(c => c.Type == ClaimTypes.NameIdentifier && c.Value == "1") &&
+                p.Identity != null &&
+                p.Identity.Name == request.Username),
+            It.IsAny<AuthenticationProperties?>()),
+            Times.Once);
     }
 
     [Fact]
