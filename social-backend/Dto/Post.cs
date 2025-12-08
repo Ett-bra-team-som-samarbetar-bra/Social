@@ -25,3 +25,12 @@ public record PostEditDto
     public int Id { get; set; }
     public required string Content { get; set; }
 }
+
+public record PostWithComments
+{
+    public int Id { get; set; }
+    public required string Username { get; set; }
+    public required string Title { get; set; }
+    public required string Content { get; set; }
+    public List<CommentResponseDto> Comments { get; set; } = [];
+}
