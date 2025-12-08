@@ -4,10 +4,12 @@ import { type Post, type PostCreateDto } from "../Types/post";
 import { useAuth } from "../Hooks/useAuth";
 import CreatePost from "../Components/CreatePostComponent";
 import PostComponent from "../Components/PostComponent";
+import { useNavigate } from "react-router-dom";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function StartPage() {
+  const navigate = useNavigate();
   const { user, updateUser } = useAuth();
   const [activeTab, setActiveTab] = useState<"all" | "following" | "mine">(
     "all"
@@ -103,6 +105,10 @@ export default function StartPage() {
     }));
   }
 
+  async function handleComment(id: number) {
+    navigate(`/post/${id}`);
+  }
+
   return (
     <div className=" overflow-y-auto">
       <CreatePost onSubmit={handleSubmit} />
@@ -134,7 +140,7 @@ export default function StartPage() {
               commentCount={post.comments.length}
               createdAt={post.createdAt}
               onLike={() => handleLike(post.id)}
-              onComment={() => console.log("Comment on:", post.id)}
+              onComment={() => handleComment(post.id)}
               hasLiked={user?.likedPostIds?.includes(post.id) ?? false}
             />
           ))}

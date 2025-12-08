@@ -10,6 +10,7 @@ public interface IPostService
     Task<int> CreateComment(CommentCreateDto dto, int postId, int userId);
     Task<PaginatedList<CommentResponseDto>> GetComments(int pageIndex, int pageSize, int postId);
     Task<int> UpdateLikeCount(int postId, int userId);
+    Task<PostResponseDto> GetPostWithComments(int id);
 }
 
 public class PostService(DatabaseContext dbContext) : IPostService
@@ -233,9 +234,16 @@ public class PostService(DatabaseContext dbContext) : IPostService
         return new CommentResponseDto
         {
             UserId = comment.UserId,
-            UserName = comment.User.Username,
+            Username = comment.User.Username,
             Content = comment.Content,
             CreatedAt = DateTime.SpecifyKind(comment.CreatedAt, DateTimeKind.Utc)
         };
+    }
+
+    public async Task<PostResponseDto> GetPostWithComments(int id)
+    {
+        var post = await _db.Posts.Include(p => p.User).Include(p => p.Comments).ThenInclude(c => c.User).FirstOrDefaultAsync(p => p.Id == id) ?? throw new NotFoundException($"No post with id {id} found");
+
+        return ToPostDto(post);
     }
 }

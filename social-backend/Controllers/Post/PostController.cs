@@ -28,6 +28,13 @@ public class PostController(IPostService postService) : ControllerBase
         return Ok(userPosts);
     }
 
+    [HttpGet("user-posts/{id}")]
+    public async Task<ActionResult<PostResponseDto>> GetPostWithComments(int id)
+    {
+        var post = await _postService.GetPostWithComments(id);
+        return Ok(post);
+    }
+
     [HttpPost]
     public async Task<ActionResult<int>> CreatePost([FromBody] PostCreateDto dto)
     {
