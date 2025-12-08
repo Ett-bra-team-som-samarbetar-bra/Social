@@ -6,8 +6,10 @@ import { useAuth } from "../Hooks/useAuth";
 import type { Post } from "../Types/post";
 import PostComponent from "../Components/PostComponent";
 const apiUrl = import.meta.env.VITE_API_URL;
+import { useNavigate } from "react-router-dom";
 
 export default function UserPage() {
+  const navigate = useNavigate();
   const { user, updateUser } = useAuth();
   const { id } = useParams();
   const [userData, setUserData] = useState<UserProfileDto | null>(null);
@@ -120,6 +122,11 @@ export default function UserPage() {
     }
   }
 
+  async function handleComment(id: number) {
+    navigate(`/post/${id}`);
+  }
+
+
   return (
     <div>
       <UserProfileComponent
@@ -147,7 +154,7 @@ export default function UserPage() {
             commentCount={post.comments.length}
             createdAt={post.createdAt}
             onLike={() => handleLike(post.id)}
-            onComment={() => console.log("Comment on:", post.id)}
+            onComment={() => handleComment(post.id)}
             hasLiked={user?.likedPostIds?.includes(post.id) ?? false}
           />
         ))}

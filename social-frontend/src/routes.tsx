@@ -5,6 +5,7 @@ import MessagePage from "./Pages/MessagePage";
 import LoginPage from "./Pages/LoginPage";
 import RegisterPage from "./Pages/Register";
 import UserPage from "./Pages/UserPage";
+import CommentsPage from "./Pages/CommentsPage";
 
 interface Route {
   element: JSX.Element;
@@ -20,6 +21,8 @@ const routes: Route[] = [
   { element: <StartPage />, path: "", menuLabel: "Start", requiresAuth: true },
   { element: <MessagePage />, path: "messages/:id" },
   { element: <UserPage />, path: "user/:id", requiresAuth: true },
+
+  { element: <CommentsPage />, path: "post/:id", requiresAuth: true },
   {
     element: <LoginPage />,
     path: "login",
