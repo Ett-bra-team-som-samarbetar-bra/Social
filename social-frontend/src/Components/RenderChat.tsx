@@ -33,21 +33,16 @@ export default function RenderChat({ messages, messagesContainerRef, messageEndR
                                     : currentDate.toLocaleDateString()}
                             </div>
                         )}
-                        {msg.content.split("\n").map((line, index) => (
-                            <div key={msg.id + "-" + index} className="message-row text-primary mb-1 ">
-                                <div className="text-nowrap">
-                                    <span>
-                                        [{currentDate.toLocaleTimeString(undefined, { timeStyle: "short" })}]
-                                    </span>{" "}
-                                    <span className="fw-bold">
-                                        {"<"}{msg.sendingUserName}{">"}
-                                    </span>
-                                </div>
-                                <div className="flex-fill">
-                                    {line || "\u00A0"}
-                                </div>
+                        <div className="message-row text-primary mb-1">
+                            <div className="message-info text-nowrap">
+                                <span>[{currentDate.toLocaleTimeString(undefined, { timeStyle: "short" })}]</span>{" "}
+                                <span className="fw-bold">{"<"}{msg.sendingUserName}{">"}</span>
                             </div>
-                        ))}
+
+                            <div className="message-text">
+                                {msg.content}
+                            </div>
+                        </div>
                     </React.Fragment>
                 );
             })}
