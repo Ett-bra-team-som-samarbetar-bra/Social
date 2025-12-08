@@ -38,3 +38,19 @@ public class UserDto
     public required string Description { get; set; }
     public List<int> LikedPostIds { get; set; } = [];
 }
+
+public class UserProfileDto
+{
+    public int Id { get; set; }
+    public string Username { get; set; } = "";
+    public string Description { get; set; } = "";
+    public DateTime CreatedAt { get; set; }
+
+    public int PostCount { get; set; }
+    public int FollowerCount { get; set; }
+    public int FollowingCount { get; set; }
+
+    public bool IsFollowing { get; set; }
+    public bool IsOwnProfile { get; set; }
+}
+
