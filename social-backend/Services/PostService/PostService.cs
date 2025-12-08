@@ -21,7 +21,7 @@ public class PostService(DatabaseContext dbContext) : IPostService
         var posts = await _db.Posts
             .Include(p => p.User)
             .Include(p => p.Comments)
-            .OrderBy(b => b.CreatedAt)
+            .OrderByDescending(b => b.CreatedAt)
             .ToListAsync();
 
         var paginatedPosts = posts
@@ -45,7 +45,7 @@ public class PostService(DatabaseContext dbContext) : IPostService
             .Where(p => p.UserId == user.Id)
             .Include(p => p.User)
             .Include(p => p.Comments)
-            .OrderBy(b => b.CreatedAt)
+            .OrderByDescending(b => b.CreatedAt)
             .ToListAsync();
 
         var paginatedPosts = posts
@@ -77,7 +77,7 @@ public class PostService(DatabaseContext dbContext) : IPostService
             .Include(p => p.User)
             .Include(p => p.Comments)
                 .ThenInclude(c => c.User)
-            .OrderBy(b => b.CreatedAt)
+            .OrderByDescending(b => b.CreatedAt)
             .ToListAsync();
 
         var paginatedPosts = posts
