@@ -36,7 +36,7 @@ public class AuthController(IAuthService authService) : ControllerBase
     [HttpPost("logout")]
     public async Task<ActionResult> Logout()
     {
-        _authService.Logout(HttpContext);
+        await _authService.Logout(HttpContext);
         return Ok("Logout successful");
     }
 }
