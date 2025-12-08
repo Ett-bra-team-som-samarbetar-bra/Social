@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging.Abstractions;
 using SocialBackend.Controllers;
 using SocialBackend.Exceptions;
 
@@ -11,7 +12,7 @@ public class ExceptionTests
     private static async Task<(int statusCode, string contentType, JsonElement body)> RunMiddlewareWithExceptionAsync(Exception ex)
     {
         RequestDelegate next = _ => Task.FromException(ex);
-        var middleware = new ExceptionMiddleware(next);
+        var middleware = new ExceptionMiddleware(next, NullLogger<ExceptionMiddleware>.Instance);
 
         var context = new DefaultHttpContext();
         context.Response.Body = new MemoryStream();

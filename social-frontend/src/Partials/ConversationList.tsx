@@ -15,7 +15,7 @@ export interface ConversationDto {
 export default function ConversationList() {
     const [conversations, setConversations] = useState<ConversationDto[]>([]);
     const [focused, setFocused] = useState(false);
-    const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+    const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
     const navigate = useNavigate();
     const { user } = useAuth();
     const listRef = useRef<HTMLDivElement>(null);
@@ -41,19 +41,12 @@ export default function ConversationList() {
 
     useEffect(() => {
         if (user && activeChatId) {
-            const timer = setTimeout(() => {
-                fetchConversations();
-            }, 300);
-            return () => clearTimeout(timer);
+            fetchConversations();
         }
     }, [activeChatId, user]);
 
-    useSignalR(user?.id ?? 0, (msg) => {
-        const isActiveChat = msg.sendingUserId === activeChatId || msg.receivingUserId === activeChatId;
-
-        if (!isActiveChat) {
-            fetchConversations();
-        }
+    useSignalR(user?.id ?? 0, () => {
+        fetchConversations();
     });
 
     useHotKey("M", () => {
@@ -62,6 +55,12 @@ export default function ConversationList() {
         setFocused(true);
         listRef.current?.focus();
     });
+
+    useEffect(() => {
+        if (activeChatId) {
+            setSelectedUserId(activeChatId);
+        }
+    }, [activeChatId]);
 
     useEffect(() => {
         if (!focused) return;
@@ -76,25 +75,38 @@ export default function ConversationList() {
                 return;
             }
 
+            const currentIndex = selectedUserId === null
+                ? -1
+                : conversations.findIndex(c => c.userId === selectedUserId);
+
             if (e.key === "ArrowDown") {
                 e.preventDefault();
-                setSelectedIndex(prev =>
-                    prev === null ? 0 : Math.min(prev + 1, conversations.length - 1)
-                );
-            } else if (e.key === "ArrowUp") {
+                const nextIndex =
+                    currentIndex < 0
+                        ? 0
+                        : Math.min(currentIndex + 1, conversations.length - 1);
+                setSelectedUserId(conversations[nextIndex].userId);
+            }
+
+            else if (e.key === "ArrowUp") {
                 e.preventDefault();
-                setSelectedIndex(prev =>
-                    prev === null ? 0 : Math.max(prev - 1, 0)
-                );
-            } else if (e.code === "Space" && selectedIndex !== null) {
+                const prevIndex =
+                    currentIndex < 0
+                        ? 0
+                        : Math.max(currentIndex - 1, 0);
+                setSelectedUserId(conversations[prevIndex].userId);
+            }
+
+            else if (e.code === "Space" && selectedUserId !== null) {
                 e.preventDefault();
-                navigate(`/messages/${conversations[selectedIndex].userId}`);
+                navigate(`/messages/${selectedUserId}`);
             }
         };
 
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [focused, selectedIndex, conversations, navigate]);
+
+    }, [focused, selectedUserId, conversations, navigate]);
 
     const messageHeading = user ? "[M]Messages" : "[░▒▓]Mess■ges̴͊";
 
@@ -107,24 +119,34 @@ export default function ConversationList() {
                 className={`conversation-list ${focused ? "focused" : ""}`}
                 onBlur={() => setFocused(false)}
             >
-                {user && <>
-                    <p className="text-primary my-0">[SPACE] to choose</p>
-                    <p className="text-primary">[ESC] to escape</p>
-                </>}
-                {conversations.map((c, i) => (
-                    <div
-                        key={c.userId}
-                        className={`conversation-item ${selectedIndex === i ? "selected" : ""}`}
-                        onClick={() => {
-                            setSelectedIndex(i);
-                            navigate(`/messages/${c.userId}`);
-                        }}
-                    >
-                        {selectedIndex === i ? "> " : "  "}
-                        @{c.username} {c.hasUnreadMessages && <span className="text-primary">⬤</span>}
-                    </div>
-                ))}
+                {user && (
+                    <>
+                        <p className="text-primary">Hit [SPACE] to choose</p>
+                        <p className="text-primary">Hit [ESC] to escape</p>
+                    </>
+                )}
+
+                {conversations.map((c) => {
+                    const isSelected = selectedUserId === c.userId;
+
+                    return (
+                        <div
+                            key={c.userId}
+                            className={`conversation-item ${isSelected ? "selected" : ""}`}
+                            onClick={() => {
+                                setSelectedUserId(c.userId);
+                                navigate(`/messages/${c.userId}`);
+                            }}
+                        >
+                            {isSelected ? "> " : "  "}
+                            @{c.username}{" "}
+                            {c.hasUnreadMessages && selectedUserId !== c.userId && (
+                                <span className="text-primary">⬤</span>
+                            )}
+                        </div>
+                    );
+                })}
             </div>
-        </Col >
+        </Col>
     );
 }

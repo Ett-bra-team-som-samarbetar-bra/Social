@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import { type Post, type PostCreateDto } from "../Types/post";
 import CreatePost from "../Components/CreatePostComponent";
 import PostComponent from "../Components/PostComponent";
+import { useNavigate } from "react-router-dom";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function StartPage() {
+  const navigate = useNavigate();
   const { user, updateUser } = useAuth();
   const [activeTab, setActiveTab] = useState<"all" | "following" | "mine" | "create">(
     "all"
@@ -108,6 +110,10 @@ export default function StartPage() {
     }));
   }
 
+  async function handleComment(id: number) {
+    navigate(`/post/${id}`);
+  }
+
   return (
     <div className="d-flex flex-column h-100">
       <div className="tab-buttons d-flex gap-1 justify-content-between">
@@ -129,7 +135,6 @@ export default function StartPage() {
         </div>
       ) : (
         <>
-
           {loading && (
             <div className="text-center text-primary mt-3">Loading...</div>
           )}
@@ -150,7 +155,7 @@ export default function StartPage() {
                   commentCount={post.comments.length}
                   createdAt={post.createdAt}
                   onLike={() => handleLike(post.id)}
-                  onComment={() => console.log("Comment on:", post.id)}
+                  onComment={() => handleComment(post.id)}
                   hasLiked={user?.likedPostIds?.includes(post.id) ?? false}
                 />
               ))}

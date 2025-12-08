@@ -10,11 +10,13 @@ public interface IPostService
     Task<int> CreateComment(CommentCreateDto dto, int postId, int userId);
     Task<PaginatedList<CommentResponseDto>> GetComments(int pageIndex, int pageSize, int postId);
     Task<int> UpdateLikeCount(int postId, int userId);
+    Task<PostResponseDto> GetPostWithComments(int id);
 }
 
-public class PostService(DatabaseContext dbContext) : IPostService
+public class PostService(DatabaseContext dbContext, ILogger<PostService> logger) : IPostService
 {
     private readonly IDatabaseContext _db = dbContext;
+    private readonly ILogger<PostService> _logger = logger;
 
     public async Task<PaginatedList<PostResponseDto>> GetPosts(int pageIndex, int pageSize)
     {
@@ -107,6 +109,7 @@ public class PostService(DatabaseContext dbContext) : IPostService
 
         _db.Posts.Add(post);
         await _db.SaveChangesAsync();
+        _logger.LogInformation("Post {PostId} created by user {UserId}", post.Id, user.Id);
 
         return post.Id;
     }
@@ -126,6 +129,7 @@ public class PostService(DatabaseContext dbContext) : IPostService
         post.Content = "[Deleted]";
         post.UpdatedAt = DateTime.UtcNow; // Will set IsEdited = true
         await _db.SaveChangesAsync();
+        _logger.LogInformation("Post {PostId} soft-deleted by user {UserId}", postId, userId);
 
         return post.Id;
     }
@@ -148,6 +152,7 @@ public class PostService(DatabaseContext dbContext) : IPostService
         _db.Comments.Add(comment);
         post.Comments.Add(comment);
         await _db.SaveChangesAsync();
+        _logger.LogInformation("Comment {CommentId} created on post {PostId} by user {UserId}", comment.Id, postId, userId);
 
         return comment.Id;
     }
@@ -178,22 +183,19 @@ public class PostService(DatabaseContext dbContext) : IPostService
         var user = await _db.Users.Include(u => u.LikedPosts).FirstOrDefaultAsync(u => u.Id == userId)
             ?? throw new NotFoundException("User not found");
 
-        Console.WriteLine("User liked posts BEFORE: " +
-            string.Join(",", user.LikedPosts.Select(p => p.Id)));
-
-
         var post = await _db.Posts.FindAsync(postId)
             ?? throw new NotFoundException("Post not found");
 
         if (user.LikedPosts.Any(p => p.Id == postId))
         {
+            _logger.LogDebug("User {UserId} attempted to like post {PostId} again", userId, postId);
             return post.LikeCount;
         }
 
         post.LikeCount++;
         user.LikedPosts.Add(post);
-        Console.WriteLine("Adding post: " + postId);
         await _db.SaveChangesAsync();
+        _logger.LogInformation("User {UserId} liked post {PostId}; like count now {LikeCount}", userId, postId, post.LikeCount);
 
         return post.LikeCount;
     }
@@ -219,8 +221,8 @@ public class PostService(DatabaseContext dbContext) : IPostService
             Id = post.Id,
             UserId = post.UserId,
             Username = post.User.Username,
-            CreatedAt = post.CreatedAt,
-            UpdatedAt = post.UpdatedAt,
+            CreatedAt = DateTime.SpecifyKind(post.CreatedAt, DateTimeKind.Utc),
+            UpdatedAt = DateTime.SpecifyKind(post.UpdatedAt, DateTimeKind.Utc),
             Title = post.Title,
             Content = post.Content,
             LikeCount = post.LikeCount,
@@ -233,9 +235,16 @@ public class PostService(DatabaseContext dbContext) : IPostService
         return new CommentResponseDto
         {
             UserId = comment.UserId,
-            UserName = comment.User.Username,
+            Username = comment.User.Username,
             Content = comment.Content,
-            CreatedAt = comment.CreatedAt
+            CreatedAt = DateTime.SpecifyKind(comment.CreatedAt, DateTimeKind.Utc)
         };
+    }
+
+    public async Task<PostResponseDto> GetPostWithComments(int id)
+    {
+        var post = await _db.Posts.Include(p => p.User).Include(p => p.Comments).ThenInclude(c => c.User).FirstOrDefaultAsync(p => p.Id == id) ?? throw new NotFoundException($"No post with id {id} found");
+
+        return ToPostDto(post);
     }
 }

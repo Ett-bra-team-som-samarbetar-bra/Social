@@ -1,5 +1,7 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using SocialBackend.Data;
 
 namespace SocialBackend.tests.Data;
@@ -31,6 +33,8 @@ public abstract class TestBase : IDisposable
     protected virtual void SeedData()
     {
     }
+
+    protected static ILogger<T> CreateLogger<T>() => NullLogger<T>.Instance;
 
     public void Dispose()
     {

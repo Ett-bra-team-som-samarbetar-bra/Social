@@ -20,7 +20,7 @@ public class AuthServiceTest : TestBase
     public AuthServiceTest()
     {
         _mockHelper = new Mock<IPasswordHelper>();
-        _authService = new AuthService(Context, _mockHelper.Object);
+        _authService = new AuthService(Context, _mockHelper.Object, CreateLogger<AuthService>());
 
         _httpContext = new DefaultHttpContext();
         _session = new TestSession();

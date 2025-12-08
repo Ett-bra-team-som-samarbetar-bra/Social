@@ -24,7 +24,7 @@ public class PostServiceSequentialTests : TestBase
 
     public PostServiceSequentialTests() : base()
     {
-        _postService = new PostService(Context);
+        _postService = new PostService(Context, CreateLogger<PostService>());
     }
 
     protected override void SeedData()

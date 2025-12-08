@@ -6,6 +6,7 @@ import LoginPage from "./Pages/LoginPage";
 import RegisterPage from "./Pages/Register";
 import NotFoundPage from "./Pages/NotFoundPage";
 import UserPage from "./Pages/UserPage";
+import CommentsPage from "./Pages/CommentsPage";
 
 interface Route {
   element: JSX.Element;
@@ -32,6 +33,10 @@ const routes: Route[] = [
   {
     element: <MessagePage />,
     path: "messages/:id"
+  },
+  {
+    element: <CommentsPage />,
+    path: "post/:id"
   },
   {
     element: <LoginPage />,

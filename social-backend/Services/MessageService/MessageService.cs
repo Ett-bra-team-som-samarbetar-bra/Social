@@ -8,11 +8,16 @@ public interface IMessageService
     Task MarkAsReadAsync(int currentUserId, int otherUserId);
 }
 
-public class MessageService(IDatabaseContext context, IUserService userService, IHubContext<ChatHub> hubContext) : IMessageService
+public class MessageService(
+    IDatabaseContext context,
+    IUserService userService,
+    IHubContext<ChatHub> hubContext,
+    ILogger<MessageService> logger) : IMessageService
 {
     private readonly IDatabaseContext _context = context;
     private readonly IUserService _userService = userService;
     private readonly IHubContext<ChatHub> _hubContext = hubContext;
+    private readonly ILogger<MessageService> _logger = logger;
 
     public async Task<List<MessageDto>> GetMessagesBetweenUsersAsync(
         int sendingUserId,
@@ -42,6 +47,7 @@ public class MessageService(IDatabaseContext context, IUserService userService, 
             .ToListAsync();
 
         messages.Reverse();
+        _logger.LogDebug("Retrieved {MessageCount} messages between users {UserA} and {UserB}", messages.Count, sendingUserId, receivingUserId);
         return messages;
     }
 
@@ -69,6 +75,7 @@ public class MessageService(IDatabaseContext context, IUserService userService, 
         await _context.SaveChangesAsync();
         var messageDto = ToDto(message);
         await BroadcastMessageAsync(messageDto, sendingUserId, receivingUserId);
+        _logger.LogInformation("Message {MessageId} sent from {SenderId} to {ReceiverId}", message.Id, sendingUserId, receivingUserId);
 
         return messageDto;
     }
@@ -109,6 +116,7 @@ public class MessageService(IDatabaseContext context, IUserService userService, 
             msg.IsRead = true;
 
         await _context.SaveChangesAsync();
+        _logger.LogInformation("Marked {Count} messages as read for user {UserId} from {OtherUserId}", unread.Count, currentUserId, otherUserId);
     }
 
     private static MessageDto ToDto(Message message)
@@ -119,7 +127,7 @@ public class MessageService(IDatabaseContext context, IUserService userService, 
             message.SendingUser.Username,
             message.ReceivingUserId,
             message.ReceivingUser.Username,
-            message.CreatedAt,
+            DateTime.SpecifyKind(message.CreatedAt, DateTimeKind.Utc),
             message.Content
         );
     }
