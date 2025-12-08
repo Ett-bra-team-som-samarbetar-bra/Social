@@ -110,7 +110,7 @@ export default function StartPage() {
   }
 
   return (
-    <div>
+    <div className=" overflow-y-auto">
       <CreatePost onSubmit={handleSubmit} />
 
       <div className="tab-buttons d-flex gap-2">
@@ -125,24 +125,26 @@ export default function StartPage() {
         <div className="text-center text-secondary mt-3">Loading...</div>
       )}
       {error && <div className="text-danger text-center mt-3">{error}</div>}
+      <div className="d-flex flex-column gap-3">
 
-      {!loading &&
-        posts.map((post) => (
-          <PostComponent
-            id={post.userId}
-            key={post.id}
-            title={post.title}
-            content={post.content}
-            username={post.username}
-            userId={post.userId}
-            likes={post.likeCount}
-            commentCount={post.comments.length}
-            createdAt={post.createdAt}
-            onLike={() => handleLike(post.id)}
-            onComment={() => handleComment(post.id)}
-            hasLiked={user?.likedPostIds?.includes(post.id) ?? false}
-          />
-        ))}
+        {!loading &&
+          posts.map((post) => (
+            <PostComponent
+              id={post.userId}
+              key={post.id}
+              title={post.title}
+              content={post.content}
+              username={post.username}
+              userId={post.userId}
+              likes={post.likeCount}
+              commentCount={post.comments.length}
+              createdAt={post.createdAt}
+              onLike={() => handleLike(post.id)}
+              onComment={() => handleComment(post.id)}
+              hasLiked={user?.likedPostIds?.includes(post.id) ?? false}
+            />
+          ))}
+      </div>
     </div>
   );
 }

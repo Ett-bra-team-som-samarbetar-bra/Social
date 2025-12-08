@@ -10,8 +10,8 @@ export default function Footer() {
   const navigate = useNavigate();
 
   const currentYear = new Date().getFullYear();
-  const brokenCopyrightString = `©${currentYear} Root.Access. All rights res̵̄̇e̷̿ͅr̵͙͑͘v̶͆e̵̜͐ḏ̶́͘根`
-  const copyrightString = `©${currentYear} Root.Access. All rights reserved.`
+  const brokenCopyrightString = `©${currentYear} Root.Access. |All rights res̵̄̇e̷̿ͅr̵͙͑͘v̶͆e̵̜͐ḏ̶́͘根`
+  const copyrightString = `©${currentYear} Root.Access. |All rights reserved`
   const typeSpeed = 60;
 
   useEffect(() => {
@@ -27,7 +27,7 @@ export default function Footer() {
       if (i >= brokenCopyrightString.length) clearInterval(interval);
     }, typeSpeed);
     return () => clearInterval(interval);
-  }, [brokenCopyrightString]);
+  }, [user]);
 
   return (
     <footer>
@@ -35,7 +35,12 @@ export default function Footer() {
 
       <Row className="m-0 py-3">
         <Col md={3} className="d-flex align-items-center justify-content-left">
-          <span className="Japanse-char-big ps-5 cursor-pointer" onClick={() => navigate("/")}> 根鍵 </span>
+          <span
+            className="Japanse-char-big ps-5 cursor-pointer glitch"
+            onClick={() => navigate("/")}
+          >
+            根鍵
+          </span>
         </Col>
 
         <Col md={6} className="text-center">

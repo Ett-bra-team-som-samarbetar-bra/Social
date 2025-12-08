@@ -18,9 +18,9 @@ const asciiLogo = `
 const keybinds = [
   { key: "I", desc: "Open information" },
   { key: "U", desc: "Target user" },
-  { key: "M", desc: "Target messages" },
   { key: "P", desc: "Target posts? TODO" },
-  { key: "X", desc: "Close" },
+  { key: "M", desc: "Target messages" },
+  { key: "C", desc: "Close" }
 ];
 
 export default function InfoModal({ show, onClose }: InfoModalProps) {
@@ -49,7 +49,7 @@ export default function InfoModal({ show, onClose }: InfoModalProps) {
         </Row>
 
         <div style={{ marginTop: "auto", width: "100%", display: "flex", justifyContent: "center" }}>
-          <RootButton keyLabel="X" onClick={onClose} className="pt-2">
+          <RootButton keyLabel="C" onClick={onClose} className="pt-2">
             Close
           </RootButton>
         </div>

@@ -4,6 +4,7 @@ import StartPage from "./Pages/StartPage";
 import MessagePage from "./Pages/MessagePage";
 import LoginPage from "./Pages/LoginPage";
 import RegisterPage from "./Pages/Register";
+import NotFoundPage from "./Pages/NotFoundPage";
 import UserPage from "./Pages/UserPage";
 import CommentsPage from "./Pages/CommentsPage";
 
@@ -18,11 +19,25 @@ interface Route {
 }
 
 const routes: Route[] = [
-  { element: <StartPage />, path: "", menuLabel: "Start", requiresAuth: true },
-  { element: <MessagePage />, path: "messages/:id" },
-  { element: <UserPage />, path: "user/:id", requiresAuth: true },
-
-  { element: <CommentsPage />, path: "post/:id", requiresAuth: true },
+  {
+    element: <StartPage />,
+    path: "",
+    menuLabel: "Start",
+    requiresAuth: true
+  },
+  {
+    element: <UserPage />,
+    path: "user/:id",
+    requiresAuth: true
+  },
+  {
+    element: <MessagePage />,
+    path: "messages/:id"
+  },
+  {
+    element: <CommentsPage />,
+    path: "post/:id"
+  },
   {
     element: <LoginPage />,
     path: "login",
@@ -35,6 +50,11 @@ const routes: Route[] = [
     menuLabel: "Register",
     guestOnly: true,
   },
+  {
+    element: <NotFoundPage />,
+    path: "*",
+    guestOnly: false,
+  }
 ];
 
 export default routes;

@@ -4,19 +4,19 @@ import RootButton from "../Components/RootButton";
 import { useHotKey } from "../Hooks/useHotKey";
 import { useSignalR } from "../Hooks/useSignalR";
 import { useAuth } from "../Hooks/useAuth";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import type MessageDto from "../Types/message";
+import RenderChat from "../Components/RenderChat";
 
 export default function MessagePage() {
     const { user, loading } = useAuth();
     const { id } = useParams();
     const messagesContainerRef = useRef<HTMLDivElement>(null);
     const messageEndRef = useRef<HTMLDivElement>(null);
-    const inputRef = useRef<HTMLInputElement>(null);
+    const inputRef = useRef<HTMLTextAreaElement>(null);
     const [loadingOlder, setLoadingOlder] = useState(false);
-
     const [messages, setMessages] = useState<MessageDto[]>([]);
-
+    const navigate = useNavigate(); 
     const currentUserId = user?.id ?? 0;
     const receivingUserId = Number(id);
 
@@ -41,6 +41,13 @@ export default function MessagePage() {
         fetchMessages();
     }, [id, receivingUserId]);
 
+    const markAsRead = async () => {
+        await fetch(`http://localhost:5174/api/message/${receivingUserId}/read`, {
+            method: "POST",
+            credentials: "include"
+        });
+    };
+
     const handleReceiveMessage = useCallback((message: MessageDto) => {
         const isRelevant =
             (message.sendingUserId === currentUserId && message.receivingUserId === receivingUserId) ||
@@ -51,6 +58,10 @@ export default function MessagePage() {
 
             setTimeout(() => {
                 scrollToBottom();
+
+                if (message.sendingUserId === receivingUserId) {
+                    markAsRead();
+                }
             }, 50);
         }
     }, [currentUserId, receivingUserId]);
@@ -88,11 +99,9 @@ export default function MessagePage() {
         });
     };
 
-    const getOtherUsername = () => {
-        const msg = messages.find(m => m.sendingUserId === receivingUserId || m.receivingUserId === receivingUserId);
-        if (!msg) return "";
-        return msg.sendingUserId === receivingUserId ? msg.sendingUserName : msg.receivingUserName;
-    }
+    const otherUsername = messages[0]?.sendingUserId === receivingUserId
+        ? messages[0]?.sendingUserName
+        : messages[0]?.receivingUserName;
 
     const loadOlderMessages = async () => {
         if (loadingOlder || messages.length === 0) return;
@@ -114,11 +123,9 @@ export default function MessagePage() {
                 }
             }
         };
-
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, []);
-
 
     if (loading) return <div>Loading...</div>;
     if (!user) return <div>Please log in</div>;
@@ -126,13 +133,13 @@ export default function MessagePage() {
     return (
         <div className="message-page d-flex flex-column h-100 w-100">
             <Container className="bg-dark text-primary border border-primary flex-column d-flex h-100">
-
-                <Row>
-                    <Col className="d-flex flex-column px-0 py-4">
+                <Row className="h-100">
+                    <Col className="d-flex flex-column px-0 py-4 h-100">
                         <Row className="align-items-between mb-4 px-4">
                             <Col>
-                                <h3 className="text-primary m-0">
-                                    @{getOtherUsername()}
+                                <h3 className="text-primary m-0 cursor-pointer"
+                                    onClick={() => navigate(`/user/${receivingUserId}`)}>
+                                    @{otherUsername}
                                 </h3>
                             </Col>
 
@@ -143,38 +150,22 @@ export default function MessagePage() {
                             </Col>
                         </Row>
 
-                        <div
-                            ref={messagesContainerRef}
-                            className="flex-grow-1 overflow-auto border-top border-bottom border-primary p-2"
-                            style={{ height: "50vh" }}
+                        <RenderChat
+                            messages={messages}
+                            messagesContainerRef={messagesContainerRef}
+                            messageEndRef={messageEndRef}
+                        />
+
+                        <Row
+                            className="mt-4 px-4 d-flex flex-row"
                         >
-                            {messages.map(msg => (
-                                <div key={msg.id} className="message-row text-primary mb-2">
-                                    <div className="message-text">
-                                        <span className="fw-bold">
-                                            {"<"}{msg.sendingUserName}{"> "}
-                                        </span>
-                                        {msg.content}
-                                    </div>
-
-                                    <span className="message-timestamp small">
-                                        <span className="msg-date">
-                                            {new Date(msg.createdAt).toLocaleDateString()}
-                                        </span>{" "}
-                                        {new Date(msg.createdAt).toLocaleTimeString()}
-                                    </span>
-                                </div>
-                            ))}
-
-                            <div ref={messageEndRef} />
-                        </div>
-
-                        <Row className="mt-4 align-items-center px-4">
-                            <Col>
+                            <Col className="d-flex flex-column">
                                 <Form.Control
                                     ref={inputRef}
-                                    className="bg-transparent border-primary text-primary rounded-0"
+                                    as="textarea"
+                                    className="bg-transparent border-primary text-primary rounded-0 flex-grow-1"
                                     placeholder="Type a message..."
+                                    rows={2}
                                     onKeyDown={e => {
                                         if (e.key === "Enter" && !e.shiftKey) {
                                             e.preventDefault();
@@ -183,7 +174,7 @@ export default function MessagePage() {
                                     }}
                                 />
                             </Col>
-                            <Col xs="auto">
+                            <Col xs="auto" className="d-flex align-items-end">
                                 <RootButton keyLabel="Enter" onClick={handleSend}>Send</RootButton>
                             </Col>
                         </Row>

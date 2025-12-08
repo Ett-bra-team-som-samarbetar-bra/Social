@@ -8,7 +8,7 @@ export default function Main() {
   return (
     <main>
       <Container fluid className="h-100 pb-4">
-        <Row className="h-100 px-2">
+        <Row className="h-100 px-5">
           <Col md={3} className="h-100 d-flex flex-column flex-grow-1">
             <UserInfo />
           </Col>

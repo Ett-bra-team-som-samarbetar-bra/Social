@@ -12,22 +12,25 @@ public class AuthController(IAuthService authService) : ControllerBase
         var user = await _authService.Login(request, HttpContext);
         return Ok(user);
     }
+
     [HttpPost("register")]
     public async Task<ActionResult> Register(RegisterRequest request)
     {
         await _authService.RegisterAsync(request);
         return Ok(new { message = "Register successful" });
     }
+
     [HttpGet("me")]
     public async Task<ActionResult<User>> Me()
     {
         var loggedInUser = await _authService.GetLoggedInUser(HttpContext);
         return Ok(loggedInUser);
     }
+
     [HttpPost("logout")]
-    public async Task<ActionResult<User>> Logout()
+    public async Task<ActionResult> Logout()
     {
         _authService.Logout(HttpContext);
-        return NoContent();
+        return Ok("Logout successful");
     }
 }
