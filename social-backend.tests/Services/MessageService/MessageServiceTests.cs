@@ -39,7 +39,7 @@ public class MessageServiceTests : TestBase
             .Setup(x => x.Clients)
             .Returns(mockClients.Object);
 
-        _messageService = new MessageService(Context, _mockUserService.Object, _mockHubContext.Object);
+        _messageService = new MessageService(Context, _mockUserService.Object, _mockHubContext.Object, CreateLogger<MessageService>());
     }
 
     protected override void SeedData()

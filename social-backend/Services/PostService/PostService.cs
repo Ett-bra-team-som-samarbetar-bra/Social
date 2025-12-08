@@ -13,15 +13,17 @@ public interface IPostService
     Task<PostResponseDto> GetPostWithComments(int id);
 }
 
-public class PostService(DatabaseContext dbContext) : IPostService
+public class PostService(DatabaseContext dbContext, ILogger<PostService> logger) : IPostService
 {
     private readonly IDatabaseContext _db = dbContext;
+    private readonly ILogger<PostService> _logger = logger;
 
     public async Task<PaginatedList<PostResponseDto>> GetPosts(int pageIndex, int pageSize)
     {
         var posts = await _db.Posts
             .Include(p => p.User)
             .Include(p => p.Comments)
+                .ThenInclude(c => c.User)
             .OrderBy(b => b.CreatedAt)
             .ToListAsync();
 
@@ -46,6 +48,7 @@ public class PostService(DatabaseContext dbContext) : IPostService
             .Where(p => p.UserId == user.Id)
             .Include(p => p.User)
             .Include(p => p.Comments)
+                .ThenInclude(c => c.User)
             .OrderBy(b => b.CreatedAt)
             .ToListAsync();
 
@@ -108,6 +111,7 @@ public class PostService(DatabaseContext dbContext) : IPostService
 
         _db.Posts.Add(post);
         await _db.SaveChangesAsync();
+        _logger.LogInformation("Post {PostId} created by user {UserId}", post.Id, user.Id);
 
         return post.Id;
     }
@@ -127,6 +131,7 @@ public class PostService(DatabaseContext dbContext) : IPostService
         post.Content = "[Deleted]";
         post.UpdatedAt = DateTime.UtcNow; // Will set IsEdited = true
         await _db.SaveChangesAsync();
+        _logger.LogInformation("Post {PostId} soft-deleted by user {UserId}", postId, userId);
 
         return post.Id;
     }
@@ -149,6 +154,7 @@ public class PostService(DatabaseContext dbContext) : IPostService
         _db.Comments.Add(comment);
         post.Comments.Add(comment);
         await _db.SaveChangesAsync();
+        _logger.LogInformation("Comment {CommentId} created on post {PostId} by user {UserId}", comment.Id, postId, userId);
 
         return comment.Id;
     }
@@ -179,22 +185,19 @@ public class PostService(DatabaseContext dbContext) : IPostService
         var user = await _db.Users.Include(u => u.LikedPosts).FirstOrDefaultAsync(u => u.Id == userId)
             ?? throw new NotFoundException("User not found");
 
-        Console.WriteLine("User liked posts BEFORE: " +
-            string.Join(",", user.LikedPosts.Select(p => p.Id)));
-
-
         var post = await _db.Posts.FindAsync(postId)
             ?? throw new NotFoundException("Post not found");
 
         if (user.LikedPosts.Any(p => p.Id == postId))
         {
+            _logger.LogDebug("User {UserId} attempted to like post {PostId} again", userId, postId);
             return post.LikeCount;
         }
 
         post.LikeCount++;
         user.LikedPosts.Add(post);
-        Console.WriteLine("Adding post: " + postId);
         await _db.SaveChangesAsync();
+        _logger.LogInformation("User {UserId} liked post {PostId}; like count now {LikeCount}", userId, postId, post.LikeCount);
 
         return post.LikeCount;
     }

@@ -17,7 +17,7 @@ public class PostServiceTests : TestBase
         CreateTestPost(user1, [], "Title3", "Content3");
         Context.SaveChanges();
 
-        var postService = new PostService(Context);
+        var postService = new PostService(Context, CreateLogger<PostService>());
         var result = await postService.GetPosts(pageIndex: 1, pageSize: 3);
 
         Assert.Equal(3, result.Items.Count);
@@ -29,7 +29,7 @@ public class PostServiceTests : TestBase
     [Fact]
     public async Task GetPosts_ReturnsEmptyArray_WhenNoPosts()
     {
-        var postService = new PostService(Context);
+        var postService = new PostService(Context, CreateLogger<PostService>());
         var result = await postService.GetPosts(pageIndex: 1, pageSize: 3);
 
         Assert.Empty(result.Items);
@@ -45,7 +45,7 @@ public class PostServiceTests : TestBase
 
         Context.SaveChanges();
 
-        var postService = new PostService(Context);
+        var postService = new PostService(Context, CreateLogger<PostService>());
         var result = await postService.GetPosts(pageIndex: 2, pageSize: 3);
 
         Assert.Equal(3, result.Items.Count);
@@ -64,7 +64,7 @@ public class PostServiceTests : TestBase
         CreateTestPost(user1, [comment1, comment2], "Title1", "Content1");
         Context.SaveChanges();
 
-        var postService = new PostService(Context);
+        var postService = new PostService(Context, CreateLogger<PostService>());
         var result = await postService.GetPosts(pageIndex: 1, pageSize: 3);
         var comments = result.Items[0].Comments.ToList();
 
@@ -88,7 +88,7 @@ public class PostServiceTests : TestBase
 
         Context.SaveChanges();
 
-        var postService = new PostService(Context);
+        var postService = new PostService(Context, CreateLogger<PostService>());
         var result = await postService.GetPosts(pageIndex: 1, pageSize: 3);
 
         Assert.True(result.Items[0].CreatedAt < result.Items[1].CreatedAt);
@@ -102,7 +102,7 @@ public class PostServiceTests : TestBase
         CreateTestPost(user1, [], "Title1", "Content1");
         Context.SaveChanges();
 
-        var postService = new PostService(Context);
+        var postService = new PostService(Context, CreateLogger<PostService>());
         var result = await postService.GetPosts(pageIndex: 1, pageSize: 3);
 
         Assert.Single(result.Items);
@@ -118,7 +118,7 @@ public class PostServiceTests : TestBase
         CreateTestPost(user2, [], "User2Title1", "User2Content1");
         Context.SaveChanges();
 
-        var postService = new PostService(Context);
+        var postService = new PostService(Context, CreateLogger<PostService>());
         var result = await postService.GetUserPosts(pageIndex: 1, pageSize: 3, user1.Id);
 
         Assert.Single(result.Items);
@@ -132,7 +132,7 @@ public class PostServiceTests : TestBase
         var user1 = CreateTestUser("TestUser1");
         Context.SaveChanges();
 
-        var postService = new PostService(Context);
+        var postService = new PostService(Context, CreateLogger<PostService>());
         var result = await postService.GetUserPosts(pageIndex: 1, pageSize: 3, user1.Id);
 
         Assert.Empty(result.Items);
@@ -141,7 +141,7 @@ public class PostServiceTests : TestBase
     [Fact]
     public async Task GetUserPosts_ShouldThrow_WhenNoUser()
     {
-        var postService = new PostService(Context);
+        var postService = new PostService(Context, CreateLogger<PostService>());
         await Assert.ThrowsAsync<NotFoundException>(async () =>
         {
             await postService.GetUserPosts(pageIndex: 1, pageSize: 3, 1337);
@@ -164,7 +164,7 @@ public class PostServiceTests : TestBase
         CreateTestPost(user4, [], "User4Title1", "User4Content1");
         Context.SaveChanges();
 
-        var postService = new PostService(Context);
+        var postService = new PostService(Context, CreateLogger<PostService>());
         var result = await postService.GetFollowingPosts(pageIndex: 1, pageSize: 3, user1.Id);
 
         Assert.Equal(2, result.Items.Count);
@@ -175,7 +175,7 @@ public class PostServiceTests : TestBase
     [Fact]
     public async Task GetFollowingPosts_ShouldThrow_WhenNoUser()
     {
-        var postService = new PostService(Context);
+        var postService = new PostService(Context, CreateLogger<PostService>());
         await Assert.ThrowsAsync<NotFoundException>(async () =>
         {
             await postService.GetFollowingPosts(pageIndex: 1, pageSize: 3, 1337);
@@ -188,7 +188,7 @@ public class PostServiceTests : TestBase
         var user1 = CreateTestUser("TestUser1");
         Context.SaveChanges();
 
-        var postService = new PostService(Context);
+        var postService = new PostService(Context, CreateLogger<PostService>());
         await Assert.ThrowsAsync<NotFoundException>(async () =>
         {
             await postService.GetFollowingPosts(pageIndex: 1, pageSize: 3, user1.Id);
@@ -207,7 +207,7 @@ public class PostServiceTests : TestBase
         CreateTestPost(user2, [comment1, comment2], "Title1", "Content1");
         Context.SaveChanges();
 
-        var postService = new PostService(Context);
+        var postService = new PostService(Context, CreateLogger<PostService>());
         var result = await postService.GetFollowingPosts(pageIndex: 1, pageSize: 3, user1.Id);
         var comments = result.Items[0].Comments.ToList();
 
@@ -229,7 +229,7 @@ public class PostServiceTests : TestBase
             Content = "New Post Content"
         };
 
-        var postService = new PostService(Context);
+        var postService = new PostService(Context, CreateLogger<PostService>());
         var createdPostId = await postService.CreatePost(createPostDto, user1.Id);
         var createdPost = Context.Posts.Find(createdPostId);
 
@@ -249,7 +249,7 @@ public class PostServiceTests : TestBase
             Content = "New Post Content"
         };
 
-        var postService = new PostService(Context);
+        var postService = new PostService(Context, CreateLogger<PostService>());
         await Assert.ThrowsAsync<NotFoundException>(async () =>
         {
             await postService.CreatePost(createPostDto, 1337);
@@ -262,7 +262,7 @@ public class PostServiceTests : TestBase
         var user1 = CreateTestUser("TestUser1");
         Context.SaveChanges();
 
-        var postService = new PostService(Context);
+        var postService = new PostService(Context, CreateLogger<PostService>());
         await Assert.ThrowsAsync<NotFoundException>(async () =>
         {
             await postService.DeletePost(999, user1.Id);
@@ -276,7 +276,7 @@ public class PostServiceTests : TestBase
         var post1 = CreateTestPost(user1, [], "Title1", "Content1");
         Context.SaveChanges();
 
-        var postService = new PostService(Context);
+        var postService = new PostService(Context, CreateLogger<PostService>());
         await Assert.ThrowsAsync<NotFoundException>(async () =>
         {
             await postService.DeletePost(post1.Id, 999);
@@ -291,7 +291,7 @@ public class PostServiceTests : TestBase
         var post1 = CreateTestPost(user1, [], "Title1", "Content1");
         Context.SaveChanges();
 
-        var postService = new PostService(Context);
+        var postService = new PostService(Context, CreateLogger<PostService>());
         await Assert.ThrowsAsync<UnauthorizedException>(async () =>
         {
             await postService.DeletePost(post1.Id, user2.Id);
@@ -305,7 +305,7 @@ public class PostServiceTests : TestBase
         var post1 = CreateTestPost(user1, [], "Title1", "Content1");
         Context.SaveChanges();
 
-        var postService = new PostService(Context);
+        var postService = new PostService(Context, CreateLogger<PostService>());
         await postService.DeletePost(post1.Id, user1.Id);
 
         var deletedPost = Context.Posts.Find(post1.Id);
@@ -325,7 +325,7 @@ public class PostServiceTests : TestBase
             Content = "New Comment Content"
         };
 
-        var postService = new PostService(Context);
+        var postService = new PostService(Context, CreateLogger<PostService>());
         var createdCommentId = await postService.CreateComment(createCommentDto, post1.Id, user1.Id);
         var createdComment = Context.Comments.Find(createdCommentId);
         var updatedPost = Context.Posts.Find(post1.Id);
@@ -344,7 +344,7 @@ public class PostServiceTests : TestBase
         var post1 = CreateTestPost(user1, [], "Title1", "Content1");
         Context.SaveChanges();
 
-        var postService = new PostService(Context);
+        var postService = new PostService(Context, CreateLogger<PostService>());
         var commentDto = new CommentCreateDto { Content = "New Comment Content" };
 
         await Assert.ThrowsAsync<NotFoundException>(async () =>
@@ -359,7 +359,7 @@ public class PostServiceTests : TestBase
         var user1 = CreateTestUser("TestUser1");
         Context.SaveChanges();
 
-        var postService = new PostService(Context);
+        var postService = new PostService(Context, CreateLogger<PostService>());
         var commentDto = new CommentCreateDto { Content = "New Comment Content" };
 
         await Assert.ThrowsAsync<NotFoundException>(async () =>
@@ -371,7 +371,7 @@ public class PostServiceTests : TestBase
     [Fact]
     public async Task GetComments_ShouldThrow_WhenPostNotFound()
     {
-        var postService = new PostService(Context);
+        var postService = new PostService(Context, CreateLogger<PostService>());
         await Assert.ThrowsAsync<NotFoundException>(async () =>
         {
             await postService.GetComments(pageIndex: 1, pageSize: 2, postId: 999);
@@ -391,7 +391,7 @@ public class PostServiceTests : TestBase
         }
         Context.SaveChanges();
 
-        var postService = new PostService(Context);
+        var postService = new PostService(Context, CreateLogger<PostService>());
         var result = await postService.GetComments(pageIndex: 1, pageSize: 2, post1.Id);
 
         Assert.Equal(2, result.Items.Count);
@@ -406,7 +406,7 @@ public class PostServiceTests : TestBase
         var post1 = CreateTestPost(user1, [], "Title1", "Content1");
         Context.SaveChanges();
 
-        var postService = new PostService(Context);
+        var postService = new PostService(Context, CreateLogger<PostService>());
         var result = await postService.GetComments(pageIndex: 1, pageSize: 2, post1.Id);
 
         Assert.Empty(result.Items);
@@ -421,7 +421,7 @@ public class PostServiceTests : TestBase
 
         Assert.Equal(0, post1.LikeCount); // Arrange Assert Act Assert 
 
-        var postService = new PostService(Context);
+        var postService = new PostService(Context, CreateLogger<PostService>());
         await postService.UpdateLikeCount(post1.Id, user1.Id);
 
         var updatedPost = Context.Posts.Find(post1.Id);
@@ -434,7 +434,7 @@ public class PostServiceTests : TestBase
         var user1 = CreateTestUser("TestUser1");
         Context.SaveChanges();
 
-        var postService = new PostService(Context);
+        var postService = new PostService(Context, CreateLogger<PostService>());
         await Assert.ThrowsAsync<NotFoundException>(async () =>
         {
             await postService.UpdateLikeCount(999, user1.Id);
@@ -448,7 +448,7 @@ public class PostServiceTests : TestBase
         var post1 = CreateTestPost(user1, [], "Title1", "Content1");
         Context.SaveChanges();
 
-        var postService = new PostService(Context);
+        var postService = new PostService(Context, CreateLogger<PostService>());
         await Assert.ThrowsAsync<NotFoundException>(async () =>
         {
             await postService.UpdateLikeCount(post1.Id, 999);
@@ -462,7 +462,7 @@ public class PostServiceTests : TestBase
         var post1 = CreateTestPost(user1, [], "Title1", "Content1");
         Context.SaveChanges();
 
-        var postService = new PostService(Context);
+        var postService = new PostService(Context, CreateLogger<PostService>());
         await postService.UpdateLikeCount(post1.Id, user1.Id); // First like
         var likeCountAfterFirst = Context.Posts.Find(post1.Id)!.LikeCount;
 
@@ -480,7 +480,7 @@ public class PostServiceTests : TestBase
         var post1 = CreateTestPost(user1, [], "Title1", "Content1");
         Context.SaveChanges();
 
-        var postService = new PostService(Context);
+        var postService = new PostService(Context, CreateLogger<PostService>());
         var result = await postService.UpdateLikeCount(post1.Id, user1.Id);
 
         Assert.Equal(1, result);

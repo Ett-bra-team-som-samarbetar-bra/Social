@@ -1,8 +1,9 @@
 namespace SocialBackend.Controllers;
 
-public class ExceptionMiddleware(RequestDelegate next)
+public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
 {
     private readonly RequestDelegate _next = next;
+    private readonly ILogger<ExceptionMiddleware> _logger = logger;
 
     public async Task InvokeAsync(HttpContext context)
     {
@@ -12,6 +13,7 @@ public class ExceptionMiddleware(RequestDelegate next)
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Unhandled exception for {RequestPath}", context.Request.Path);
             await HandleExceptionAsync(context, ex);
         }
     }
