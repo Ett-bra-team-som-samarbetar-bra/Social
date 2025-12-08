@@ -48,4 +48,14 @@ public class MessageController(IMessageService messageService) : ControllerBase
 
         return Ok(conversations);
     }
+
+    [HttpPost("{otherUserId}/read")]
+    public async Task<IActionResult> MarkAsRead(int otherUserId)
+    {
+        var currentUserId = HttpContext.GetUserId();
+
+        await _messageService.MarkAsReadAsync(currentUserId, otherUserId);
+
+        return Ok();
+    }
 }

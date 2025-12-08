@@ -55,10 +55,9 @@ export default function ConversationList() {
             fetchConversations();
         }
     });
-    
+
     useHotKey("M", () => {
         setFocused(true);
-        setSelectedIndex(0);
         listRef.current?.focus();
     });
 
@@ -71,7 +70,6 @@ export default function ConversationList() {
             if (e.key === "Escape") {
                 e.preventDefault();
                 setFocused(false);
-                setSelectedIndex(null);
                 listRef.current?.blur();
                 return;
             }
@@ -96,34 +94,31 @@ export default function ConversationList() {
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, [focused, selectedIndex, conversations, navigate]);
 
-    const handleMouseSelect = (index: number) => {
-        setSelectedIndex(index);
-    };
-
     const messageHeading = user ? "[M]Messages" : "[░▒▓]Mess■ges̴͊";
 
     return (
         <Col className="conversation-aside ">
             <h5 className="text-primary mb-3 text-uppercase">{messageHeading}</h5>
-
             <div
                 ref={listRef}
                 tabIndex={0}
                 className={`p-2 conversation-list ${focused ? "focused" : ""}`}
                 onBlur={() => setFocused(false)}
             >
-                <p className="text-primary">Hit [SPACE] to choose</p>
-                <p className="text-primary">Hit [ESC] to escape</p>
+                {user && <>
+                    <p className="text-primary">Hit [SPACE] to choose</p>
+                    <p className="text-primary">Hit [ESC] to escape</p>
+                </>}
                 {conversations.map((c, i) => (
                     <div
                         key={c.userId}
                         className={`conversation-item ${selectedIndex === i ? "selected" : ""}`}
                         onClick={() => {
-                            handleMouseSelect(i);
+                            setSelectedIndex(i);
                             navigate(`/messages/${c.userId}`);
                         }}
-                        onMouseEnter={() => handleMouseSelect(i)}
                     >
+                        {selectedIndex === i ? "> " : "  "}
                         @{c.username} {c.hasUnreadMessages && <span className="text-primary">⬤</span>}
                     </div>
                 ))}
