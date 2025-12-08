@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authorization;
+
 namespace SocialBackend.Controllers;
 
 [ApiController]
@@ -6,6 +8,7 @@ public class UserController(IUserService userService) : ControllerBase
 {
     private readonly IUserService _userService = userService;
 
+    [Authorize]
     [HttpGet("id/{profileId}")]
     public async Task<ActionResult<User>> GetUserById(int profileId)
     {
@@ -14,6 +17,7 @@ public class UserController(IUserService userService) : ControllerBase
         return Ok(profile);
     }
 
+    [Authorize]
     [HttpGet("GetAllUsers")]
     public async Task<ActionResult<List<User>>> GetAllUsers()
     {
@@ -21,6 +25,7 @@ public class UserController(IUserService userService) : ControllerBase
         return Ok(users);
     }
 
+    [Authorize]
     [HttpPut("update-password")]
     public async Task<ActionResult> UpdatePassword(UpdatePasswordRequest request)
     {
@@ -29,6 +34,7 @@ public class UserController(IUserService userService) : ControllerBase
         return Ok(new { message = "Password has been updated" });
     }
 
+    [Authorize]
     [HttpPut("update-description")]
     public async Task<ActionResult> UpdateDescription(UpdateDescriptionRequest request)
     {
@@ -37,6 +43,7 @@ public class UserController(IUserService userService) : ControllerBase
         return Ok(new { message = "Description has been updated" });
     }
 
+    [Authorize]
     [HttpDelete("DeleteUser")]
     public async Task<ActionResult> DeleteUser()
     {
@@ -45,6 +52,7 @@ public class UserController(IUserService userService) : ControllerBase
         return NoContent();
     }
 
+    [Authorize]
     [HttpPut("follow")]
     public async Task<ActionResult> FollowUser(UserIdRequest request)
     {
@@ -53,6 +61,7 @@ public class UserController(IUserService userService) : ControllerBase
         return Ok(new { isFollowing = true });
     }
 
+    [Authorize]
     [HttpPut("unfollow")]
     public async Task<ActionResult> UnfollowUser(UserIdRequest request)
     {

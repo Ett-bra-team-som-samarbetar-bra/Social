@@ -1,4 +1,6 @@
-﻿namespace SocialBackend.Controllers;
+﻿using Microsoft.AspNetCore.Authorization;
+
+namespace SocialBackend.Controllers;
 
 [ApiController]
 [Route("api/post")]
@@ -6,6 +8,7 @@ public class PostController(IPostService postService) : ControllerBase
 {
     private readonly IPostService _postService = postService;
 
+    [Authorize]
     [HttpGet("all/{pageIndex:int?}/{pageSize:int?}")]
     public async Task<ActionResult<List<PostResponseDto>>> GetPosts(int pageIndex = 1, int pageSize = 10)
     {
@@ -13,6 +16,7 @@ public class PostController(IPostService postService) : ControllerBase
         return Ok(posts);
     }
 
+    [Authorize]
     [HttpGet("user-posts/{userId}/{pageIndex:int?}/{pageSize:int?}")]
     public async Task<ActionResult<List<PostResponseDto>>> GetUserPosts(int userId, int pageIndex = 1, int pageSize = 10)
     {
@@ -20,6 +24,7 @@ public class PostController(IPostService postService) : ControllerBase
         return Ok(userPosts);
     }
 
+    [Authorize]
     [HttpGet("follower-posts/{pageIndex:int?}/{pageSize:int?}")]
     public async Task<ActionResult<List<PostResponseDto>>> GetFollowingPosts(int pageIndex = 1, int pageSize = 10)
     {
@@ -28,6 +33,7 @@ public class PostController(IPostService postService) : ControllerBase
         return Ok(userPosts);
     }
 
+    [Authorize]
     [HttpGet("user-posts/{id}")]
     public async Task<ActionResult<PostResponseDto>> GetPostWithComments(int id)
     {
@@ -35,6 +41,7 @@ public class PostController(IPostService postService) : ControllerBase
         return Ok(post);
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<ActionResult<int>> CreatePost([FromBody] PostCreateDto dto)
     {
@@ -43,6 +50,7 @@ public class PostController(IPostService postService) : ControllerBase
         return Ok(postId);
     }
 
+    [Authorize]
     [HttpDelete("{postId}")]
     public async Task<ActionResult<int>> DeletePost(int postId)
     {
@@ -51,6 +59,7 @@ public class PostController(IPostService postService) : ControllerBase
         return Ok(deletedPostId);
     }
 
+    [Authorize]
     [HttpPut("like/{postId}")]
     public async Task<ActionResult<int>> UpdateLikeCount(int postId)
     {
@@ -59,6 +68,7 @@ public class PostController(IPostService postService) : ControllerBase
         return Ok(updatedLikeCount);
     }
 
+    [Authorize]
     [HttpGet("comments/{postId}/{pageIndex}/{pageSize}")]
     public async Task<ActionResult<PaginatedList<CommentResponseDto>>> GetComments(int postId, int pageIndex = 1, int pageSize = 10)
     {
@@ -66,6 +76,7 @@ public class PostController(IPostService postService) : ControllerBase
         return Ok(comments);
     }
 
+    [Authorize]
     [HttpPost("comments/{postId}")]
     public async Task<ActionResult<int>> CreateComment(int postId, [FromBody] CommentCreateDto dto)
     {
