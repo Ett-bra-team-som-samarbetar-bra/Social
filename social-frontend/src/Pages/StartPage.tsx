@@ -48,9 +48,9 @@ export default function StartPage() {
         if (!ignore) {
           try {
             const errorData = await result.json();
-            setError(errorData.error || `HTTP ${result.status}: ${result.statusText}`);
+            setError(errorData.error || "Failed to load posts");
           } catch {
-            setError(`HTTP ${result.status}: ${result.statusText}`);
+            setError("Failed to load posts");
           }
         }
         setLoading(false);
@@ -124,13 +124,13 @@ export default function StartPage() {
 
   return (
     <div className="d-flex flex-column h-100">
-      <div className="tab-buttons d-flex gap-1 justify-content-between">
+      <div className="d-flex gap-1 justify-content-between">
         <div className="d-flex gap-1">
-          <RootButton className="post-outline" onClick={() => setActiveTab("all")}>Global</RootButton>
-          <RootButton className="post-outline" onClick={() => setActiveTab("following")}>Follow</RootButton>
-          <RootButton className="post-outline" onClick={() => setActiveTab("mine")}>Mine</RootButton>
+          <RootButton className="post-outline post-tab-fixed-size" onClick={() => setActiveTab("all")}>Global</RootButton>
+          <RootButton className="post-outline post-tab-fixed-size" onClick={() => setActiveTab("following")}>Follow</RootButton>
+          <RootButton className="post-outline post-tab-fixed-size" onClick={() => navigate(`/user/${user!.id}`)}>Profile</RootButton>
         </div>
-        <RootButton className="post-outline" onClick={() => setActiveTab("create")}>Create</RootButton>
+        <RootButton className="post-outline post-tab-fixed-size" onClick={() => setActiveTab("create")}>Create</RootButton>
       </div>
 
       {activeTab === "create" ? (

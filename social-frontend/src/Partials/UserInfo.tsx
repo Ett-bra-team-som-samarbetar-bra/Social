@@ -18,12 +18,8 @@ export default function UserInfo() {
   const [newDescription, setNewDescription] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const { user, logout, updateUser } = useAuth();
+  const { user, updateUser } = useAuth();
   const userInfoRef = useRef<HTMLDivElement>(null);
-
-  function handleLogout() {
-    logout();
-  }
 
   async function handleChangePassword() {
     setError(null);
@@ -261,6 +257,7 @@ export default function UserInfo() {
           {!editMode && user && (
 
             <div className="d-flex flex-column gap-2 mt-3">
+
               <RootButton
                 keyLabel="P"
                 onClick={() => {
@@ -271,7 +268,6 @@ export default function UserInfo() {
               >
                 Change Password
               </RootButton>
-
               <RootButton
                 keyLabel="D"
                 onClick={() => {
@@ -284,19 +280,7 @@ export default function UserInfo() {
               </RootButton>
             </div>
           )}
-
-          {user && (
-            <RootButton
-              keyLabel="L"
-              onClick={handleLogout}
-              className="mt-3 w-100"
-            >
-              Logout
-            </RootButton>
-          )}
-
         </div>
-
       </div>
     </Col>
   );

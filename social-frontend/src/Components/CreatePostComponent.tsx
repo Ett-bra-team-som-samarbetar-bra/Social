@@ -69,7 +69,8 @@ export default function CreatePost({ onSubmit, userId, username }: CreatePostPro
             {content.length}/{contentLimit}
           </div>
 
-          <RootButton keyLabel="S" type="submit">
+          <RootButton keyLabel="S" type="submit" fontsize={13}
+            className="post-button-fixed-size">
             Create
           </RootButton>
         </div>

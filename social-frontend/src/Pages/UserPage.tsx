@@ -1,12 +1,15 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useAuth } from "../Hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+import type { Post } from "../Types/post";
 import UserProfileComponent from "../Components/UserProfileComponent";
 import { type UserProfileDto } from "../Types/auth";
-import { useAuth } from "../Hooks/useAuth";
-import type { Post } from "../Types/post";
 import PostComponent from "../Components/PostComponent";
+import PostAlertMessage from "../Components/PostAlertMessage";
+import RootButton from "../Components/RootButton";
+
 const apiUrl = import.meta.env.VITE_API_URL;
-import { useNavigate } from "react-router-dom";
 
 export default function UserPage() {
   const navigate = useNavigate();
@@ -25,8 +28,7 @@ export default function UserPage() {
         credentials: "include",
       });
 
-      if (!result.ok) return; // Add error handling later
-
+      if (!result.ok) return;
       setUserData(await result.json());
     }
 
@@ -40,12 +42,18 @@ export default function UserPage() {
       );
 
       if (!result.ok) {
-        setError("Failed to load posts");
+        try {
+          const errorData = await result.json();
+          setError(errorData.error || "Failed to load posts");
+        } catch {
+          setError("Failed to load posts");
+        }
         setLoading(false);
         return;
       }
-      const postData = await result.json();
 
+
+      const postData = await result.json();
       setPosts(postData.items);
     }
 
@@ -126,9 +134,10 @@ export default function UserPage() {
     navigate(`/post/${id}`);
   }
 
-
   return (
     <div>
+      <RootButton className="post-outline non-interactive post-tab-fixed-size">User</RootButton>
+
       <UserProfileComponent
         userId={userData.id}
         username={userData.username}
@@ -142,27 +151,38 @@ export default function UserPage() {
         onFollowToggle={handleFollowToggle}
       />
 
-      {!loading &&
-        posts.map((post) => (
-          <PostComponent
-            id={post.userId}
-            key={post.id}
-            title={post.title}
-            content={post.content}
-            username={post.username}
-            userId={post.userId}
-            likes={post.likeCount}
-            commentCount={post.comments.length}
-            createdAt={post.createdAt}
-            onLike={() => handleLike(post.id)}
-            onComment={() => handleComment(post.id)}
-            hasLiked={user?.likedPostIds?.includes(post.id) ?? false}
-          />
-        ))}
+      <RootButton className="post-outline non-interactive post-tab-fixed-size">Posts</RootButton>
+
       {loading && (
-        <div className="text-center text-secondary mt-3">Loading...</div>
+        <PostAlertMessage
+          message={"Loading..."}
+          isErrorMessage={false} />
       )}
-      {error && <div className="text-danger text-center mt-3">{error}</div>}
+      {error &&
+        <PostAlertMessage
+          message={error}
+          isErrorMessage={true} />
+      }
+      {!loading && !error &&
+        <div className="d-flex flex-column overflow-y-auto gap-3 post-outline mb-4">
+          {posts.map((post) => (
+            <PostComponent
+              id={post.userId}
+              key={post.id}
+              title={post.title}
+              content={post.content}
+              username={post.username}
+              userId={post.userId}
+              likes={post.likeCount}
+              commentCount={post.comments.length}
+              createdAt={post.createdAt}
+              onLike={() => handleLike(post.id)}
+              onComment={() => handleComment(post.id)}
+              hasLiked={user?.likedPostIds?.includes(post.id) ?? false}
+            />
+          ))}
+        </div>
+      }
     </div>
   );
 }

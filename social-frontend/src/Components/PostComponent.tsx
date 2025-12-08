@@ -69,6 +69,7 @@ export default function PostComponent({
             fontsize={13}
             onClick={onLike}
             disabled={hasLiked}
+            className="post-button-fixed-size"
           >
             {hasLiked ? "Liked" : "Like"}
           </RootButton>
@@ -77,6 +78,7 @@ export default function PostComponent({
             keyLabel="C"
             onClick={onComment}
             fontsize={13}
+            className="post-button-fixed-size"
           >
             Comment
           </RootButton>
