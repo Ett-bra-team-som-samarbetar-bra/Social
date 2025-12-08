@@ -1,9 +1,11 @@
 import JsonDisplay from "../Components/JsonDisplay";
 import RootButton from "../Components/RootButton";
 import { useAuth } from "../Hooks/useAuth";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { passwordSchema } from "../Validation/passwordSchema";
 import { descriptionSchema } from "../Validation/descriptionSchema";
+import { useHotKey } from "../Hooks/useHotKey";
+import { Col } from "react-bootstrap";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -11,11 +13,13 @@ export default function UserInfo() {
   const [editMode, setEditMode] = useState<"password" | "description" | null>(
     null
   );
+  const [focused, setFocused] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [newDescription, setNewDescription] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const { user, logout, updateUser } = useAuth();
+  const userInfoRef = useRef<HTMLDivElement>(null);
 
   function handleLogout() {
     logout();
@@ -101,6 +105,29 @@ export default function UserInfo() {
     setEditMode(null);
   }
 
+  useHotKey("U", () => {
+    if (!user) return;
+
+    setFocused(true);
+    userInfoRef.current?.focus();
+  });
+
+  useEffect(() => {
+    if (!focused) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        setFocused(false);
+        userInfoRef.current?.blur();
+        return;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [focused]);
+
   const prefilledData = {
     name: "null",
     email: "undefined",
@@ -119,143 +146,158 @@ export default function UserInfo() {
   const userHeading = user ? `[U]User` : "[■]U■eṛ̶̛̘̉";
 
   return (
-    <div className="user-info-wrapper">
-      <h6 className="text-primary mb-3">{userHeading}</h6>
+    <Col className="user-info-wrapper">
+      <h5 className="text-primary mb-3 keybind-header">{userHeading}</h5>
 
-      <JsonDisplay data={profileData} />
+      <div
+        ref={userInfoRef}
+        tabIndex={0}
+        className={`user-info-border ${focused ? "focused" : ""}`}
+        onBlur={() => setFocused(false)}
+      >
+        <JsonDisplay data={profileData} />
 
-      {editMode === "password" && user && (
-        <div className=" mt-3">
-          <pre className="json-pre">
-            {`{
+        {/* TODO */}
+        <div className="">
+
+          {editMode === "password" && user && (
+            <div className=" mt-3">
+              <pre className="json-pre">
+                {`{
   "newPassword": "`}
-            <input
-              type="password"
-              className="json-input"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
-            {`"
+                <input
+                  type="password"
+                  className="json-input"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                />
+                {`"
 }`}
-          </pre>
+              </pre>
 
-          {error && (
-            <div className="json-error-box">
-              {error.split("\n").map((line, i) => (
-                <div key={i}>• {line}</div>
-              ))}
+              {error && (
+                <div className="json-error-box">
+                  {error.split("\n").map((line, i) => (
+                    <div key={i}>• {line}</div>
+                  ))}
+                </div>
+              )}
+
+              {success && (
+                <div className="json-error-box">
+                  {success.split("\n").map((line, i) => (
+                    <div key={i}>• {line}</div>
+                  ))}
+                </div>
+              )}
+              <div className="d-flex gap-3">
+                <RootButton
+                  keyLabel="S"
+                  className="mt-2 flex-grow-1"
+                  onClick={handleChangePassword}
+                >
+                  Save
+                </RootButton>
+                <RootButton
+                  keyLabel="C"
+                  className="mt-2 flex-grow-1"
+                  onClick={cancelEdit}
+                >
+                  Cancel
+                </RootButton>
+              </div>
             </div>
           )}
 
-          {success && (
-            <div className="json-error-box">
-              {success.split("\n").map((line, i) => (
-                <div key={i}>• {line}</div>
-              ))}
-            </div>
-          )}
-          <div className="d-flex gap-3">
-            <RootButton
-              keyLabel="S"
-              className="mt-2 flex-grow-1"
-              onClick={handleChangePassword}
-            >
-              Save
-            </RootButton>
-            <RootButton
-              keyLabel="C"
-              className="mt-2 flex-grow-1"
-              onClick={cancelEdit}
-            >
-              Cancel
-            </RootButton>
-          </div>
-        </div>
-      )}
-
-      {editMode === "description" && user && (
-        <div className="mt-3">
-          <pre className="json-pre">
-            {`{
+          {editMode === "description" && user && (
+            <div className="mt-3">
+              <pre className="json-pre">
+                {`{
   "newDescription": "`}
-            <textarea
-              className="json-input json-textarea"
-              rows={2}
-              value={newDescription}
-              onChange={(e) => setNewDescription(e.target.value.slice(0, 300))}
-            />
-            {`"
+                <textarea
+                  className="json-input json-textarea"
+                  rows={2}
+                  value={newDescription}
+                  onChange={(e) => setNewDescription(e.target.value.slice(0, 300))}
+                />
+                {`"
 }`}
-          </pre>
+              </pre>
 
-          {error && (
-            <div className="json-error-box">
-              {error.split("\n").map((line, i) => (
-                <div key={i}>• {line}</div>
-              ))}
+              {error && (
+                <div className="json-error-box">
+                  {error.split("\n").map((line, i) => (
+                    <div key={i}>• {line}</div>
+                  ))}
+                </div>
+              )}
+
+              {success && (
+                <div className="json-error-box">
+                  {success.split("\n").map((line, i) => (
+                    <div key={i}>• {line}</div>
+                  ))}
+                </div>
+              )}
+              <div className="d-flex gap-3">
+                <RootButton
+                  keyLabel="S"
+                  className="mt-2 flex-grow-1"
+                  onClick={handleChangeDescription}
+                >
+                  Save
+                </RootButton>
+                <RootButton
+                  keyLabel="C"
+                  className="mt-2 flex-grow-1"
+                  onClick={cancelEdit}
+                >
+                  Cancel
+                </RootButton>
+              </div>
             </div>
           )}
 
-          {success && (
-            <div className="json-error-box">
-              {success.split("\n").map((line, i) => (
-                <div key={i}>• {line}</div>
-              ))}
+          {!editMode && user && (
+
+            <div className="d-flex flex-column gap-2 mt-3">
+              <RootButton
+                keyLabel="P"
+                onClick={() => {
+                  setEditMode("password");
+                  setSuccess(null);
+                  setError(null);
+                }}
+              >
+                Change Password
+              </RootButton>
+
+              <RootButton
+                keyLabel="D"
+                onClick={() => {
+                  setEditMode("description");
+                  setSuccess(null);
+                  setError(null);
+                }}
+              >
+                Change Description
+              </RootButton>
             </div>
           )}
-          <div className="d-flex gap-3">
-            <RootButton
-              keyLabel="S"
-              className="mt-2 flex-grow-1"
-              onClick={handleChangeDescription}
-            >
-              Save
-            </RootButton>
-            <RootButton
-              keyLabel="C"
-              className="mt-2 flex-grow-1"
-              onClick={cancelEdit}
-            >
-              Cancel
-            </RootButton>
-          </div>
-        </div>
-      )}
 
-      {!editMode && user && (
-        <div className="d-flex flex-column gap-2 mt-3">
-          <RootButton
-            keyLabel="P"
-            onClick={() => {
-              setEditMode("password");
-              setSuccess(null);
-              setError(null);
-            }}
-          >
-            Change Password
-          </RootButton>
+          {user && (
+            <RootButton
+              keyLabel="L"
+              onClick={handleLogout}
+              className="mt-3 w-100"
+            >
+              Logout
+            </RootButton>
+          )}
 
-          <RootButton
-            keyLabel="D"
-            onClick={() => {
-              setEditMode("description");
-              setSuccess(null);
-              setError(null);
-            }}
-          >
-            Change Description
-          </RootButton>
         </div>
-      )}
-      {user && (
-        <RootButton
-          keyLabel="L"
-          onClick={handleLogout}
-          className="logout-button"
-        >
-          Logout
-        </RootButton>
-      )}
-    </div>
+
+      </div>
+    </Col>
   );
 }

@@ -28,7 +28,7 @@ body {
 }
 
 main {
-    max-height: 80vh;
+    max-height: 82vh;
     min-height: 0;
 }
 
@@ -42,6 +42,10 @@ h6 {
     color: $primary;
 }
 
+h5 {
+    font-size: 20px;
+}
+
 html,
 body,
 #root {
@@ -52,7 +56,7 @@ body,
 }
 
 .Japanse-char-big {
-    font-size: 3rem;
+    font-size: 2.4rem;
     color: $primary;
     font-family: 'VT323', monospace;
     user-select: none;
@@ -71,4 +75,17 @@ body,
 
 .user-select-none {
     user-select: none;
+}
+
+.keybind-header {
+    margin-left: -5px;
+}
+
+.overflow-y-auto {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.overflow-y-auto::-webkit-scrollbar {
+    display: none;
 }

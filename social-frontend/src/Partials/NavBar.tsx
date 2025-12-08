@@ -38,7 +38,7 @@ export default function NavBar() {
                   key={i}
                   as={NavLink}
                   to={r.path}
-                  className="nav-link px-lg-4 text-uppercase pt-0"
+                  className="nav-link px-lg-4 pt-0"
                   onClick={() => setTimeout(() => setExpanded(false), 200)}
                 >
                   [{r.menuLabel}]

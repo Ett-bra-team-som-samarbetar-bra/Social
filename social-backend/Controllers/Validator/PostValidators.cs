@@ -4,8 +4,8 @@ public class PostCreateDtoValidator : AbstractValidator<PostCreateDto>
 {
     public PostCreateDtoValidator()
     {
-        const int TitleMaxLength = 100;
-        const int ContentMaxLength = 1000;
+        const int TitleMaxLength = 30;
+        const int ContentMaxLength = 300;
 
         RuleFor(x => x.Title).NotEmpty().WithMessage("Title is required")
         .MaximumLength(TitleMaxLength).WithMessage($"Title must be at most {TitleMaxLength} characters long");

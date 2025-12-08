@@ -4,7 +4,6 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    overflow: hidden;
 }
 
 .conversation-list:focus {
@@ -12,7 +11,7 @@
 }
 
 .conversation-list.focused {
-    border: 1px solid bootstrap.$primary !important;
+    outline: 1px solid bootstrap.$primary !important;
     background-color: bootstrap.$dark !important;
 }
 
@@ -22,14 +21,7 @@
 
 .conversation-list {
     margin-top: 0;
-}
-
-.conversation-aside h5 {
-    font-size: 20px;
-}
-
-h5 {
-    font-size: 20px;
+    overflow: hidden;
 }
 
 .conversation-list {

@@ -21,9 +21,9 @@ public class PostServiceTests : TestBase
         var result = await postService.GetPosts(pageIndex: 1, pageSize: 3);
 
         Assert.Equal(3, result.Items.Count);
-        Assert.Equal("Title1", result.Items[0].Title);
+        Assert.Equal("Title1", result.Items[2].Title);
         Assert.Equal("Title2", result.Items[1].Title);
-        Assert.Equal("Title3", result.Items[2].Title);
+        Assert.Equal("Title3", result.Items[0].Title);
     }
 
     [Fact]
@@ -49,9 +49,9 @@ public class PostServiceTests : TestBase
         var result = await postService.GetPosts(pageIndex: 2, pageSize: 3);
 
         Assert.Equal(3, result.Items.Count);
-        Assert.Equal("Title4", result.Items[0].Title);
-        Assert.Equal("Title5", result.Items[1].Title);
-        Assert.Equal("Title6", result.Items[2].Title);
+        Assert.Equal("Title7", result.Items[0].Title);
+        Assert.Equal("Title6", result.Items[1].Title);
+        Assert.Equal("Title5", result.Items[2].Title);
     }
 
     [Fact]
@@ -91,8 +91,8 @@ public class PostServiceTests : TestBase
         var postService = new PostService(Context, CreateLogger<PostService>());
         var result = await postService.GetPosts(pageIndex: 1, pageSize: 3);
 
-        Assert.True(result.Items[0].CreatedAt < result.Items[1].CreatedAt);
-        Assert.True(result.Items[1].CreatedAt < result.Items[2].CreatedAt);
+        Assert.True(result.Items[1].CreatedAt < result.Items[0].CreatedAt);
+        Assert.True(result.Items[2].CreatedAt < result.Items[1].CreatedAt);
     }
 
     [Fact]
@@ -168,8 +168,8 @@ public class PostServiceTests : TestBase
         var result = await postService.GetFollowingPosts(pageIndex: 1, pageSize: 3, user1.Id);
 
         Assert.Equal(2, result.Items.Count);
-        Assert.Equal("User2Title1", result.Items[0].Title);
-        Assert.Equal("User3Title1", result.Items[1].Title);
+        Assert.Equal("User2Title1", result.Items[1].Title);
+        Assert.Equal("User3Title1", result.Items[0].Title);
     }
 
     [Fact]

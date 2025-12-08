@@ -1,11 +1,16 @@
 @use "bootstrap";
 
 .post-box {
-  border: 1px solid bootstrap.$primary;
+  border-bottom: 1px solid bootstrap.$info;
+  border-top: 1px solid bootstrap.$info;
   background: bootstrap.$dark;
   padding: 1rem;
   margin-top: 0, 5rem;
   color: #ddd;
+}
+
+.post-box:last-child {
+  margin-bottom: 2rem;
 }
 
 .post-header {
@@ -32,12 +37,11 @@
 }
 
 .post-content {
-  background: #1a1a1a;
-  border: 1px solid bootstrap.$info;
-  padding: 0.75rem;
-  border-radius: 2px;
+  border-top: 1px solid bootstrap.$info;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  padding-right: 0.75rem;
   overflow-y: auto;
-  min-height: 100px;
   white-space: pre-wrap;
   word-break: break-word;
   font-family: "Noto Sans", sans-serif;
@@ -51,4 +55,8 @@
     color: bootstrap.$primary;
     text-decoration: underline;
   }
+}
+
+.post-outline {
+  border: 1px solid bootstrap.$primary;
 }
