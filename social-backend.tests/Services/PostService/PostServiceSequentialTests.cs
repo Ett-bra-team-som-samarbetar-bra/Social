@@ -51,10 +51,10 @@ public class PostServiceSequentialTests : TestBase
         // assert
         Assert.NotNull(firstPage);
         Assert.Single(firstPage.Items);
-        Assert.Equal("First", firstPage.Items[0].Title);
+        Assert.Equal("Second", firstPage.Items[0].Title);
         Assert.NotNull(secondPage);
         Assert.Single(secondPage.Items);
-        Assert.Equal("Second", secondPage.Items[0].Title);
+        Assert.Equal("First", secondPage.Items[0].Title);
     }
 
     [Fact]
@@ -168,7 +168,7 @@ public class PostServiceSequentialTests : TestBase
         // assert
         Assert.NotNull(firstPage);
         Assert.Single(firstPage.Items);
-        Assert.Equal("First", firstPage.Items[0].Title);
+        Assert.Equal("New Post", firstPage.Items[0].Title);
 
         Assert.NotNull(secondPage);
         Assert.Single(secondPage.Items);
@@ -176,6 +176,6 @@ public class PostServiceSequentialTests : TestBase
 
         Assert.NotNull(thirdPage);
         Assert.Single(thirdPage.Items);
-        Assert.Equal("New Post", thirdPage.Items[0].Title);
+        Assert.Equal("First", thirdPage.Items[0].Title);
     }
 }

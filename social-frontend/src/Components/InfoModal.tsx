@@ -1,9 +1,11 @@
 import { Row } from "react-bootstrap";
 import RootButton from "./RootButton";
+import { useHotKey } from "../Hooks/useHotKey";
 
 interface InfoModalProps {
   show: boolean;
   onClose: () => void;
+  setShow: (show: boolean) => void;
 }
 
 const asciiLogo = `
@@ -20,11 +22,15 @@ const keybinds = [
   { key: "U", desc: "Target user" },
   { key: "P", desc: "Target posts? TODO" },
   { key: "M", desc: "Target messages" },
-  { key: "C", desc: "Close" }
+  { key: "ESC", desc: "Close/Cancel" },
 ];
 
-export default function InfoModal({ show, onClose }: InfoModalProps) {
+export default function InfoModal({ show, onClose, setShow }: InfoModalProps) {
   if (!show) return null;
+
+  useHotKey("Escape", () => {
+    setShow(false);
+  });
 
   return (
     <>

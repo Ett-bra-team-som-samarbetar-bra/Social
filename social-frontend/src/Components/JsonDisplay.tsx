@@ -4,7 +4,7 @@ interface JsonDisplayProps {
 
 export default function JsonDisplay({ data }: JsonDisplayProps) {
   return (
-    <div className="json-box-container json-display-container">
+    <div className="json-box-container">
       <div className=" json-display-box">
         <pre className="json-pre json-display-pre">
           {`{`}

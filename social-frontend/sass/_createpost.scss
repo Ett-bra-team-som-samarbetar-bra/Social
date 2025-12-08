@@ -16,20 +16,20 @@
 
 .create-post-input {
   width: 100%;
-  background: bootstrap.$primary;
-  color: bootstrap.$dark;
-  border: 1px solid bootstrap.$primary;
   padding: 0.6rem;
   font-size: 1rem;
+  background-color: transparent;
+  border: 1px solid bootstrap.$info;
+  padding: 0.75rem;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: bootstrap.$primary;
 
   &:focus {
     outline: none;
-    border-color: bootstrap.$dark;
+    border-color: bootstrap.$primary;
   }
-}
-
-.create-post-title {
-  font-weight: 500;
 }
 
 .create-post-content {

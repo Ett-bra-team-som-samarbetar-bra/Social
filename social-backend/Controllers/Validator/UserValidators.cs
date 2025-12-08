@@ -6,7 +6,7 @@ public class LoginRequestValidator : AbstractValidator<LoginRequest>
     {
         RuleFor(x => x.Username).NotEmpty().WithMessage("Username is required")
         .MinimumLength(3).WithMessage("Username must be atleast three characters")
-        .MaximumLength(50).WithMessage("Username must be at most 50 characters");
+        .MaximumLength(30).WithMessage("Username must be at most 30 characters");
 
         RuleFor(x => x.Password).NotEmpty().WithMessage("Password is required to log in");
     }
@@ -18,7 +18,7 @@ public class RegisterRequestValidator : AbstractValidator<RegisterRequest>
     {
         RuleFor(x => x.Username).NotEmpty().WithMessage("Username is required")
         .MinimumLength(3).WithMessage("Username must be at least three characters")
-        .MaximumLength(50).WithMessage("Username must be at most 50 characters long");
+        .MaximumLength(30).WithMessage("Username must be at most 30 characters long");
 
         RuleFor(x => x.Email).NotEmpty().WithMessage("Email must not be empty")
         .EmailAddress().WithMessage("Email must be a valid emailaddress")

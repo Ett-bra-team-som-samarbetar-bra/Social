@@ -44,7 +44,7 @@ export default function Header() {
       </Container>
       <DividerLine variant="primary" className="mb-4" />
 
-      <InfoModal show={showModal} onClose={() => setShowModal(false)} />
+      <InfoModal show={showModal} setShow={setShowModal} onClose={() => setShowModal(false)} />
     </header>
   );
 }
