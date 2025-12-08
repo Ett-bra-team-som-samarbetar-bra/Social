@@ -32,6 +32,10 @@ public class PostService(DatabaseContext dbContext, ILogger<PostService> logger)
             .ToList();
 
         var count = posts.Count;
+
+        if (count == 0)
+            throw new NotFoundException("No posts found");
+
         var result = await GetPaginatedPosts(paginatedPosts, count, pageIndex, pageSize);
         var dtoPosts = result.Items.Select(ToPostDto).ToList();
 
@@ -56,6 +60,10 @@ public class PostService(DatabaseContext dbContext, ILogger<PostService> logger)
             .ToList();
 
         var count = posts.Count;
+
+        if (count == 0)
+            throw new NotFoundException("You have not created any posts...");
+
         var result = await GetPaginatedPosts(paginatedPosts, count, pageIndex, pageSize);
         var dtoPosts = result.Items.Select(ToPostDto).ToList();
 
@@ -72,7 +80,7 @@ public class PostService(DatabaseContext dbContext, ILogger<PostService> logger)
         var followingIds = user.Following.Select(u => u.Id).ToList();
 
         if (followingIds.Count == 0)
-            throw new NotFoundException("User is not following anyone");
+            throw new NotFoundException("You are not following anyone...");
 
         var posts = await _db.Posts
             .Where(p => followingIds.Contains(p.UserId))
