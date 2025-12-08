@@ -234,7 +234,7 @@ public class PostService(DatabaseContext dbContext) : IPostService
         return new CommentResponseDto
         {
             UserId = comment.UserId,
-            UserName = comment.User.Username,
+            Username = comment.User.Username,
             Content = comment.Content,
             CreatedAt = DateTime.SpecifyKind(comment.CreatedAt, DateTimeKind.Utc)
         };

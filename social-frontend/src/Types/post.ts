@@ -16,14 +16,9 @@ export interface PostCreateDto {
   content: string;
 }
 
-/*public record PostCreateDto
-{
-    public required string Title { get; set; }
-    public required string Content { get; set; }
+export interface Comment {
+  userId: number;
+  username: string;
+  content: string;
+  createdAt: string;
 }
-
-public record PostEditDto
-{
-    public int Id { get; set; }
-    public required string Content { get; set; }
-} */
