@@ -41,8 +41,7 @@ export default function ConversationList() {
 
     useEffect(() => {
         if (user && activeChatId) {
-            const timer = setTimeout(fetchConversations, 300);
-            return () => clearTimeout(timer);
+            fetchConversations();
         }
     }, [activeChatId, user]);
 
@@ -139,7 +138,7 @@ export default function ConversationList() {
                         >
                             {isSelected ? "> " : "  "}
                             @{c.username}{" "}
-                            {c.hasUnreadMessages && (
+                            {c.hasUnreadMessages && selectedUserId !== c.userId && (
                                 <span className="text-primary">⬤</span>
                             )}
                         </div>
