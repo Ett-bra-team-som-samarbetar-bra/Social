@@ -93,28 +93,7 @@ export default function CommentsPage() {
       onComment={() => openPost(post.id)}
       hasLiked={user?.likedPostIds?.includes(post.id) ?? false}
     />
-
     }
-    {post && post.comments.length > 0 && (
-      <div className="mt-4">
-        <h5>Comments</h5>
-        {post.comments.map((comment) => (
-          <CommentComponent key={`${comment.createdAt}-${comment.userId}`}
-            comment={comment} />
-        ))}
-      </div>
-    )}
-
-    {post && post.comments.length === 0 && (
-      <p className="text-muted mt-3">No comments yet. Be the first!</p>
-    )}
-
-    {loading && (
-      <div className="text-center text-secondary mt-3">Loading...</div>
-    )}
-    {error && <div className="text-danger text-center mt-3">{error}</div>}
-    <div className="d-flex flex-column gap-3"></div>
-
     <div className="mt-4">
       <h5>Add a Comment</h5>
 
@@ -135,5 +114,25 @@ export default function CommentsPage() {
         Post Comment
       </RootButton>
     </div>
+    {post && post.comments.length > 0 && (
+      <div className="mt-4">
+        <h5>Comments</h5>
+        {post.comments.map((comment) => (
+          <CommentComponent key={`${comment.createdAt}-${comment.userId}`}
+            comment={comment} />
+        ))}
+      </div>
+    )}
+
+    {post && post.comments.length === 0 && (
+      <p className="text-muted mt-3">No comments yet. Be the first!</p>
+    )}
+
+    {loading && (
+      <div className="text-center text-secondary mt-3">Loading...</div>
+    )}
+    {error && <div className="text-danger text-center mt-3">{error}</div>}
+    <div className="d-flex flex-column gap-3"></div>
+
   </div>;
 }
