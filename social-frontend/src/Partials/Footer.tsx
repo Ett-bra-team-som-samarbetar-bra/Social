@@ -33,10 +33,10 @@ export default function Footer() {
     <footer>
       <DividerLine variant="primary" />
 
-      <Row className="m-0 py-3">
+      <Row className="m-0 align-items-center py-2">
         <Col md={3} className="d-flex align-items-center justify-content-left">
           <span
-            className="Japanse-char-big ps-5 cursor-pointer glitch"
+            className="m-0 Japanse-char-big ps-5 cursor-pointer glitch"
             onClick={() => navigate("/")}
           >
             根鍵
@@ -45,21 +45,17 @@ export default function Footer() {
 
         <Col md={6} className="text-center">
           <p className="m-0 text-size-small">
-            {"${01010010 01101111 01101111 01110100 00101110 01000001 01100011 01100011 01100101 01110011 01110011}"}
-          </p>
-
-          <p className="m-0 text-size-small">
             {"0x52_0x6F_0x6F_0x74_0x2E_0x41_0x63_0x63_0x65_0x73_0x73"}
           </p>
 
-          <p className="pt-2 mt-1 m-0 text-size-small" style={{ fontFamily: "monospace" }}>
+          <p className=" m-0 text-size-small" style={{ fontFamily: "monospace" }}>
             {typed}
             {typed.length < brokenCopyrightString.length && (
               <span className="blinking-cursor">|</span>
             )}
           </p>
-
         </Col>
+
         <Col md={3} />
       </Row>
     </footer >
