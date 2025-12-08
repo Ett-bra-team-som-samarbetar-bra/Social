@@ -14,6 +14,8 @@ export default function UserPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pageIndex, setPageIndex] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
 
   useEffect(() => {
     async function loadUser() {
@@ -26,7 +28,27 @@ export default function UserPage() {
       setUserData(await result.json());
     }
 
+    async function loadPosts() {
+      const result = await fetch(
+        `${apiUrl}/api/post/user-posts/${id}/${pageIndex}/${pageSize}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
+
+      if (!result.ok) {
+        setError("Failed to load posts");
+        setLoading(false);
+        return;
+      }
+      const postData = await result.json();
+
+      setPosts(postData.items);
+    }
+
     loadUser();
+    loadPosts();
   }, [id]);
 
   if (!userData) return <div>Loading...</div>;
