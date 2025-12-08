@@ -23,6 +23,7 @@ public class PostService(DatabaseContext dbContext, ILogger<PostService> logger)
         var posts = await _db.Posts
             .Include(p => p.User)
             .Include(p => p.Comments)
+                .ThenInclude(c => c.User)
             .OrderBy(b => b.CreatedAt)
             .ToListAsync();
 
@@ -47,6 +48,7 @@ public class PostService(DatabaseContext dbContext, ILogger<PostService> logger)
             .Where(p => p.UserId == user.Id)
             .Include(p => p.User)
             .Include(p => p.Comments)
+                .ThenInclude(c => c.User)
             .OrderBy(b => b.CreatedAt)
             .ToListAsync();
 
