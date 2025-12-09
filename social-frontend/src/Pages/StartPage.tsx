@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useAuth } from "../Hooks/useAuth";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +9,7 @@ import PostComponent from "../Components/PostComponent";
 import PostAlertMessage from "../Components/PostAlertMessage";
 import { useFocus } from "../Context/FocusContext";
 import { useHotKey } from "../Hooks/useHotKey";
-
+import { usePagination } from "../Hooks/usePagination";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -18,72 +19,66 @@ export default function StartPage() {
 
   const navigate = useNavigate();
   const { user, updateUser } = useAuth();
-  const [activeTab, setActiveTab] = useState<"all" | "following" | "mine" | "create">(
-    "all"
-  );
+  const [activeTab, setActiveTab] = useState<
+    "all" | "following" | "mine" | "create"
+  >("all");
   const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [pageIndex] = useState<number>(1);
+  const [createError, setCreateError] = useState<string | null>(null);
   const [pageSize] = useState<number>(10);
-  const postIds = posts.map(p => p.id);
+  const postIds = posts.map((p) => p.id);
   const isCreateMode = activeTab === "create";
 
+  const fetchPage = async (page: number, size: number) => {
+    if (activeTab === "create") return [] as Post[];
+    if (activeTab === "mine" && !user?.id) return [] as Post[];
 
+    const endpoint =
+      activeTab === "all"
+        ? `${apiUrl}/api/post/all/${page}/${size}`
+        : activeTab === "following"
+        ? `${apiUrl}/api/post/follower-posts/${page}/${size}`
+        : `${apiUrl}/api/post/user-posts/${user?.id}/${page}/${size}`;
 
-  const endpoints = {
-    all: `${apiUrl}/api/post/all/${pageIndex}/${pageSize}`,
-    following: `${apiUrl}/api/post/follower-posts/${pageIndex}/${pageSize}`,
-    mine: `${apiUrl}/api/post/user-posts/${user?.id}/${pageIndex}/${pageSize}`,
-    create: "",
-  };
-
-  // Fetch posts
-  useEffect(() => {
-    if (activeTab === "mine" && !user?.id) return;
-    if (activeTab === "create") return;
-
-    let ignore = false;
-
-    async function fetchPosts() {
-      setLoading(true);
-      setError(null);
-
-      const result = await fetch(endpoints[activeTab], {
-        method: "GET",
-        credentials: "include",
-      });
-
-      if (!result.ok) {
-        if (!ignore) {
-          try {
-            const errorData = await result.json();
-            setError(errorData.error || "Failed to load posts");
-          } catch {
-            setError("Failed to load posts");
-          }
-        }
-        setLoading(false);
-        return;
+    const result = await fetch(endpoint, {
+      method: "GET",
+      credentials: "include",
+    });
+    if (!result.ok) {
+      try {
+        const errorData = await result.json();
+        throw new Error(errorData.error || "Failed to load posts");
+      } catch {
+        throw new Error("Failed to load posts");
       }
-
-      const data = await result.json();
-      if (!ignore) setPosts(data.items ?? []);
-      if (!ignore && focus.region === "center" && data.items?.length > 0) {
-        setFocusedPost(data.items[0].id);
-      }
-
-      setLoading(false);
     }
 
-    fetchPosts();
-    return () => {
-      ignore = true;
-    };
-  }, [activeTab, user?.id]);
+    const data = await result.json();
+    // Support APIs that return either an array directly or an object with `items`.
+    if (Array.isArray(data)) return data as Post[];
+    return (data.items ?? []) as Post[];
+  };
+
+  const { items, loading, error, hasMore, loadMore } = usePagination<Post>(
+    fetchPage,
+    pageSize,
+    [activeTab, user?.id]
+  );
+
+  useEffect(() => {
+    setPosts(items);
+    if (
+      items.length > 0 &&
+      focus.region === "center" &&
+      focus.focusedPostId === null
+    ) {
+      setFocusedPost(items[0].id);
+    }
+  }, [items]);
 
   async function handleSubmit(title: string, content: string) {
     const request: PostCreateDto = { title, content };
+    setCreateError(null);
+
     const result = await fetch(`${apiUrl}/api/post`, {
       method: "POST",
       credentials: "include",
@@ -92,8 +87,8 @@ export default function StartPage() {
     });
 
     if (!result.ok) {
-      setError("Failed to create post");
-      setLoading(false);
+      setCreateError("Failed to create post");
+      return;
     }
 
     setActiveTab("all");
@@ -112,7 +107,7 @@ export default function StartPage() {
     });
 
     if (!result.ok) {
-      setError("Something went wrong.");
+      setCreateError("Something went wrong.");
 
       // Rollback UI
       setPosts((prev) =>
@@ -142,7 +137,7 @@ export default function StartPage() {
   }, [isActiveRegion, posts]);
 
   useHotKey(
-    "j",
+    "arrowDown",
     () => {
       if (!isActiveRegion) return;
       if (isCreateMode) return;
@@ -152,7 +147,7 @@ export default function StartPage() {
     "center"
   );
   useHotKey(
-    "k",
+    "arrowUp",
     () => {
       if (!isActiveRegion) return;
       if (isCreateMode) return;
@@ -205,39 +200,58 @@ export default function StartPage() {
       <div className="d-flex flex-column h-100">
         <div className="d-flex gap-1 justify-content-between">
           <div className="d-flex gap-1">
-            <RootButton className="post-outline post-tab-fixed-size" onClick={() => setActiveTab("all")}>Global</RootButton>
-            <RootButton className="post-outline post-tab-fixed-size" onClick={() => setActiveTab("following")}>Follow</RootButton>
-            <RootButton className="post-outline post-tab-fixed-size" onClick={() => navigate(`/user/${user!.id}`)}>Profile</RootButton>
+            <RootButton
+              className="post-outline post-tab-fixed-size"
+              onClick={() => setActiveTab("all")}
+            >
+              Global
+            </RootButton>
+            <RootButton
+              className="post-outline post-tab-fixed-size"
+              onClick={() => setActiveTab("following")}
+            >
+              Follow
+            </RootButton>
+            <RootButton
+              className="post-outline post-tab-fixed-size"
+              onClick={() => navigate(`/user/${user!.id}`)}
+            >
+              Profile
+            </RootButton>
           </div>
-          <RootButton className="post-outline post-tab-fixed-size" onClick={() => setActiveTab("create")}>Create</RootButton>
+          <RootButton
+            className="post-outline post-tab-fixed-size"
+            onClick={() => setActiveTab("create")}
+          >
+            Create
+          </RootButton>
         </div>
 
-        {
-          activeTab === "create" ? (
-            <div className="">
-              <CreatePost
-                onSubmit={handleSubmit}
-                userId={user!.id}
-                username={user!.username}
+        {activeTab === "create" ? (
+          <div className="">
+            <CreatePost
+              onSubmit={handleSubmit}
+              userId={user!.id}
+              username={user!.username}
+            />
+          </div>
+        ) : (
+          <>
+            {loading && (
+              <PostAlertMessage message={"Loading..."} isErrorMessage={false} />
+            )}
+            {(error || createError) && (
+              <PostAlertMessage
+                message={error ?? createError ?? ""}
+                isErrorMessage={true}
               />
-            </div>
-          ) : (
-            <>
-              {loading && (
-                <PostAlertMessage
-                  message={"Loading..."}
-                  isErrorMessage={false} />
-              )}
-              {error &&
-                <PostAlertMessage
-                  message={error}
-                  isErrorMessage={true} />
-              }
-              {!loading && !error &&
+            )}
+            {!loading && !(error || createError) && (
+              <>
                 <div className="d-flex flex-column overflow-y-auto gap-3 post-outline mb-4">
                   {posts.map((post) => (
                     <PostComponent
-                      id={post.userId}
+                      id={post.id}
                       key={post.id}
                       title={post.title}
                       content={post.content}
@@ -249,14 +263,27 @@ export default function StartPage() {
                       onLike={() => handleLike(post.id)}
                       onComment={() => handleComment(post.id)}
                       hasLiked={user?.likedPostIds?.includes(post.id) ?? false}
+                      isFocused={focus.focusedPostId == post.id}
                     />
                   ))}
                 </div>
-              }
-            </>
-          )
-        }
-      </div >
+                <div className="d-flex justify-content-center mb-3">
+                  <RootButton
+                    onClick={() => loadMore()}
+                    disabled={!hasMore || loading}
+                  >
+                    {loading
+                      ? "Loading..."
+                      : hasMore
+                      ? "Load more"
+                      : "No more posts"}
+                  </RootButton>
+                </div>
+              </>
+            )}
+          </>
+        )}
+      </div>
     </>
   );
 }
