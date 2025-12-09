@@ -134,55 +134,61 @@ export default function UserPage() {
     navigate(`/post/${id}`);
   }
 
+  const heading = user ? "[P]Post" : "[[▓]P▣ó̶st";
+
   return (
-    <div className="d-flex flex-column h-100">
-      <RootButton className="post-outline non-interactive post-tab-fixed-size">Profile</RootButton>
+    <>
+      <h5 className="text-primary mb-3 keybind-header">{heading}</h5>
 
-      <UserProfileComponent
-        userId={userData.id}
-        username={userData.username}
-        description={userData.description}
-        createdAt={userData.createdAt}
-        postCount={userData.postCount}
-        followerCount={userData.followerCount}
-        followingCount={userData.followingCount}
-        isFollowing={userData.isFollowing}
-        isOwnProfile={userData.isOwnProfile}
-        onFollowToggle={handleFollowToggle}
-      />
+      <div className="d-flex flex-column h-100">
+        <RootButton className="post-outline non-interactive post-tab-fixed-size">Profile</RootButton>
 
-      <RootButton className="post-outline non-interactive post-tab-fixed-size">Posts</RootButton>
+        <UserProfileComponent
+          userId={userData.id}
+          username={userData.username}
+          description={userData.description}
+          createdAt={userData.createdAt}
+          postCount={userData.postCount}
+          followerCount={userData.followerCount}
+          followingCount={userData.followingCount}
+          isFollowing={userData.isFollowing}
+          isOwnProfile={userData.isOwnProfile}
+          onFollowToggle={handleFollowToggle}
+        />
 
-      {loading && (
-        <PostAlertMessage
-          message={"Loading..."}
-          isErrorMessage={false} />
-      )}
-      {error &&
-        <PostAlertMessage
-          message={error}
-          isErrorMessage={true} />
-      }
-      {!loading && !error &&
-        <div className="d-flex flex-column overflow-y-auto gap-3 post-outline mb-4">
-          {posts.map((post) => (
-            <PostComponent
-              id={post.userId}
-              key={post.id}
-              title={post.title}
-              content={post.content}
-              username={post.username}
-              userId={post.userId}
-              likes={post.likeCount}
-              commentCount={post.comments.length}
-              createdAt={post.createdAt}
-              onLike={() => handleLike(post.id)}
-              onComment={() => handleComment(post.id)}
-              hasLiked={user?.likedPostIds?.includes(post.id) ?? false}
-            />
-          ))}
-        </div>
-      }
-    </div>
+        <RootButton className="post-outline non-interactive post-tab-fixed-size">Posts</RootButton>
+
+        {loading && (
+          <PostAlertMessage
+            message={"Loading..."}
+            isErrorMessage={false} />
+        )}
+        {error &&
+          <PostAlertMessage
+            message={error}
+            isErrorMessage={true} />
+        }
+        {!loading && !error &&
+          <div className="d-flex flex-column overflow-y-auto gap-3 post-outline mb-4">
+            {posts.map((post) => (
+              <PostComponent
+                id={post.userId}
+                key={post.id}
+                title={post.title}
+                content={post.content}
+                username={post.username}
+                userId={post.userId}
+                likes={post.likeCount}
+                commentCount={post.comments.length}
+                createdAt={post.createdAt}
+                onLike={() => handleLike(post.id)}
+                onComment={() => handleComment(post.id)}
+                hasLiked={user?.likedPostIds?.includes(post.id) ?? false}
+              />
+            ))}
+          </div>
+        }
+      </div>
+    </>
   );
 }
