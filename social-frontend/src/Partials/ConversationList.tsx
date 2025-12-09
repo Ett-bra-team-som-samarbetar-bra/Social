@@ -145,6 +145,9 @@ export default function ConversationList() {
         className={`conversation-list ${focused ? "focused" : ""}`}
         onBlur={() => setFocused(false)}
       >
+        <p className="text-primary m-0">{text1Heading}</p>
+        <p className="text-primary">{text2Heading}</p>
+
         {conversations.map((c) => {
           const isSelected = selectedUserId === c.userId;
 
@@ -157,8 +160,6 @@ export default function ConversationList() {
                 navigate(`/messages/${c.userId}`);
               }}
             >
-              <p className="text-primary m-0">{text1Heading}</p>
-              <p className="text-primary">{text2Heading}</p>
 
               {isSelected ? "> " : "  "}@{c.username}{" "}
               {c.hasUnreadMessages && selectedUserId !== c.userId && (

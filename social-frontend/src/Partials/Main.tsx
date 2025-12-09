@@ -31,7 +31,9 @@ export default function Main() {
             className={`h-100 d-flex flex-column region
               ${focus.region === "center" ? "active-region" : ""}`}
           >
-            <h5 className="text-primary mb-3 keybind-header cursor-pointer" onClick={() => navigate(`/`)}>{userHeading}</h5>
+            <h5
+              className={`text-primary mb-3 keybind-header ${user ? 'cursor-pointer' : ''}`}
+              onClick={user ? () => navigate(`/`) : undefined}>{userHeading}</h5>
             <Outlet />
           </Col>
 
