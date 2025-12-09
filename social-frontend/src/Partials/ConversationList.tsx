@@ -144,13 +144,6 @@ export default function ConversationList() {
         className={`conversation-list ${focused ? "focused" : ""}`}
         onBlur={() => setFocused(false)}
       >
-        {user && (
-          <>
-            <p className="text-primary">Hit [SPACE] to choose</p>
-            <p className="text-primary">Hit [ESC] to escape</p>
-          </>
-        )}
-
         {conversations.map((c) => {
           const isSelected = selectedUserId === c.userId;
 
@@ -170,26 +163,6 @@ export default function ConversationList() {
                     </>
                 )}
 
-                {conversations.map((c) => {
-                    const isSelected = selectedUserId === c.userId;
-
-                    return (
-                        <div
-                            key={c.userId}
-                            className={`conversation-item ${isSelected ? "selected" : ""}`}
-                            onClick={() => {
-                                setSelectedUserId(c.userId);
-                                navigate(`/messages/${c.userId}`);
-                            }}
-                        >
-                            {isSelected ? "> " : "  "}
-                            @{c.username}{" "}
-                            {c.hasUnreadMessages && selectedUserId !== c.userId && (
-                                <span className="text-primary">⬤</span>
-                            )}
-                        </div>
-                    );
-                })}
               {isSelected ? "> " : "  "}@{c.username}{" "}
               {c.hasUnreadMessages && selectedUserId !== c.userId && (
                 <span className="text-primary">⬤</span>
