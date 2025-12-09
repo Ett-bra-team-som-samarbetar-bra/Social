@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from "react";
 
-type FocusRegion = "left" | "center" | "right";
+type FocusRegion = "left" | "center" | "right" | "none";
 
 interface FocusState {
   region: FocusRegion;

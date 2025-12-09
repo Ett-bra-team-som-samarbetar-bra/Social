@@ -11,27 +11,24 @@ export function GlobalHotkeys() {
     const [showInfoModal, setShowInfoModal] = useState(false);
     const [showLogoutModal, setShowLogoutModal] = useState(false);
 
+    useHotKey("Escape", () => setRegion("none"), "global");
     useHotKey("u", () => setRegion("left"), "global");
-
     useHotKey("p", () => setRegion("center"), "global");
-
     useHotKey("m", () => setRegion("right"), "global");
-
     useHotKey("i", () => setShowInfoModal(true), "global");
-    
     useHotKey("l", () => setShowLogoutModal(true), "global");
 
     return (
         <>
-            <InfoModal 
-                show={showInfoModal} 
-                setShow={setShowInfoModal} 
-                onClose={() => setShowInfoModal(false)} 
+            <InfoModal
+                show={showInfoModal}
+                setShow={setShowInfoModal}
+                onClose={() => setShowInfoModal(false)}
             />
-            <LogoutModal 
-                show={showLogoutModal} 
-                setShow={setShowLogoutModal} 
-                onClose={() => setShowLogoutModal(false)} 
+            <LogoutModal
+                show={showLogoutModal}
+                setShow={setShowLogoutModal}
+                onClose={() => setShowLogoutModal(false)}
                 onLogout={logout}
             />
         </>
