@@ -191,6 +191,44 @@ export default function StartPage() {
     "local",
     "center"
   );
+
+  useHotKey(
+    "g",
+    () => {
+      if (!isActiveRegion) return;
+      setActiveTab("all");
+    },
+    "local",
+    "center"
+  );
+  useHotKey(
+    "f",
+    () => {
+      if (!isActiveRegion) return;
+      setActiveTab("following");
+    },
+    "local",
+    "center"
+  );
+  useHotKey(
+    "h",
+    () => {
+      if (!isActiveRegion) return;
+      navigate(`/user/${user!.id}`);
+    },
+    "local",
+    "center"
+  );
+  useHotKey(
+    "y",
+    () => {
+      if (!isActiveRegion) return;
+      setActiveTab("create");
+    },
+    "local",
+    "center"
+  );
+
   useEffect(() => {
     if (!focus.focusedPostId) return;
 
@@ -205,11 +243,11 @@ export default function StartPage() {
       <div className="d-flex flex-column h-100">
         <div className="d-flex gap-1 justify-content-between">
           <div className="d-flex gap-1">
-            <RootButton className="post-outline post-tab-fixed-size" onClick={() => setActiveTab("all")}>Global</RootButton>
-            <RootButton className="post-outline post-tab-fixed-size" onClick={() => setActiveTab("following")}>Follow</RootButton>
-            <RootButton className="post-outline post-tab-fixed-size" onClick={() => navigate(`/user/${user!.id}`)}>Profile</RootButton>
+            <RootButton className="post-outline post-tab-fixed-size" onClick={() => setActiveTab("all")}>[G]Global</RootButton>
+            <RootButton className="post-outline post-tab-fixed-size" onClick={() => setActiveTab("following")}>[F]Follow</RootButton>
+            <RootButton className="post-outline post-tab-fixed-size" onClick={() => navigate(`/user/${user!.id}`)}>[H]Profile</RootButton>
           </div>
-          <RootButton className="post-outline post-tab-fixed-size" onClick={() => setActiveTab("create")}>Create</RootButton>
+          <RootButton className="post-outline post-tab-fixed-size" onClick={() => setActiveTab("create")}>[Y]Create</RootButton>
         </div>
 
         {

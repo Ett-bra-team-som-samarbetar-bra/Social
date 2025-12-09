@@ -141,11 +141,10 @@ export default function ConversationList() {
 
   const messageHeading = user ? "[M]Messages" : "[░▒▓]Mess■ges̴͊";
   const text1Heading = user ? "[SPACE] to choose" : "[S̷P̴A̸C̶E̵] t̷͝o̶͟ c̴̕h͢͠o̡͞o̸͞s̷͠e͟";
-  const text2Heading = user ? "[ESC] to escape" : "[░■] to e̡͝s͝c̡■░░";
 
   return (
-    <Col className="conversation-aside ">
-      <h5 className="text-primary mb-3 keybind-header">{messageHeading}</h5>
+    <Col className="conversation-aside">
+      <h5 className={`text-primary mb-3 keybind-header w-50 py-1 ${isActiveRegion ? 'bg-primary text-dark' : ''}`}>{messageHeading}</h5>
       <div
         ref={listRef}
         tabIndex={0}
@@ -153,7 +152,6 @@ export default function ConversationList() {
         onBlur={() => setFocused(false)}
       >
         <p className="text-primary m-0">{text1Heading}</p>
-        <p className="text-primary">{text2Heading}</p>
 
         {conversations.map((c) => {
           const isSelected = selectedUserId === c.userId;
