@@ -4,6 +4,7 @@ import { useFocus } from "./FocusContext.tsx";
 import InfoModal from "../Components/InfoModal";
 import LogoutModal from "../Components/LogoutModal";
 import { useAuth } from "../Hooks/useAuth";
+import { messageActionsRef } from "./MessageActionsRef";
 
 export function GlobalHotkeys() {
     const { setRegion } = useFocus();
@@ -20,6 +21,12 @@ export function GlobalHotkeys() {
     useHotKey("i", () => setShowInfoModal(true), "global");
     
     useHotKey("l", () => setShowLogoutModal(true), "global");
+
+    useHotKey("o", () => messageActionsRef.loadOlderMessages?.(), "global");
+
+    useHotKey("k", () => messageActionsRef.scrollToTop?.(), "global");
+
+    useHotKey("n", () => messageActionsRef.scrollToBottom?.(), "global");
 
     return (
         <>

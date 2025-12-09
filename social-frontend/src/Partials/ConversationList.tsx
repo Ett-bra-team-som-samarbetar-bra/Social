@@ -45,6 +45,14 @@ export default function ConversationList() {
   }, [isActiveRegion]);
 
   useEffect(() => {
+    if (activeChatId) {
+      setSelectedUserId(activeChatId);
+    } else {
+      setSelectedUserId(null);
+    }
+  }, [activeChatId]);
+
+  useEffect(() => {
     if (!user) {
       setConversations([]);
       return;
@@ -53,9 +61,8 @@ export default function ConversationList() {
   }, [user]);
 
   useEffect(() => {
-    if (user && activeChatId) {
-      fetchConversations();
-    }
+    if (!user) return;
+    fetchConversations();
   }, [activeChatId, user]);
 
   useSignalR(user?.id ?? 0, () => {
@@ -162,7 +169,7 @@ export default function ConversationList() {
             >
 
               {isSelected ? "> " : "  "}@{c.username}{" "}
-              {c.hasUnreadMessages && selectedUserId !== c.userId && (
+              {c.hasUnreadMessages && activeChatId !== c.userId && (
                 <span className="text-primary">⬤</span>
               )}
             </div>
