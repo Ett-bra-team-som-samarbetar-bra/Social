@@ -38,7 +38,7 @@ export default function Header() {
             {user && (
               <RootButton
                 className=""
-                keyLabel="L"
+                keyLabel="X"
                 onClick={() => setShowLogoutModal(true)}
                 textColor="primary"
                 backgroundColor="transparent"
@@ -61,8 +61,17 @@ export default function Header() {
       </Container>
       <DividerLine variant="primary" className="mb-4" />
 
-      <InfoModal show={showInfoModal} setShow={setShowInfoModal} onClose={() => setShowInfoModal(false)} />
-      <LogoutModal show={showLogoutModal} setShow={setShowLogoutModal} onClose={() => setShowLogoutModal(false)} onLogout={logout} />
+      <InfoModal
+        show={showInfoModal}
+        setShow={setShowInfoModal}
+        onClose={() => setShowInfoModal(false)}
+      />
+      <LogoutModal
+        show={showLogoutModal}
+        setShow={setShowLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onLogout={logout}
+      />
     </header>
   );
 }
