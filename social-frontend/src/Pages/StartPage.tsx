@@ -135,8 +135,6 @@ export default function StartPage() {
     navigate(`/post/${id}`);
   }
 
-  const userHeading = user ? "[P]Post" : "[[▓]P▣ó̶st";
-
   useEffect(() => {
     if (isActiveRegion && posts.length > 0 && focus.focusedPostId === null) {
       setFocusedPost(posts[0].id);
@@ -204,8 +202,6 @@ export default function StartPage() {
 
   return (
     <>
-      <h5 className="text-primary mb-3 keybind-header">{userHeading}</h5>
-
       <div className="d-flex flex-column h-100">
         <div className="d-flex gap-1 justify-content-between">
           <div className="d-flex gap-1">
