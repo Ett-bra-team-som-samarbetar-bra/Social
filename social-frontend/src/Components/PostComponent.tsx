@@ -13,6 +13,7 @@ interface PostComponentProps {
   onLike: () => void;
   onComment: () => void;
   hasLiked: boolean;
+  isFocused?: boolean;
 }
 
 export default function PostComponent({
@@ -26,13 +27,14 @@ export default function PostComponent({
   onLike,
   onComment,
   hasLiked,
+  isFocused,
 }: PostComponentProps) {
   const navigate = useNavigate();
   const date = new Date(createdAt);
   const dateFormatted = date.toLocaleString().slice(0, -3);
 
   return (
-    <div className="post-box">
+    <div id={`post-${id}`} className={`post-box ${isFocused ? "post-focused" : ""}`}>
       <h2 className="post-title clickable ms-1 mb-2"
         onClick={() => navigate(`/user/${id}`)}>
         @{username}

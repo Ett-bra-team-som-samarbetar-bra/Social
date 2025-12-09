@@ -19,8 +19,8 @@ export default function UserPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [pageIndex, setPageIndex] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(10);
+  const [pageIndex] = useState<number>(1);
+  const [pageSize] = useState<number>(10);
 
   useEffect(() => {
     async function loadUser() {

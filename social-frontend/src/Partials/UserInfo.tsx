@@ -4,12 +4,15 @@ import { useAuth } from "../Hooks/useAuth";
 import { useEffect, useRef, useState } from "react";
 import { passwordSchema } from "../Validation/passwordSchema";
 import { descriptionSchema } from "../Validation/descriptionSchema";
-import { useHotKey } from "../Hooks/useHotKey";
 import { Col } from "react-bootstrap";
+import { useFocus } from "../Context/FocusContext";
+import { useHotKey } from "../Hooks/useHotKey";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function UserInfo() {
+  const { focus } = useFocus();
+
   const [editMode, setEditMode] = useState<"password" | "description" | null>(
     null
   );
@@ -20,6 +23,7 @@ export default function UserInfo() {
   const [success, setSuccess] = useState<string | null>(null);
   const { user, updateUser } = useAuth();
   const userInfoRef = useRef<HTMLDivElement>(null);
+  const isActiveRegion = focus.region === "left";
 
   async function handleChangePassword() {
     setError(null);
@@ -101,12 +105,63 @@ export default function UserInfo() {
     setEditMode(null);
   }
 
-  useHotKey("U", () => {
-    if (!user) return;
+  useHotKey(
+    "f",
+    () => {
+      if (!isActiveRegion) return;
+      if (editMode !== null) return;
+      setEditMode("password");
+      setError(null);
+      setSuccess(null);
+    },
+    "local",
+    "left",
+  );
 
-    setFocused(true);
-    userInfoRef.current?.focus();
-  });
+  useHotKey(
+    "d",
+    () => {
+      if (!isActiveRegion) return;
+      if (editMode !== null) return;
+      setEditMode("description");
+      setError(null);
+      setSuccess(null);
+    },
+    "local",
+    "left",
+  );
+
+  useHotKey(
+    "c",
+    () => {
+      if (!isActiveRegion) return;
+      if (editMode === null) return;
+      cancelEdit();
+    },
+    "local",
+    "left",
+  );
+
+  useHotKey(
+    "s",
+    () => {
+      if (!isActiveRegion) return;
+      if (editMode === null) return;
+
+      if (editMode === "password") handleChangePassword();
+      if (editMode === "description") handleChangeDescription();
+    },
+    "local",
+    "left"
+  );
+  useEffect(() => {
+    if (focus.region === "left") {
+      setFocused(true);
+      userInfoRef.current?.focus();
+    } else {
+      setFocused(false);
+    }
+  }, [focus.region]);
 
   useEffect(() => {
     if (!focused) return;
@@ -149,7 +204,7 @@ export default function UserInfo() {
         ref={userInfoRef}
         tabIndex={0}
         className={`user-info-border ${focused ? "focused" : ""}`}
-        onBlur={() => setFocused(false)}
+      /*onBlur={() => setFocused(false)}*/
       >
         <JsonDisplay data={profileData} />
 
@@ -259,7 +314,7 @@ export default function UserInfo() {
             <div className="d-flex flex-column gap-2 mt-3">
 
               <RootButton
-                keyLabel="P"
+                keyLabel="F"
                 onClick={() => {
                   setEditMode("password");
                   setSuccess(null);

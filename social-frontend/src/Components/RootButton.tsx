@@ -27,7 +27,7 @@ export default function RootButton({
     keyLabel,
     disabled = false,
 }: RootButtonProps) {
-    useHotKey(keyLabel, onClick || (() => { }));
+    //useHotKey(keyLabel, onClick || (() => { }));
 
     return (
         <Button
