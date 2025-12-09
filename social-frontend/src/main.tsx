@@ -8,6 +8,9 @@ import routes from "./routes";
 import { AuthProvider } from "./Auth/AuthProvider";
 import ProtectedRoute from "./Auth/ProtectedRoute";
 import GuestRoute from "./Auth/GuestRoute";
+import { HotkeyProvider } from "./Context/HotkeyContext";
+import { FocusProvider } from "./Context/FocusContext.tsx";
+import { GlobalHotkeys } from "./Context/GlobalHotkeys.tsx";
 
 const mappedRoutes: RouteObject[] = routes.map((r) => {
   let element = r.element;
@@ -39,7 +42,12 @@ const router = createBrowserRouter([
 createRoot(document.querySelector("#root")!).render(
   <StrictMode>
     <AuthProvider>
-      <RouterProvider router={router} />
+      <FocusProvider>
+        <HotkeyProvider>
+          <GlobalHotkeys />
+          <RouterProvider router={router} />
+        </HotkeyProvider>
+      </FocusProvider>
     </AuthProvider>
   </StrictMode>
 );

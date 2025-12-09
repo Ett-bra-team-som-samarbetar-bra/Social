@@ -1,33 +1,19 @@
 import { useEffect } from "react";
+import { useHotkeyManager } from "../Context/HotkeyContext";
 
-export function useHotKey(keyLabel: string | undefined, callback?: () => void) {
+export function useHotKey(
+    key: string | undefined,
+    callback: (() => void) | undefined,
+    scope: "global" | "local" = "local",
+    region?: "left" | "center" | "right"
+) {
+    const { registerHotkey, unregisterHotkey } = useHotkeyManager();
+
     useEffect(() => {
-        if (!keyLabel || !callback) return;
+        if (!key || !callback) return;
 
-        const targetKey = keyLabel.toLowerCase();
+        const id = registerHotkey(key, callback, scope, region);
 
-        const handleKeyPress = (e: KeyboardEvent) => {
-            const activeEl = document.activeElement as HTMLElement | null;
-
-            if (
-                activeEl &&
-                (
-                    activeEl.tagName === "INPUT" ||
-                    activeEl.tagName === "TEXTAREA" ||
-                    activeEl.isContentEditable ||
-                    activeEl.closest("input, textarea, [contenteditable]") 
-                )
-            ) {
-                return;
-            }
-
-            if (e.key.toLowerCase() === targetKey) {
-                e.preventDefault();
-                callback();
-            }
-        };
-
-        window.addEventListener("keydown", handleKeyPress);
-        return () => window.removeEventListener("keydown", handleKeyPress);
-    }, [keyLabel, callback]);
+        return () => unregisterHotkey(id);
+    }, [key, callback, scope, region]);
 }
