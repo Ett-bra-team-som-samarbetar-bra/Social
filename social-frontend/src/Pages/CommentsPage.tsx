@@ -95,12 +95,8 @@ export default function CommentsPage() {
     });
   };
 
-  const heading = user ? "[P]Post" : "[[▓]P▣ó̶st";
-
   return (
     <>
-      <h5 className="text-primary mb-3 keybind-header">{heading}</h5>
-
       <div className="overflow-y-auto">
         <RootButton className="post-outline non-interactive post-tab-fixed-size">Post</RootButton>
         {loading && (

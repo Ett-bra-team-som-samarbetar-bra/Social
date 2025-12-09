@@ -136,12 +136,8 @@ export default function MessagePage() {
     if (!user) return <div>Please log in</div>;
     if (!id) return <div>Please select a conversation</div>;
 
-    const heading = user ? "[P]Chat" : "[[▓]Ch▣t";
-
     return (
         <>
-            <h5 className="text-primary mb-3 keybind-header">{heading}</h5>
-
             <div className="message-page d-flex flex-column h-100 w-100">
                 <Container className="bg-dark text-primary border border-primary flex-column d-flex h-100">
                     <Row className="h-100">

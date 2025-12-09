@@ -134,12 +134,8 @@ export default function UserPage() {
     navigate(`/post/${id}`);
   }
 
-  const heading = user ? "[P]Post" : "[[▓]P▣ó̶st";
-
   return (
     <>
-      <h5 className="text-primary mb-3 keybind-header">{heading}</h5>
-
       <div className="d-flex flex-column h-100">
         <RootButton className="post-outline non-interactive post-tab-fixed-size">Profile</RootButton>
 

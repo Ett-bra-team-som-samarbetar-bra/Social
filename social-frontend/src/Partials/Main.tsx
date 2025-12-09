@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
 import ConversationList from "./ConversationList";
 import UserInfo from "./UserInfo";
@@ -8,6 +8,8 @@ import { useAuth } from "../Hooks/useAuth";
 export default function Main() {
   const { user } = useAuth();
   const { focus } = useFocus();
+
+  const navigate = useNavigate();
   const userHeading = user ? "[P]Post" : "[[▓]P▣ó̶st";
 
   return (
@@ -29,7 +31,7 @@ export default function Main() {
             className={`h-100 d-flex flex-column region
               ${focus.region === "center" ? "active-region" : ""}`}
           >
-            <h5 className="text-primary mb-3 keybind-header">{userHeading}</h5>
+            <h5 className="text-primary mb-3 keybind-header cursor-pointer" onClick={() => navigate(`/`)}>{userHeading}</h5>
             <Outlet />
           </Col>
 

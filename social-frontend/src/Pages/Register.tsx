@@ -60,8 +60,6 @@ export default function RegisterPage() {
 
   return (
     <>
-      <h5 className="text-primary mb-3 keybind-header">[[▓]P▣ó̶st</h5>
-
       <div className="d-flex flex-column h-100 align-items-center top-padding">
         <div>
           <div className="d-flex gap-1 justify-content-between">
