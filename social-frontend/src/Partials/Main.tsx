@@ -1,6 +1,5 @@
 import { Outlet } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
-import NavBar from "./NavBar";
 import ConversationList from "./ConversationList";
 import UserInfo from "./UserInfo";
 
@@ -14,7 +13,6 @@ export default function Main() {
           </Col>
 
           <Col md={6} className="h-100 d-flex flex-column">
-            <NavBar />
             <Outlet />
           </Col>
 

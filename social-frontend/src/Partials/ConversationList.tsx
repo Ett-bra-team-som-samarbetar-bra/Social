@@ -109,6 +109,8 @@ export default function ConversationList() {
     }, [focused, selectedUserId, conversations, navigate]);
 
     const messageHeading = user ? "[M]Messages" : "[░▒▓]Mess■ges̴͊";
+    const text1Heading = user ? "[SPACE] to choose" : "[S̷P̴A̸C̶E̵] t̷͝o̶͟ c̴̕h͢͠o̡͞o̸͞s̷͠e͟";
+    const text2Heading = user ? "[ESC] to escape" : "[░■] to e̡͝s͝c̡■░░";
 
     return (
         <Col className="conversation-aside ">
@@ -119,12 +121,8 @@ export default function ConversationList() {
                 className={`conversation-list ${focused ? "focused" : ""}`}
                 onBlur={() => setFocused(false)}
             >
-                {user && (
-                    <>
-                        <p className="text-primary m-0">[SPACE] to choose</p>
-                        <p className="text-primary">[ESC] to escape</p>
-                    </>
-                )}
+                <p className="text-primary m-0">{text1Heading}</p>
+                <p className="text-primary">{text2Heading}</p>
 
                 {conversations.map((c) => {
                     const isSelected = selectedUserId === c.userId;

@@ -153,9 +153,7 @@ export default function UserInfo() {
       >
         <JsonDisplay data={profileData} />
 
-        {/* TODO */}
         <div className="">
-
           {editMode === "password" && user && (
             <div className=" mt-3">
               <pre className="json-pre">
@@ -186,17 +184,21 @@ export default function UserInfo() {
                   ))}
                 </div>
               )}
-              <div className="d-flex gap-3">
+              <div className="negative-left-margin">
                 <RootButton
                   keyLabel="S"
-                  className="mt-2 flex-grow-1"
-                  onClick={handleChangePassword}
-                >
+                  textColor="primary"
+                  backgroundColor="transparent"
+                  fontsize={14}
+                  onClick={handleChangePassword}>
                   Save
                 </RootButton>
+
                 <RootButton
                   keyLabel="C"
-                  className="mt-2 flex-grow-1"
+                  textColor="primary"
+                  backgroundColor="transparent"
+                  fontsize={14}
                   onClick={cancelEdit}
                 >
                   Cancel
@@ -235,17 +237,22 @@ export default function UserInfo() {
                   ))}
                 </div>
               )}
-              <div className="d-flex gap-3">
+              <div className="negative-left-margin">
                 <RootButton
                   keyLabel="S"
-                  className="mt-2 flex-grow-1"
+                  textColor="primary"
+                  backgroundColor="transparent"
+                  fontsize={14}
                   onClick={handleChangeDescription}
                 >
                   Save
                 </RootButton>
+
                 <RootButton
                   keyLabel="C"
-                  className="mt-2 flex-grow-1"
+                  textColor="primary"
+                  backgroundColor="transparent"
+                  fontsize={14}
                   onClick={cancelEdit}
                 >
                   Cancel
@@ -255,28 +262,31 @@ export default function UserInfo() {
           )}
 
           {!editMode && user && (
-
-            <div className="d-flex flex-column gap-2 mt-3">
-
+            <div className="negative-left-margin">
               <RootButton
                 keyLabel="P"
+                textColor="primary"
+                backgroundColor="transparent"
+                fontsize={14}
                 onClick={() => {
                   setEditMode("password");
                   setSuccess(null);
                   setError(null);
-                }}
-              >
-                Change Password
+                }}>
+                Password
               </RootButton>
+
               <RootButton
                 keyLabel="D"
+                textColor="primary"
+                backgroundColor="transparent"
+                fontsize={14}
                 onClick={() => {
                   setEditMode("description");
                   setSuccess(null);
                   setError(null);
-                }}
-              >
-                Change Description
+                }}>
+                Description
               </RootButton>
             </div>
           )}

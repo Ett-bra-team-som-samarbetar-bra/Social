@@ -122,59 +122,65 @@ export default function StartPage() {
     navigate(`/post/${id}`);
   }
 
-  return (
-    <div className="d-flex flex-column h-100">
-      <div className="d-flex gap-1 justify-content-between">
-        <div className="d-flex gap-1">
-          <RootButton className="post-outline post-tab-fixed-size" onClick={() => setActiveTab("all")}>Global</RootButton>
-          <RootButton className="post-outline post-tab-fixed-size" onClick={() => setActiveTab("following")}>Follow</RootButton>
-          <RootButton className="post-outline post-tab-fixed-size" onClick={() => navigate(`/user/${user!.id}`)}>Profile</RootButton>
-        </div>
-        <RootButton className="post-outline post-tab-fixed-size" onClick={() => setActiveTab("create")}>Create</RootButton>
-      </div>
+  const userHeading = user ? "[P]Post" : "[[▓]P▣ó̶st";
 
-      {activeTab === "create" ? (
-        <div className="">
-          <CreatePost
-            onSubmit={handleSubmit}
-            userId={user!.id}
-            username={user!.username}
-          />
+  return (
+    <>
+      <h5 className="text-primary mb-3 keybind-header">{userHeading}</h5>
+
+      <div className="d-flex flex-column h-100">
+        <div className="d-flex gap-1 justify-content-between">
+          <div className="d-flex gap-1">
+            <RootButton className="post-outline post-tab-fixed-size" onClick={() => setActiveTab("all")}>Global</RootButton>
+            <RootButton className="post-outline post-tab-fixed-size" onClick={() => setActiveTab("following")}>Follow</RootButton>
+            <RootButton className="post-outline post-tab-fixed-size" onClick={() => navigate(`/user/${user!.id}`)}>Profile</RootButton>
+          </div>
+          <RootButton className="post-outline post-tab-fixed-size" onClick={() => setActiveTab("create")}>Create</RootButton>
         </div>
-      ) : (
-        <>
-          {loading && (
-            <PostAlertMessage
-              message={"Loading..."}
-              isErrorMessage={false} />
-          )}
-          {error &&
-            <PostAlertMessage
-              message={error}
-              isErrorMessage={true} />
-          }
-          {!loading && !error &&
-            <div className="d-flex flex-column overflow-y-auto gap-3 post-outline mb-4">
-              {posts.map((post) => (
-                <PostComponent
-                  id={post.userId}
-                  key={post.id}
-                  title={post.title}
-                  content={post.content}
-                  username={post.username}
-                  userId={post.userId}
-                  likes={post.likeCount}
-                  commentCount={post.comments.length}
-                  createdAt={post.createdAt}
-                  onLike={() => handleLike(post.id)}
-                  onComment={() => handleComment(post.id)}
-                  hasLiked={user?.likedPostIds?.includes(post.id) ?? false}
-                />
-              ))}
-            </div>
-          }
-        </>
-      )}
-    </div>
+
+        {activeTab === "create" ? (
+          <div className="">
+            <CreatePost
+              onSubmit={handleSubmit}
+              userId={user!.id}
+              username={user!.username}
+            />
+          </div>
+        ) : (
+          <>
+            {loading && (
+              <PostAlertMessage
+                message={"Loading..."}
+                isErrorMessage={false} />
+            )}
+            {error &&
+              <PostAlertMessage
+                message={error}
+                isErrorMessage={true} />
+            }
+            {!loading && !error &&
+              <div className="d-flex flex-column overflow-y-auto gap-3 post-outline mb-4">
+                {posts.map((post) => (
+                  <PostComponent
+                    id={post.userId}
+                    key={post.id}
+                    title={post.title}
+                    content={post.content}
+                    username={post.username}
+                    userId={post.userId}
+                    likes={post.likeCount}
+                    commentCount={post.comments.length}
+                    createdAt={post.createdAt}
+                    onLike={() => handleLike(post.id)}
+                    onComment={() => handleComment(post.id)}
+                    hasLiked={user?.likedPostIds?.includes(post.id) ?? false}
+                  />
+                ))}
+              </div>
+            }
+          </>
+        )}
+      </div>
+    </>
   );
 }

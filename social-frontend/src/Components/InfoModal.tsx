@@ -20,7 +20,7 @@ const asciiLogo = `
 const keybinds = [
   { key: "I", desc: "Open information" },
   { key: "U", desc: "Target user" },
-  { key: "P", desc: "Target posts? TODO" },
+  { key: "P", desc: "Target post" },
   { key: "M", desc: "Target messages" },
   { key: "ESC", desc: "Close/Cancel" },
 ];
