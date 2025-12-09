@@ -16,11 +16,10 @@ const asciiLogo = `
 ██   ██  ██████   ██████     ██   ██  ██   ██  ██████  ██████ ███████ ███████ ███████
 `;
 
-// TODO
 const keybinds = [
   { key: "I", desc: "Open information" },
   { key: "U", desc: "Target user" },
-  { key: "P", desc: "Target post" },
+  { key: "P", desc: "Target posts" },
   { key: "M", desc: "Target messages" },
   { key: "ESC", desc: "Close/Cancel" },
 ];
@@ -55,7 +54,7 @@ export default function InfoModal({ show, onClose, setShow }: InfoModalProps) {
         </Row>
 
         <div style={{ marginTop: "auto", width: "100%", display: "flex", justifyContent: "center" }}>
-          <RootButton keyLabel="C" onClick={onClose} className="pt-2">
+          <RootButton keyLabel="Escape" onClick={onClose} className="pt-2">
             Close
           </RootButton>
         </div>

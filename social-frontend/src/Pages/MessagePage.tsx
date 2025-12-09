@@ -10,7 +10,7 @@ import RenderChat from "../Components/RenderChat";
 import { messageActionsRef } from "../Context/MessageActionsRef";
 
 export default function MessagePage() {
-    const { user, loading } = useAuth();
+    const { user } = useAuth();
     const { id } = useParams();
     const messagesContainerRef = useRef<HTMLDivElement>(null);
     const messageEndRef = useRef<HTMLDivElement>(null);
@@ -22,6 +22,10 @@ export default function MessagePage() {
     const receivingUserId = Number(id);
     const location = useLocation();
     const stateUsername = (location.state as { username?: string })?.username;
+
+    if (!user) {
+        navigate("/login");
+    }
 
     const fetchMessages = async (before?: string) => {
         const url = new URL(`http://localhost:5174/api/message/${receivingUserId}`);
@@ -144,10 +148,6 @@ export default function MessagePage() {
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, []);
-
-    if (loading) return <div>Loading...</div>;
-    if (!user) return <div>Please log in</div>;
-    if (!id) return <div>Please select a conversation</div>;
 
     return (
         <>
