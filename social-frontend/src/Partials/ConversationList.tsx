@@ -3,150 +3,174 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSignalR } from "../Hooks/useSignalR";
 import { useAuth } from "../Hooks/useAuth";
+import { useFocus } from "../Context/FocusContext";
 import { useHotKey } from "../Hooks/useHotKey";
 
 export interface ConversationDto {
-    userId: number;
-    username: string;
-    hasUnreadMessages: boolean;
-    lastMessageAt: string;
+  userId: number;
+  username: string;
+  hasUnreadMessages: boolean;
+  lastMessageAt: string;
 }
 
 export default function ConversationList() {
-    const [conversations, setConversations] = useState<ConversationDto[]>([]);
-    const [focused, setFocused] = useState(false);
-    const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
-    const navigate = useNavigate();
-    const { user } = useAuth();
-    const listRef = useRef<HTMLDivElement>(null);
-    const location = useLocation();
-    const activeChatId = Number(location.pathname.split("/").pop());
+  const { focus } = useFocus();
+  const isActiveRegion = focus.region === "right";
+  const [conversations, setConversations] = useState<ConversationDto[]>([]);
+  const [focused, setFocused] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const listRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
+  const activeChatId = Number(location.pathname.split("/").pop());
 
-    const fetchConversations = async () => {
-        const res = await fetch("http://localhost:5174/api/message/conversations", {
-            credentials: "include"
-        });
-        if (!res.ok) return;
-        const data = await res.json();
-        setConversations(data);
-    };
-
-    useEffect(() => {
-        if (!user) {
-            setConversations([]);
-            return;
-        }
-        fetchConversations();
-    }, [user]);
-
-    useEffect(() => {
-        if (user && activeChatId) {
-            fetchConversations();
-        }
-    }, [activeChatId, user]);
-
-    useSignalR(user?.id ?? 0, () => {
-        fetchConversations();
+  const fetchConversations = async () => {
+    const res = await fetch("http://localhost:5174/api/message/conversations", {
+      credentials: "include",
     });
+    if (!res.ok) return;
+    const data = await res.json();
+    setConversations(data);
+  };
 
-    useHotKey("M", () => {
-        if (!user) return;
+  useEffect(() => {
+    if (isActiveRegion) {
+      setFocused(true);
+      listRef.current?.focus();
+    } else {
+      setFocused(false);
+      listRef.current?.blur();
+    }
+  }, [isActiveRegion]);
 
-        setFocused(true);
-        listRef.current?.focus();
-    });
+  useEffect(() => {
+    if (!user) {
+      setConversations([]);
+      return;
+    }
+    fetchConversations();
+  }, [user]);
 
-    useEffect(() => {
-        if (activeChatId) {
-            setSelectedUserId(activeChatId);
-        }
-    }, [activeChatId]);
+  useEffect(() => {
+    if (user && activeChatId) {
+      fetchConversations();
+    }
+  }, [activeChatId, user]);
 
-    useEffect(() => {
-        if (!focused) return;
+  useSignalR(user?.id ?? 0, () => {
+    fetchConversations();
+  });
 
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (!conversations.length) return;
+  useEffect(() => {
+    if (activeChatId) {
+      setSelectedUserId(activeChatId);
+    }
+  }, [activeChatId]);
 
-            if (e.key === "Escape") {
-                e.preventDefault();
-                setFocused(false);
-                listRef.current?.blur();
-                return;
-            }
+  useHotKey(
+    "arrowdown",
+    () => {
+      if (!isActiveRegion) return;
+      if (!conversations.length) return;
 
-            const currentIndex = selectedUserId === null
-                ? -1
-                : conversations.findIndex(c => c.userId === selectedUserId);
+      const currentIndex =
+        selectedUserId === null
+          ? -1
+          : conversations.findIndex((c) => c.userId === selectedUserId);
 
-            if (e.key === "ArrowDown") {
-                e.preventDefault();
-                const nextIndex =
-                    currentIndex < 0
-                        ? 0
-                        : Math.min(currentIndex + 1, conversations.length - 1);
-                setSelectedUserId(conversations[nextIndex].userId);
-            }
+      const nextIndex =
+        currentIndex < 0
+          ? 0
+          : Math.min(currentIndex + 1, conversations.length - 1);
 
-            else if (e.key === "ArrowUp") {
-                e.preventDefault();
-                const prevIndex =
-                    currentIndex < 0
-                        ? 0
-                        : Math.max(currentIndex - 1, 0);
-                setSelectedUserId(conversations[prevIndex].userId);
-            }
+      setSelectedUserId(conversations[nextIndex].userId);
+    },
+    "local",
+    "right"
+  );
 
-            else if (e.code === "Space" && selectedUserId !== null) {
-                e.preventDefault();
-                navigate(`/messages/${selectedUserId}`);
-            }
-        };
+  useHotKey(
+    "arrowup",
+    () => {
+      if (!isActiveRegion) return;
+      if (!conversations.length) return;
 
-        window.addEventListener("keydown", handleKeyDown);
-        return () => window.removeEventListener("keydown", handleKeyDown);
+      const currentIndex =
+        selectedUserId === null
+          ? -1
+          : conversations.findIndex((c) => c.userId === selectedUserId);
 
-    }, [focused, selectedUserId, conversations, navigate]);
+      const prevIndex = currentIndex < 0 ? 0 : Math.max(currentIndex - 1, 0);
 
-    const messageHeading = user ? "[M]Messages" : "[░▒▓]Mess■ges̴͊";
+      setSelectedUserId(conversations[prevIndex].userId);
+    },
+    "local",
+    "right"
+  );
 
-    return (
-        <Col className="conversation-aside ">
-            <h5 className="text-primary mb-3 keybind-header">{messageHeading}</h5>
+  useHotKey(
+    " ",
+    () => {
+      if (!isActiveRegion) return;
+      if (!selectedUserId) return;
+
+      navigate(`/messages/${selectedUserId}`);
+    },
+    "local",
+    "right"
+  );
+
+  useHotKey(
+    "escape",
+    () => {
+      if (!isActiveRegion) return;
+
+      setFocused(false);
+      listRef.current?.blur();
+    },
+    "local",
+    "right"
+  );
+
+  const messageHeading = user ? "[M]Messages" : "[░▒▓]Mess■ges̴͊";
+
+  return (
+    <Col className="conversation-aside ">
+      <h5 className="text-primary mb-3 keybind-header">{messageHeading}</h5>
+      <div
+        ref={listRef}
+        tabIndex={0}
+        className={`conversation-list ${focused ? "focused" : ""}`}
+        onBlur={() => setFocused(false)}
+      >
+        {user && (
+          <>
+            <p className="text-primary">Hit [SPACE] to choose</p>
+            <p className="text-primary">Hit [ESC] to escape</p>
+          </>
+        )}
+
+        {conversations.map((c) => {
+          const isSelected = selectedUserId === c.userId;
+
+          return (
             <div
-                ref={listRef}
-                tabIndex={0}
-                className={`conversation-list ${focused ? "focused" : ""}`}
-                onBlur={() => setFocused(false)}
+              key={c.userId}
+              className={`conversation-item ${isSelected ? "selected" : ""}`}
+              onClick={() => {
+                setSelectedUserId(c.userId);
+                navigate(`/messages/${c.userId}`);
+              }}
             >
-                {user && (
-                    <>
-                        <p className="text-primary">Hit [SPACE] to choose</p>
-                        <p className="text-primary">Hit [ESC] to escape</p>
-                    </>
-                )}
-
-                {conversations.map((c) => {
-                    const isSelected = selectedUserId === c.userId;
-
-                    return (
-                        <div
-                            key={c.userId}
-                            className={`conversation-item ${isSelected ? "selected" : ""}`}
-                            onClick={() => {
-                                setSelectedUserId(c.userId);
-                                navigate(`/messages/${c.userId}`);
-                            }}
-                        >
-                            {isSelected ? "> " : "  "}
-                            @{c.username}{" "}
-                            {c.hasUnreadMessages && selectedUserId !== c.userId && (
-                                <span className="text-primary">⬤</span>
-                            )}
-                        </div>
-                    );
-                })}
+              {isSelected ? "> " : "  "}@{c.username}{" "}
+              {c.hasUnreadMessages && selectedUserId !== c.userId && (
+                <span className="text-primary">⬤</span>
+              )}
             </div>
-        </Col>
-    );
+          );
+        })}
+      </div>
+    </Col>
+  );
 }
