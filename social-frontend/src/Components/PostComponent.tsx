@@ -12,6 +12,7 @@ interface PostComponentProps {
   createdAt: Date;
   onLike: () => void;
   onComment: () => void;
+  hideButtons?: boolean;
   hasLiked: boolean;
 }
 
@@ -26,6 +27,7 @@ export default function PostComponent({
   onLike,
   onComment,
   hasLiked,
+  hideButtons = false,
 }: PostComponentProps) {
   const navigate = useNavigate();
   const date = new Date(createdAt);
@@ -69,7 +71,7 @@ export default function PostComponent({
             fontsize={13}
             onClick={onLike}
             disabled={hasLiked}
-            className="post-button-fixed-size"
+            className={`post-button-fixed-size ${hideButtons ? 'invisible' : ''}`}
           >
             {hasLiked ? "Liked" : "Like"}
           </RootButton>
@@ -78,7 +80,7 @@ export default function PostComponent({
             keyLabel="C"
             onClick={onComment}
             fontsize={13}
-            className="post-button-fixed-size"
+            className={`post-button-fixed-size ${hideButtons ? 'invisible' : ''}`}
           >
             Comment
           </RootButton>

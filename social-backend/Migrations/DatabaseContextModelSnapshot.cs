@@ -2,24 +2,37 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using SocialBackend.Data;
 
 #nullable disable
 
-namespace SocialBackend.Migrations
+namespace social_backend.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20251125132000_AddMessagesModel")]
-    partial class AddMessagesModel
+    partial class DatabaseContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.0");
 
-            modelBuilder.Entity("Comment", b =>
+            modelBuilder.Entity("PostUser", b =>
+                {
+                    b.Property<int>("LikedById")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("LikedPostsId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("LikedById", "LikedPostsId");
+
+                    b.HasIndex("LikedPostsId");
+
+                    b.ToTable("UserLikedPosts", (string)null);
+                });
+
+            modelBuilder.Entity("SocialBackend.Models.Comment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -47,7 +60,7 @@ namespace SocialBackend.Migrations
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("Message", b =>
+            modelBuilder.Entity("SocialBackend.Models.Message", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -59,6 +72,9 @@ namespace SocialBackend.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("ReceivingUserId")
                         .HasColumnType("INTEGER");
@@ -75,7 +91,7 @@ namespace SocialBackend.Migrations
                     b.ToTable("Messages");
                 });
 
-            modelBuilder.Entity("Post", b =>
+            modelBuilder.Entity("SocialBackend.Models.Post", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -87,6 +103,9 @@ namespace SocialBackend.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("LikeCount")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -105,13 +124,17 @@ namespace SocialBackend.Migrations
                     b.ToTable("Posts");
                 });
 
-            modelBuilder.Entity("User", b =>
+            modelBuilder.Entity("SocialBackend.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
@@ -122,16 +145,11 @@ namespace SocialBackend.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("PostId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PostId");
 
                     b.ToTable("Users");
                 });
@@ -148,17 +166,32 @@ namespace SocialBackend.Migrations
 
                     b.HasIndex("FollowingId");
 
-                    b.ToTable("UserUser");
+                    b.ToTable("UserFollowers", (string)null);
                 });
 
-            modelBuilder.Entity("Comment", b =>
+            modelBuilder.Entity("PostUser", b =>
                 {
-                    b.HasOne("Post", null)
+                    b.HasOne("SocialBackend.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("LikedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SocialBackend.Models.Post", null)
+                        .WithMany()
+                        .HasForeignKey("LikedPostsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SocialBackend.Models.Comment", b =>
+                {
+                    b.HasOne("SocialBackend.Models.Post", null)
                         .WithMany("Comments")
                         .HasForeignKey("PostId");
 
-                    b.HasOne("User", "User")
-                        .WithMany("Comments")
+                    b.HasOne("SocialBackend.Models.User", "User")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -166,15 +199,15 @@ namespace SocialBackend.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Message", b =>
+            modelBuilder.Entity("SocialBackend.Models.Message", b =>
                 {
-                    b.HasOne("User", "ReceivingUser")
+                    b.HasOne("SocialBackend.Models.User", "ReceivingUser")
                         .WithMany("MessagesReceived")
                         .HasForeignKey("ReceivingUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("User", "SendingUser")
+                    b.HasOne("SocialBackend.Models.User", "SendingUser")
                         .WithMany("MessagesSent")
                         .HasForeignKey("SendingUserId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -185,10 +218,10 @@ namespace SocialBackend.Migrations
                     b.Navigation("SendingUser");
                 });
 
-            modelBuilder.Entity("Post", b =>
+            modelBuilder.Entity("SocialBackend.Models.Post", b =>
                 {
-                    b.HasOne("User", "User")
-                        .WithMany()
+                    b.HasOne("SocialBackend.Models.User", "User")
+                        .WithMany("Posts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -196,42 +229,33 @@ namespace SocialBackend.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("User", b =>
-                {
-                    b.HasOne("Post", null)
-                        .WithMany("Likes")
-                        .HasForeignKey("PostId");
-                });
-
             modelBuilder.Entity("UserUser", b =>
                 {
-                    b.HasOne("User", null)
+                    b.HasOne("SocialBackend.Models.User", null)
                         .WithMany()
                         .HasForeignKey("FollowersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("User", null)
+                    b.HasOne("SocialBackend.Models.User", null)
                         .WithMany()
                         .HasForeignKey("FollowingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Post", b =>
+            modelBuilder.Entity("SocialBackend.Models.Post", b =>
                 {
                     b.Navigation("Comments");
-
-                    b.Navigation("Likes");
                 });
 
-            modelBuilder.Entity("User", b =>
+            modelBuilder.Entity("SocialBackend.Models.User", b =>
                 {
-                    b.Navigation("Comments");
-
                     b.Navigation("MessagesReceived");
 
                     b.Navigation("MessagesSent");
+
+                    b.Navigation("Posts");
                 });
 #pragma warning restore 612, 618
         }
