@@ -23,6 +23,7 @@ public class PostService(DatabaseContext dbContext, ILogger<PostService> logger)
         var posts = await _db.Posts
             .Include(p => p.User)
             .Include(p => p.Comments)
+                .ThenInclude(c => c.User)
             .OrderByDescending(b => b.CreatedAt)
             .ToListAsync();
 

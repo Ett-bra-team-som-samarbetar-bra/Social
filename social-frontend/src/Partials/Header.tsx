@@ -5,6 +5,7 @@ import DividerLine from "../Components/DividerLine";
 import RootButton from "../Components/RootButton";
 import InfoModal from "../Components/InfoModal";
 import { useAuth } from "../Hooks/useAuth";
+import LogoutModal from "../Components/LogoutModal";
 
 const asciiLogo = `
 ██████   ██████   ██████  ████████     █████   ██████  ██████ ███████ ███████ ███████
@@ -16,7 +17,8 @@ const asciiLogo = `
 
 export default function Header() {
   const { user, logout } = useAuth();
-  const [showModal, setShowModal] = useState(false);
+  const [showInfoModal, setShowInfoModal] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const navigate = useNavigate();
 
@@ -37,7 +39,7 @@ export default function Header() {
               <RootButton
                 className=""
                 keyLabel="L"
-                onClick={() => { logout(); }}
+                onClick={() => setShowLogoutModal(true)}
                 textColor="primary"
                 backgroundColor="transparent"
                 fontsize={14}
@@ -50,7 +52,7 @@ export default function Header() {
               textColor="primary"
               backgroundColor="transparent"
               fontsize={14}
-              onClick={() => setShowModal(true)}
+              onClick={() => setShowInfoModal(true)}
             >
               Info
             </RootButton>
@@ -59,7 +61,8 @@ export default function Header() {
       </Container>
       <DividerLine variant="primary" className="mb-4" />
 
-      <InfoModal show={showModal} setShow={setShowModal} onClose={() => setShowModal(false)} />
+      <InfoModal show={showInfoModal} setShow={setShowInfoModal} onClose={() => setShowInfoModal(false)} />
+      <LogoutModal show={showLogoutModal} setShow={setShowLogoutModal} onClose={() => setShowLogoutModal(false)} onLogout={logout} />
     </header>
   );
 }
