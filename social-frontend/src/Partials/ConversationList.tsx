@@ -45,6 +45,14 @@ export default function ConversationList() {
   }, [isActiveRegion]);
 
   useEffect(() => {
+    if (activeChatId) {
+      setSelectedUserId(activeChatId);
+    } else {
+      setSelectedUserId(null);
+    }
+  }, [activeChatId]);
+
+  useEffect(() => {
     if (!user) {
       setConversations([]);
       return;
@@ -53,9 +61,8 @@ export default function ConversationList() {
   }, [user]);
 
   useEffect(() => {
-    if (user && activeChatId) {
-      fetchConversations();
-    }
+    if (!user) return;
+    fetchConversations();
   }, [activeChatId, user]);
 
   useSignalR(user?.id ?? 0, () => {
@@ -145,6 +152,8 @@ export default function ConversationList() {
         className={`conversation-list ${focused ? "focused" : ""}`}
         onBlur={() => setFocused(false)}
       >
+          <p className="text-primary m-0">{text1Heading}</p>
+          <p className="text-primary">{text2Heading}</p>
         {conversations.map((c) => {
           const isSelected = selectedUserId === c.userId;
 
@@ -157,11 +166,9 @@ export default function ConversationList() {
                 navigate(`/messages/${c.userId}`);
               }}
             >
-              <p className="text-primary m-0">{text1Heading}</p>
-              <p className="text-primary">{text2Heading}</p>
 
               {isSelected ? "> " : "  "}@{c.username}{" "}
-              {c.hasUnreadMessages && selectedUserId !== c.userId && (
+              {c.hasUnreadMessages && activeChatId !== c.userId && (
                 <span className="text-primary">⬤</span>
               )}
             </div>
