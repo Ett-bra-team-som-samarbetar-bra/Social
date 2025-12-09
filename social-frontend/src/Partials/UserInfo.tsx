@@ -147,13 +147,13 @@ export default function UserInfo() {
     () => {
       if (!isActiveRegion) return;
       if (editMode === null) return;
-
       if (editMode === "password") handleChangePassword();
       if (editMode === "description") handleChangeDescription();
     },
     "local",
     "left"
   );
+
   useEffect(() => {
     if (focus.region === "left") {
       setFocused(true);
@@ -198,12 +198,11 @@ export default function UserInfo() {
 
   return (
     <Col className="user-info-wrapper">
-      <h5 className="text-primary mb-3 keybind-header">{userHeading}</h5>
+      <h5 className={`text-primary mb-3 keybind-header w-50 py-1 ${isActiveRegion ? 'bg-primary text-dark' : ''}`}>{userHeading}</h5>
 
-      <div
-        ref={userInfoRef}
+      <div ref={userInfoRef}
         tabIndex={0}
-        className={`user-info-border ${focused ? "focused" : ""}`}
+        className="user-info-scope"
       /*onBlur={() => setFocused(false)}*/
       >
         <JsonDisplay data={profileData} />

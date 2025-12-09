@@ -45,6 +45,14 @@ export default function ConversationList() {
   }, [isActiveRegion]);
 
   useEffect(() => {
+    if (activeChatId) {
+      setSelectedUserId(activeChatId);
+    } else {
+      setSelectedUserId(null);
+    }
+  }, [activeChatId]);
+
+  useEffect(() => {
     if (!user) {
       setConversations([]);
       return;
@@ -53,9 +61,8 @@ export default function ConversationList() {
   }, [user]);
 
   useEffect(() => {
-    if (user && activeChatId) {
-      fetchConversations();
-    }
+    if (!user) return;
+    fetchConversations();
   }, [activeChatId, user]);
 
   useSignalR(user?.id ?? 0, () => {
@@ -134,17 +141,18 @@ export default function ConversationList() {
 
   const messageHeading = user ? "[M]Messages" : "[░▒▓]Mess■ges̴͊";
   const text1Heading = user ? "[SPACE] to choose" : "[S̷P̴A̸C̶E̵] t̷͝o̶͟ c̴̕h͢͠o̡͞o̸͞s̷͠e͟";
-  const text2Heading = user ? "[ESC] to escape" : "[░■] to e̡͝s͝c̡■░░";
 
   return (
-    <Col className="conversation-aside ">
-      <h5 className="text-primary mb-3 keybind-header">{messageHeading}</h5>
+    <Col className="conversation-aside">
+      <h5 className={`text-primary mb-3 keybind-header w-50 py-1 ${isActiveRegion ? 'bg-primary text-dark' : ''}`}>{messageHeading}</h5>
       <div
         ref={listRef}
         tabIndex={0}
         className={`conversation-list ${focused ? "focused" : ""}`}
         onBlur={() => setFocused(false)}
       >
+        <p className="text-primary m-0">{text1Heading}</p>
+
         {conversations.map((c) => {
           const isSelected = selectedUserId === c.userId;
 
@@ -157,11 +165,9 @@ export default function ConversationList() {
                 navigate(`/messages/${c.userId}`);
               }}
             >
-              <p className="text-primary m-0">{text1Heading}</p>
-              <p className="text-primary">{text2Heading}</p>
 
               {isSelected ? "> " : "  "}@{c.username}{" "}
-              {c.hasUnreadMessages && selectedUserId !== c.userId && (
+              {c.hasUnreadMessages && activeChatId !== c.userId && (
                 <span className="text-primary">⬤</span>
               )}
             </div>

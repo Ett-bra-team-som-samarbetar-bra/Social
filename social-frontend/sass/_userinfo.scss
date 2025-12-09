@@ -6,13 +6,12 @@
   height: 100%;
 }
 
-.user-info-border:focus {
+.user-info-scope:focus {
   outline: none;
   height: 100%;
 }
 
-.user-info-border.focused {
-  outline: 1px solid bootstrap.$primary !important;
-  background-color: bootstrap.$dark !important;
+.user-info-scope.focused {
+  outline: none;
   height: 100%;
 }

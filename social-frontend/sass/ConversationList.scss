@@ -8,11 +8,12 @@
 
 .conversation-list:focus {
     outline: none;
+    height: 100%;
 }
 
 .conversation-list.focused {
-    outline: 1px solid bootstrap.$primary !important;
-    background-color: bootstrap.$dark !important;
+    outline: none;
+    height: 100%;
 }
 
 .conversation-aside>h5 {

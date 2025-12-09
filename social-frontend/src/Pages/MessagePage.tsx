@@ -7,9 +7,10 @@ import { useAuth } from "../Hooks/useAuth";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import type MessageDto from "../Types/message";
 import RenderChat from "../Components/RenderChat";
+import { messageActionsRef } from "../Context/MessageActionsRef";
 
 export default function MessagePage() {
-    const { user, loading } = useAuth();
+    const { user } = useAuth();
     const { id } = useParams();
     const messagesContainerRef = useRef<HTMLDivElement>(null);
     const messageEndRef = useRef<HTMLDivElement>(null);
@@ -21,6 +22,10 @@ export default function MessagePage() {
     const receivingUserId = Number(id);
     const location = useLocation();
     const stateUsername = (location.state as { username?: string })?.username;
+
+    if (!user) {
+        navigate("/login");
+    }
 
     const fetchMessages = async (before?: string) => {
         const url = new URL(`http://localhost:5174/api/message/${receivingUserId}`);
@@ -89,17 +94,17 @@ export default function MessagePage() {
         }
     });
 
-    const scrollToBottom = () => {
+    const scrollToBottom = useCallback(() => {
         requestAnimationFrame(() => {
             messageEndRef.current?.scrollIntoView({ block: "end", behavior: "smooth" });
         });
-    };
+    }, []);
 
-    const scrollToTop = () => {
+    const scrollToTop = useCallback(() => {
         requestAnimationFrame(() => {
             messagesContainerRef.current?.scrollTo({ top: 0, behavior: "smooth" });
         });
-    };
+    }, []);
 
     const otherUsername =
         stateUsername ??
@@ -108,14 +113,26 @@ export default function MessagePage() {
             : messages[0]?.receivingUserName) ??
         "Unknown";
 
-    const loadOlderMessages = async () => {
+    const loadOlderMessages = useCallback(async () => {
         if (loadingOlder || messages.length === 0) return;
         setLoadingOlder(true);
         const oldestMessage = messages[0];
         await fetchMessages(oldestMessage.createdAt);
         setLoadingOlder(false);
         scrollToTop();
-    };
+    }, [loadingOlder, messages, scrollToTop]);
+
+    useEffect(() => {
+        messageActionsRef.scrollToTop = scrollToTop;
+        messageActionsRef.scrollToBottom = scrollToBottom;
+        messageActionsRef.loadOlderMessages = loadOlderMessages;
+
+        return () => {
+            messageActionsRef.scrollToTop = null;
+            messageActionsRef.scrollToBottom = null;
+            messageActionsRef.loadOlderMessages = null;
+        };
+    }, [loadOlderMessages, scrollToTop, scrollToBottom]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -131,10 +148,6 @@ export default function MessagePage() {
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, []);
-
-    if (loading) return <div>Loading...</div>;
-    if (!user) return <div>Please log in</div>;
-    if (!id) return <div>Please select a conversation</div>;
 
     return (
         <>
@@ -152,7 +165,7 @@ export default function MessagePage() {
 
                                 <Col xs="auto" className="d-flex gap-2">
                                     <RootButton keyLabel="O" className="small-button" fontsize={12} onClick={loadOlderMessages}>Load old</RootButton>
-                                    <RootButton keyLabel="U" className="small-button" fontsize={12} onClick={scrollToTop}>up</RootButton>
+                                    <RootButton keyLabel="K" className="small-button" fontsize={12} onClick={scrollToTop}>up</RootButton>
                                     <RootButton keyLabel="N" className="small-button" fontsize={12} onClick={scrollToBottom}>down</RootButton>
                                 </Col>
                             </Row>
