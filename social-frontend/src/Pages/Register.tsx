@@ -59,75 +59,88 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="json-box-container mt-5">
-      <form onSubmit={onSubmit} className="json-box">
-        <pre className="json-pre">
-          {`{
+    <>
+      <div className="d-flex flex-column h-100 align-items-center top-padding">
+        <div>
+          <div className="d-flex gap-1 justify-content-between">
+            <div className="d-flex gap-1">
+              <RootButton className="post-outline post-tab-fixed-size" onClick={() => navigate("/login")}>Login</RootButton>
+              <RootButton className="post-outline post-tab-fixed-size" onClick={() => navigate("/register")}>Register</RootButton>
+            </div>
+          </div>
+
+          <div className="json-box-container">
+            <form onSubmit={onSubmit} className="json-box">
+              <pre className="json-pre">
+                {`{
   "username": "`}
-          <input
-            className="json-input"
-            autoComplete="off"
-            value={username}
-            maxLength={30}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder=""
-          />
-          {`",
+                <input
+                  className="json-input"
+                  autoComplete="off"
+                  value={username}
+                  maxLength={30}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder=""
+                />
+                {`",
   "password": "`}
-          <input
-            type="password"
-            autoComplete="off"
-            className="json-input"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder=""
-          />
-          {`",
+                <input
+                  type="password"
+                  autoComplete="off"
+                  className="json-input"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder=""
+                />
+                {`",
   "email": "`}
-          <input
-            className="json-input"
-            autoComplete="off"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder=""
-          />
-          {`",
+                <input
+                  className="json-input"
+                  autoComplete="off"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder=""
+                />
+                {`",
   "description": "`}
-          <textarea
-            className="json-input json-textarea"
-            autoComplete="off"
-            value={description}
-            onChange={(e) => setDescription(e.target.value.slice(0, 300))}
-            placeholder=""
-            rows={2}
-          />
-          {`"
+                <textarea
+                  className="json-input json-textarea"
+                  autoComplete="off"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value.slice(0, 300))}
+                  placeholder=""
+                  rows={2}
+                />
+                {`"
 }`}
-          <div className="char-counter text-center">
-            {300 - description.length} characters left for description
-          </div>
-        </pre>
+                <div className="content-counter">
+                  {description.length}/{300}
+                </div>
+              </pre>
 
-        {formError && (
-          <div className="json-error-box">
-            {formError.split("\n").map((line, i) => (
-              <div key={i}>• {line}</div>
-            ))}
-          </div>
-        )}
+              {formError && (
+                <div className="json-error-box">
+                  {formError.split("\n").map((line, i) => (
+                    <div key={i}>• {line}</div>
+                  ))}
+                </div>
+              )}
 
-        {registerSuccess && (
-          <div className="json-error-box">
-            {registerSuccess.split("\n").map((line, i) => (
-              <div key={i}>• {line}</div>
-            ))}
-          </div>
-        )}
+              {registerSuccess && (
+                <div className="json-error-box">
+                  {registerSuccess.split("\n").map((line, i) => (
+                    <div key={i}>• {line}</div>
+                  ))}
+                </div>
+              )}
 
-        <RootButton keyLabel="Enter" type="submit" className="mt-4 w-100">
-          Register
-        </RootButton>
-      </form>
-    </div>
+              <RootButton keyLabel="Enter" type="submit" className="mt-4 w-100">
+                Register
+              </RootButton>
+            </form>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }

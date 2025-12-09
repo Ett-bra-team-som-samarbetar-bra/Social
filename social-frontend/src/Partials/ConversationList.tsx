@@ -102,7 +102,6 @@ export default function ConversationList() {
           : conversations.findIndex((c) => c.userId === selectedUserId);
 
       const prevIndex = currentIndex < 0 ? 0 : Math.max(currentIndex - 1, 0);
-
       setSelectedUserId(conversations[prevIndex].userId);
     },
     "local",
@@ -134,6 +133,8 @@ export default function ConversationList() {
   );
 
   const messageHeading = user ? "[M]Messages" : "[░▒▓]Mess■ges̴͊";
+  const text1Heading = user ? "[SPACE] to choose" : "[S̷P̴A̸C̶E̵] t̷͝o̶͟ c̴̕h͢͠o̡͞o̸͞s̷͠e͟";
+  const text2Heading = user ? "[ESC] to escape" : "[░■] to e̡͝s͝c̡■░░";
 
   return (
     <Col className="conversation-aside ">
@@ -156,12 +157,8 @@ export default function ConversationList() {
                 navigate(`/messages/${c.userId}`);
               }}
             >
-                {user && (
-                    <>
-                        <p className="text-primary m-0">[SPACE] to choose</p>
-                        <p className="text-primary">[ESC] to escape</p>
-                    </>
-                )}
+              <p className="text-primary m-0">{text1Heading}</p>
+              <p className="text-primary">{text2Heading}</p>
 
               {isSelected ? "> " : "  "}@{c.username}{" "}
               {c.hasUnreadMessages && selectedUserId !== c.userId && (

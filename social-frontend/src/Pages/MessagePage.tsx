@@ -135,57 +135,60 @@ export default function MessagePage() {
     if (loading) return <div>Loading...</div>;
     if (!user) return <div>Please log in</div>;
     if (!id) return <div>Please select a conversation</div>;
+
     return (
-        <div className="message-page d-flex flex-column h-100 w-100">
-            <Container className="bg-dark text-primary border border-primary flex-column d-flex h-100">
-                <Row className="h-100">
-                    <Col className="d-flex flex-column px-0 py-4 h-100">
-                        <Row className="align-items-between mb-4 px-4">
-                            <Col>
-                                <h3 className="text-primary m-0 cursor-pointer"
-                                    onClick={() => navigate(`/user/${receivingUserId}`)}>
-                                    @{otherUsername}
-                                </h3>
-                            </Col>
+        <>
+            <div className="message-page d-flex flex-column h-100 w-100">
+                <Container className="bg-dark text-primary border border-primary flex-column d-flex h-100">
+                    <Row className="h-100">
+                        <Col className="d-flex flex-column px-0 py-4 h-100">
+                            <Row className="align-items-between mb-4 px-4">
+                                <Col>
+                                    <h3 className="text-primary m-0 cursor-pointer"
+                                        onClick={() => navigate(`/user/${receivingUserId}`)}>
+                                        @{otherUsername}
+                                    </h3>
+                                </Col>
 
-                            <Col xs="auto" className="d-flex gap-2">
-                                <RootButton keyLabel="O" className="small-button" fontsize={12} onClick={loadOlderMessages}>Load old</RootButton>
-                                <RootButton keyLabel="U" className="small-button" fontsize={12} onClick={scrollToTop}>up</RootButton>
-                                <RootButton keyLabel="N" className="small-button" fontsize={12} onClick={scrollToBottom}>down</RootButton>
-                            </Col>
-                        </Row>
+                                <Col xs="auto" className="d-flex gap-2">
+                                    <RootButton keyLabel="O" className="small-button" fontsize={12} onClick={loadOlderMessages}>Load old</RootButton>
+                                    <RootButton keyLabel="U" className="small-button" fontsize={12} onClick={scrollToTop}>up</RootButton>
+                                    <RootButton keyLabel="N" className="small-button" fontsize={12} onClick={scrollToBottom}>down</RootButton>
+                                </Col>
+                            </Row>
 
-                        <RenderChat
-                            messages={messages}
-                            messagesContainerRef={messagesContainerRef}
-                            messageEndRef={messageEndRef}
-                        />
+                            <RenderChat
+                                messages={messages}
+                                messagesContainerRef={messagesContainerRef}
+                                messageEndRef={messageEndRef}
+                            />
 
-                        <Row
-                            className="mt-4 px-4 d-flex flex-row"
-                        >
-                            <Col className="d-flex flex-column">
-                                <Form.Control
-                                    ref={inputRef}
-                                    as="textarea"
-                                    className="bg-transparent border-primary text-primary rounded-0 flex-grow-1"
-                                    placeholder="Type a message..."
-                                    rows={2}
-                                    onKeyDown={e => {
-                                        if (e.key === "Enter" && !e.shiftKey) {
-                                            e.preventDefault();
-                                            handleSend();
-                                        }
-                                    }}
-                                />
-                            </Col>
-                            <Col xs="auto" className="d-flex align-items-end">
-                                <RootButton keyLabel="Enter" onClick={handleSend}>Send</RootButton>
-                            </Col>
-                        </Row>
-                    </Col>
-                </Row>
-            </Container>
-        </div>
+                            <Row
+                                className="mt-4 px-4 d-flex flex-row"
+                            >
+                                <Col className="d-flex flex-column">
+                                    <Form.Control
+                                        ref={inputRef}
+                                        as="textarea"
+                                        className="bg-transparent border-primary text-primary rounded-0 flex-grow-1"
+                                        placeholder="Type a message..."
+                                        rows={2}
+                                        onKeyDown={e => {
+                                            if (e.key === "Enter" && !e.shiftKey) {
+                                                e.preventDefault();
+                                                handleSend();
+                                            }
+                                        }}
+                                    />
+                                </Col>
+                                <Col xs="auto" className="d-flex align-items-end">
+                                    <RootButton keyLabel="Enter" onClick={handleSend}>Send</RootButton>
+                                </Col>
+                            </Row>
+                        </Col>
+                    </Row>
+                </Container>
+            </div>
+        </>
     );
 }
