@@ -51,6 +51,7 @@ public class PostService(DatabaseContext dbContext, ILogger<PostService> logger)
             .Where(p => p.UserId == user.Id)
             .Include(p => p.User)
             .Include(p => p.Comments)
+                .ThenInclude(c => c.User)
             .OrderByDescending(b => b.CreatedAt)
             .ToListAsync();
 

@@ -121,8 +121,8 @@ export default function ConversationList() {
             >
                 {user && (
                     <>
-                        <p className="text-primary">Hit [SPACE] to choose</p>
-                        <p className="text-primary">Hit [ESC] to escape</p>
+                        <p className="text-primary m-0">[SPACE] to choose</p>
+                        <p className="text-primary">[ESC] to escape</p>
                     </>
                 )}
 

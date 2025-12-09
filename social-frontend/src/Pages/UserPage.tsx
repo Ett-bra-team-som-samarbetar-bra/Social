@@ -19,8 +19,8 @@ export default function UserPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [pageIndex, setPageIndex] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(10);
+  const [pageIndex] = useState<number>(1);
+  const [pageSize] = useState<number>(10);
 
   useEffect(() => {
     async function loadUser() {
@@ -135,8 +135,8 @@ export default function UserPage() {
   }
 
   return (
-    <div>
-      <RootButton className="post-outline non-interactive post-tab-fixed-size">User</RootButton>
+    <div className="d-flex flex-column h-100">
+      <RootButton className="post-outline non-interactive post-tab-fixed-size">Profile</RootButton>
 
       <UserProfileComponent
         userId={userData.id}

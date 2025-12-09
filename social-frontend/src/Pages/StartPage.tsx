@@ -18,8 +18,8 @@ export default function StartPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [pageIndex, setPageIndex] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(10);
+  const [pageIndex] = useState<number>(1);
+  const [pageSize] = useState<number>(10);
 
   const endpoints = {
     all: `${apiUrl}/api/post/all/${pageIndex}/${pageSize}`,

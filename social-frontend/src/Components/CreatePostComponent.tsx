@@ -57,7 +57,7 @@ export default function CreatePost({ onSubmit, userId, username }: CreatePostPro
         {/* Content Textarea */}
         <textarea
           className="create-post-input create-post-content"
-          placeholder="Write your post..."
+          placeholder="Writeḻ̸̨̳̰̩̅a̶̻͈̩͗͗̏͘͝ͅl̶̘̟̙̥̹̽͋͊̅̕d̸̥͌͋̓k̷̻͑͐..."
           value={content}
           onChange={(e) => setContent(e.target.value.slice(0, contentLimit))}
           rows={4}
