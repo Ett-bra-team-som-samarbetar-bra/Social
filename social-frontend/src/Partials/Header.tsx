@@ -1,8 +1,11 @@
 import { Container, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import DividerLine from "../Components/DividerLine";
 import RootButton from "../Components/RootButton";
+import InfoModal from "../Components/InfoModal";
 import { useAuth } from "../Hooks/useAuth";
+import LogoutModal from "../Components/LogoutModal";
 
 const asciiLogo = `
 ██████   ██████   ██████  ████████     █████   ██████  ██████ ███████ ███████ ███████
@@ -13,7 +16,10 @@ const asciiLogo = `
 `;
 
 export default function Header() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const [showInfoModal, setShowInfoModal] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+
   const navigate = useNavigate();
 
   return (
@@ -33,6 +39,7 @@ export default function Header() {
               <RootButton
                 className=""
                 keyLabel="L"
+                onClick={() => setShowLogoutModal(true)}
                 textColor="primary"
                 backgroundColor="transparent"
                 fontsize={14}
@@ -45,6 +52,7 @@ export default function Header() {
               textColor="primary"
               backgroundColor="transparent"
               fontsize={14}
+              onClick={() => setShowInfoModal(true)}
             >
               Info
             </RootButton>
@@ -52,6 +60,9 @@ export default function Header() {
         </Row>
       </Container>
       <DividerLine variant="primary" className="mb-4" />
+
+      <InfoModal show={showInfoModal} setShow={setShowInfoModal} onClose={() => setShowInfoModal(false)} />
+      <LogoutModal show={showLogoutModal} setShow={setShowLogoutModal} onClose={() => setShowLogoutModal(false)} onLogout={logout} />
     </header>
   );
 }
