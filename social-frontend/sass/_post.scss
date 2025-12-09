@@ -9,6 +9,14 @@
   color: #ddd;
 }
 
+.post-focused {
+  outline: 3px solid #0d6efd;
+  border-radius: 8px;
+  background-color: rgba(13, 110, 253, 0.05);
+  scroll-margin-top: 80px;
+}
+
+
 .post-header {
   display: flex;
   justify-content: flex-start;

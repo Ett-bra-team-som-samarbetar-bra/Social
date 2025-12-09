@@ -6,10 +6,16 @@ import CreatePost from "../Components/CreatePostComponent";
 import RootButton from "../Components/RootButton";
 import PostComponent from "../Components/PostComponent";
 import PostAlertMessage from "../Components/PostAlertMessage";
+import { useFocus } from "../Context/FocusContext";
+import { useHotKey } from "../Hooks/useHotKey";
+
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function StartPage() {
+  const { focus, setFocusedPost, cyclePost } = useFocus();
+  const isActiveRegion = focus.region === "center";
+
   const navigate = useNavigate();
   const { user, updateUser } = useAuth();
   const [activeTab, setActiveTab] = useState<"all" | "following" | "mine" | "create">(
@@ -20,6 +26,10 @@ export default function StartPage() {
   const [error, setError] = useState<string | null>(null);
   const [pageIndex] = useState<number>(1);
   const [pageSize] = useState<number>(10);
+  const postIds = posts.map(p => p.id);
+  const isCreateMode = activeTab === "create";
+
+
 
   const endpoints = {
     all: `${apiUrl}/api/post/all/${pageIndex}/${pageSize}`,
@@ -59,6 +69,9 @@ export default function StartPage() {
 
       const data = await result.json();
       if (!ignore) setPosts(data.items ?? []);
+      if (!ignore && focus.region === "center" && data.items?.length > 0) {
+        setFocusedPost(data.items[0].id);
+      }
 
       setLoading(false);
     }
@@ -122,6 +135,73 @@ export default function StartPage() {
     navigate(`/post/${id}`);
   }
 
+
+  useEffect(() => {
+    if (isActiveRegion && posts.length > 0 && focus.focusedPostId === null) {
+      setFocusedPost(posts[0].id);
+    }
+  }, [isActiveRegion, posts]);
+
+  useHotKey(
+    "j",
+    () => {
+      if (!isActiveRegion) return;
+      if (isCreateMode) return;
+      cyclePost("next", postIds);
+    },
+    "local",
+    "center"
+  );
+  useHotKey(
+    "k",
+    () => {
+      if (!isActiveRegion) return;
+      if (isCreateMode) return;
+      cyclePost("prev", postIds);
+    },
+    "local",
+    "center"
+  );
+  useHotKey(
+    "l",
+    () => {
+      if (!isActiveRegion) return;
+      if (isCreateMode) return;
+
+      const id = focus.focusedPostId;
+      if (!id) return;
+
+      // Check if currently focused post is liked
+      const isLiked = user?.likedPostIds?.includes(id);
+      if (isLiked) return;
+
+      handleLike(id);
+    },
+    "local",
+    "center"
+  );
+  useHotKey(
+    "c",
+    () => {
+      if (!isActiveRegion) return;
+      if (isCreateMode) return;
+      const id = focus.focusedPostId;
+      if (!id) return;
+      handleComment(id);
+    },
+    "local",
+    "center"
+  );
+  useEffect(() => {
+    if (!focus.focusedPostId) return;
+
+    const el = document.querySelector(`#post-${focus.focusedPostId}`);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [focus.focusedPostId]);
+
+
   return (
     <div className="d-flex flex-column h-100">
       <div className="d-flex gap-1 justify-content-between">
@@ -169,6 +249,7 @@ export default function StartPage() {
                   onLike={() => handleLike(post.id)}
                   onComment={() => handleComment(post.id)}
                   hasLiked={user?.likedPostIds?.includes(post.id) ?? false}
+                  isFocused={focus.focusedPostId === post.id}
                 />
               ))}
             </div>
