@@ -269,7 +269,7 @@ export default function StartPage() {
                 <div className="d-flex flex-column overflow-y-auto gap-3 post-outline mb-4">
                   {posts.map((post) => (
                     <PostComponent
-                      id={post.id}
+                      id={post.userId}
                       key={post.id}
                       title={post.title}
                       content={post.content}
