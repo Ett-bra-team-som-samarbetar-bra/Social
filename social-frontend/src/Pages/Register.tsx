@@ -60,7 +60,7 @@ export default function RegisterPage() {
 
   return (
     <>
-      <div className="d-flex flex-column h-100 align-items-center top-padding">
+      <div className="d-flex flex-column h-100 align-items-center justify-content-center">
         <div>
           <div className="d-flex gap-1 justify-content-between">
             <div className="d-flex gap-1">
